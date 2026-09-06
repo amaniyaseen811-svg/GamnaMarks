@@ -1252,6 +1252,16 @@ function resolve(ok, paint, forcedMsg){
     ]);
   }else{
     p.wrong++;
+    
+    // ✅ تفعيل نظام الأخطاء
+    if(typeof KanaaErrorSystem !== 'undefined') {
+      const gameEnded = KanaaErrorSystem.addError(curQ.id, p.name);
+      if(gameEnded) {
+        setTimeout(() => location.reload(), 3000);
+        return;
+      }
+    }
+    
     Voice.queue([
       {t: forcedMsg || 'ولا يهمّك. المحقّق الشاطر بيغلط ليتعلّم.', who:'zaydan'},
       {t: curQ.fact, who:'zaydan'}
@@ -1600,7 +1610,34 @@ const WS1 = [
    why:'البحر الأبيض المتوسط يحدّ فلسطين غرباً، والبحر الميت داخلها من الشرق.'},
   {q:'ما أخفض نقطة على سطح الأرض؟',
    opts:['البحر الميت','بحيرة طبريا','وادي النيل','النقب'], ans:'البحر الميت',
-   why:'البحر الميت أخفض نقطة في العالم وأكثر المياه ملوحة.'}
+   why:'البحر الميت أخفض نقطة في العالم وأكثر المياه ملوحة.'},
+  {q:'كم سنة قبل الميلاد كان الكنعانيون يسكنون فلسطين؟',
+   opts:['حوالي 5000 سنة','حوالي 10000 سنة','حوالي 3000 سنة','حوالي 2000 سنة'], ans:'حوالي 5000 سنة',
+   why:'الكنعانيون استوطنوا فلسطين منذ حوالي 5000 سنة قبل الميلاد.'},
+  {q:'ما أهم مدينة كنعانية على ساحل البحر المتوسط؟',
+   opts:['صور','عكا','صيدا','جبيل'], ans:'صور',
+   why:'صور كانت أهم مدينة ساحلية كنعانية واشتهرت بصناعة الأرجوان.'},
+  {q:'ماذا كان يعني للكنعانيين اللون الأرجواني؟',
+   opts:['رمز الملوكية والسلطة','لون الحزن','رمز السلام','لون الفقراء'], ans:'رمز الملوكية والسلطة',
+   why:'الأرجوان كان نادراً وغالياً جداً، فأصبح رمز الملوك والأمراء.'},
+  {q:'ما الحضارة التي سبقت الكنعانيين في فلسطين؟',
+   opts:['لا توجد — الكنعانيون أولاً','المصريون','الرومان','الإغريق'], ans:'لا توجد — الكنعانيون أولاً',
+   why:'الكنعانيون كانوا أول حضارة منظمة في فلسطين.'},
+  {q:'أي من المدن التالية لا تكون كنعانية الأصل؟',
+   opts:['الإسكندرية','صور','عكا','أريحا'], ans:'الإسكندرية',
+   why:'الإسكندرية مدينة مصرية بنيت في العصر البطلمي، وليست كنعانية.'},
+  {q:'كم عدد الممالك الكنعانية في فلسطين؟',
+   opts:['حوالي 12 ممالك','حوالي 5 ممالك','ممالك كثيرة ومنقسمة','مملكة واحدة فقط'], ans:'ممالك كثيرة ومنقسمة',
+   why:'فلسطين كانت منقسمة لعدة ممالك صغيرة متنافسة.'},
+  {q:'ماذا اشتهر الفينيقيون الكنعانيون بصناعته؟',
+   opts:['الزجاج والأرجوان','الحديد فقط','الذهب فقط','السيراميك فقط'], ans:'الزجاج والأرجوان',
+   why:'الفينيقيون برعوا في صناعة الزجاج والأرجوان وكانا أساس تجارتهم.'},
+  {q:'كم عاماً استمرت الحضارة الكنعانية؟',
+   opts:['حوالي 5000 سنة','حوالي 2000 سنة','حوالي 10000 سنة','حوالي 1000 سنة'], ans:'حوالي 5000 سنة',
+   why:'الحضارة الكنعانية استمرت من حوالي 3000 ق.م إلى 300 ق.م.'},
+  {q:'أي الحضارات القديمة كانت معاصرة للكنعانيين؟',
+   opts:['المصرية والبابلية','الرومانية فقط','الإغريقية فقط','الصينية فقط'], ans:'المصرية والبابلية',
+   why:'الحضارة المصرية والبابلية كانتا معاصرتين للحضارة الكنعانية.'}
 ];
 
 const WS2 = [
@@ -1627,7 +1664,43 @@ const WS2 = [
   {q:'ما الدليل المادي على أنّ أريحا أقدم مدينة في العالم؟',
    opts:['طبقات الأرض والأسوار والأبراج في تل السلطان','قصص الناس عنها','اسمها القديم','قربها من البحر الميت'],
    ans:'طبقات الأرض والأسوار والأبراج في تل السلطان',
-   why:'علماء الآثار وجدوا في تل السلطان طبقات وأسواراً وبرجاً عمره آلاف السنين — دليل مادي لا يُنكر.'}
+   why:'علماء الآثار وجدوا في تل السلطان طبقات وأسواراً وبرجاً عمره آلاف السنين.'},
+  {q:'كيف تأقلم الكنعانيون مع طبيعة بلادهم الجبلية؟',
+   opts:['بنوا سلاسل مدرجات للزراعة','هاجروا لبلاد أخرى','تركوا الزراعة تماماً','اعتمدوا على الصيد فقط'],
+   ans:'بنوا سلاسل مدرجات للزراعة',
+   why:'عملوا مدرجات على الجبال لتحسين الزراعة واستغلال المياه.'},
+  {q:'ما الذي جعل الحضارة الكنعانية قوية رغم تقسم البلاد؟',
+   opts:['الحرف والتجارة والموارد الطبيعية','الجيش القوي','التحالفات الدولية فقط','الذهب الوفير'],
+   ans:'الحرف والتجارة والموارد الطبيعية',
+   why:'رغم الانقسام السياسي، قوتهم كانت في حرفهم العالية والتجارة.'},
+  {q:'لماذا كانت الأرجوان غالياً جداً ومطلوباً في العالم القديم؟',
+   opts:['صعوبة استخراجه من الحلزون البحري وندرته','لونه الجميل فقط','كان سهل الصنع','لا يوجد لون أجمل منه'],
+   ans:'صعوبة استخراجه من الحلزون البحري وندرته',
+   why:'كان يحتاج لآلاف الحلزونات لتلوين قطعة قماش واحدة.'},
+  {q:'كيف نقل الكنعانيون الحضارة واللغة للشعوب الأخرى؟',
+   opts:['عن طريق التجارة البحرية والسفن','بالحروب والغزو','بالهجرة القسرية','بالدعوة الدينية'],
+   ans:'عن طريق التجارة البحرية والسفن',
+   why:'التجار الكنعانيون نقلوا الأبجدية والثقافة في رحلاتهم التجارية.'},
+  {q:'ما أهمية موقع فلسطين الجغرافي للكنعانيين؟',
+   opts:['ربط بين آسيا وإفريقيا، وممر للتجارة','بعيد عن الأعداء','قريب من المعادن الثمينة','يمتلك نفطاً وغازاً'],
+   ans:'ربط بين آسيا وإفريقيا، وممر للتجارة',
+   why:'موقعهم الاستراتيجي جعله ممراً تجارياً مهماً جداً.'},
+  {q:'لماذا اهتم الكنعانيون بالملاحة والتجارة البحرية؟',
+   opts:['لأن البحر كان أسرع وأرخص من البر','لا توجد طرق برية','كانوا خائفين من البحر','لم يكن عندهم خيار آخر'],
+   ans:'لأن البحر كان أسرع وأرخص من البر',
+   why:'نقل البضائع بالبحر كان أكثر فعالية من الطرق البرية الصعبة.'},
+  {q:'ماذا تعلمنا من اختراع الكنعانيين للأبجدية؟',
+   opts:['أهمية تطوير الأدوات والأفكار','أن العلم بدون تطبيق لا قيمة له','أن اللغة الوحيدة الصحيحة عددية','أن الكتابة اختراع حديث فقط'],
+   ans:'أهمية تطوير الأدوات والأفكار',
+   why:'اختراعهم غيّر العالم وأثبت أهمية الابتكار.'},
+  {q:'كيف كان تأثير الحضارة الكنعانية على الحضارات التالية؟',
+   opts:['تأثير كبير — نقلوا الأبجدية والحرف','تأثير محدود جداً','لم يكن لهم أي تأثير','تأثيرهم كان سلبياً فقط'],
+   ans:'تأثير كبير — نقلوا الأبجدية والحرف',
+   why:'الحضارات اليونانية والرومانية ورثت عنهم الأبجدية والعلوم.'},
+  {q:'ما الذي يميز الحضارة الكنعانية عن الحضارات المعاصرة لها؟',
+   opts:['براعة في الحرف والتجارة والابتكار','كانت الأقوى عسكرياً','كانت الأغنى بالذهب','كانت الأكبر حجماً'],
+   ans:'براعة في الحرف والتجارة والابتكار',
+   why:'رغم صغر حجمهم، تميزوا بالابتكار والحرفية العالية.'}
 ];
 
 const GIFTS = [
@@ -1640,12 +1713,41 @@ const GIFTS = [
 /* ---------- شاشة الكأس ---------- */
 function scrCup(){
   const p = P();
+  const totalQuestions = 34;
+  const accuracy = ((p.right / totalQuestions) * 100).toFixed(1);
+  const mins = Math.max(1, Math.round((Date.now() - window.G.started) / 60000));
+  
+  // حساب التقدير
+  let grade, gradeColor, gradeArabic;
+  if(accuracy >= 90) {
+    grade = 'A+'; gradeColor = '#10b981'; gradeArabic = '🌟 ممتاز جداً';
+  } else if(accuracy >= 80) {
+    grade = 'A'; gradeColor = '#06b6d4'; gradeArabic = '⭐ ممتاز';
+  } else if(accuracy >= 70) {
+    grade = 'B'; gradeColor = '#f59e0b'; gradeArabic = '👍 جيد جداً';
+  } else if(accuracy >= 60) {
+    grade = 'C'; gradeColor = '#f97316'; gradeArabic = '📌 جيد';
+  } else {
+    grade = 'D'; gradeColor = '#ef4444'; gradeArabic = '⚠️ يحتاج تحسّن';
+  }
+  
   show(`
     <div class="trophy">
       <div class="cup">🏆</div>
       <h2 style="font-size:30px;color:var(--gold2)">🎉 ألف مبروك 🎉</h2>
       <p class="sub mt">${p.name}، حلّيتِ القضايا الثلاث وواجهتِ الظلّ.</p>
       <div class="medal">${AR_NUM(p.score)} نقطة</div>
+      
+      <!-- ✅ إحصائيات محسّنة -->
+      <div style="background: linear-gradient(135deg, ${gradeColor}22, ${gradeColor}11); 
+                  border: 2px solid ${gradeColor}; border-radius: 18px; padding: 24px; margin: 24px 0;">
+        <div style="font-size: 48px; font-weight: bold; color: ${gradeColor}; margin-bottom: 8px;">${grade}</div>
+        <div style="font-size: 18px; color: ${gradeColor}; font-weight: 600;">${gradeArabic}</div>
+        <div style="font-size: 12px; color: var(--clay3); margin-top: 8px;">
+          دقتك: ${accuracy}% | الوقت: ${mins} دقيقة | إجابات صحيحة: ${AR_NUM(p.right)}/${AR_NUM(totalQuestions)}
+        </div>
+      </div>
+      
       ${tabletHTML(p.letters)}
       <p class="sub mt">بقي شغل صغير… ورقتان عمل والمارد بينتظرك.</p>
     </div>
@@ -1754,7 +1856,10 @@ function scrGenie(){
       $('gift').innerHTML = `<div class="fact mt2" style="text-align:center">
         <div style="font-size:52px">${g.em}</div>
         <b style="font-size:18px">${g.t}</b>
-        <p>${g.d}</p></div>`;
+        <p>${g.d}</p>
+        <!-- ✅ إضافة عرض النقاط الإضافية -->
+        ${g.pts ? `<p style="color:var(--gold2);font-weight:bold;margin-top:12px;">+${g.pts} نقطة إضافية! 🌟</p>` : ''}
+        </div>`;
       Voice.queue([{t:'مبروك! ربحتِ '+g.t, who:'kanaan'},{t:g.d, who:'zaydan'}]);
       $('fin').onclick = scrTrophy;
     });
@@ -2919,10 +3024,86 @@ scrCover();
 
   /* تشغيل تلقائي: زر الغرفة يظهر بأي لعبة، ولو في غرفة محفوظة بيكمل عليها */
   function auto() {
+    // ✅ عرض الفيديو أولاً قبل اللعبة
+    showIntroVideo();
+  }
+  
+  // ✅ شاشة الفيديو التفاعلية
+  function showIntroVideo() {
+    if (!fab) buildUI();
+    
+    const videoContainer = document.createElement('div');
+    videoContainer.id = 'videoContainer';
+    videoContainer.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    `;
+    
+    const video = document.createElement('video');
+    video.id = 'introVideo';
+    video.style.cssText = `
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    `;
+    video.src = 'kanaan_intro.mp4';
+    video.autoplay = true;
+    video.controls = false;
+    
+    // زر تخطي الفيديو
+    const skipBtn = document.createElement('button');
+    skipBtn.textContent = '⏭️ تخطي الفيديو';
+    skipBtn.style.cssText = `
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 30px;
+      background: rgba(229, 172, 46, 0.9);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10000;
+    `;
+    
+    videoContainer.appendChild(video);
+    videoContainer.appendChild(skipBtn);
+    document.body.appendChild(videoContainer);
+    
+    // عند انتهاء الفيديو
+    video.onended = function() {
+      goToGame();
+    };
+    
+    // عند الضغط على التخطي
+    skipBtn.onclick = function() {
+      goToGame();
+    };
+  }
+  
+  // ✅ الذهاب للعبة الفعلية
+  function goToGame() {
+    const videoContainer = document.getElementById('videoContainer');
+    if (videoContainer) {
+      videoContainer.remove();
+    }
+    
+    // استكمال البداية العادية
     if (!fab) buildUI();
     buildLauncher();
     var n = lsGet(LS_NAME), ro = lsGet(LS_ROLE) || 'student';
-    /* غرفة المعلمة المحفوظة لها الأولوية دائمًا */
     var tr = lsGet(LS_TROOM);
     var r = (ro === 'teacher' && tr) ? tr : lsGet(LS_ROOM);
     if (r && n) begin(r, n, ro);
@@ -3965,5 +4146,9 @@ scrCover();
   };
 })();
 </script>
+
+<!-- ===== تحسينات لغز الأرجوان — بدون تضارب ===== -->
+<script src="kanaan_enhancements_SAFE.js"></script>
+
 </body>
 </html>
