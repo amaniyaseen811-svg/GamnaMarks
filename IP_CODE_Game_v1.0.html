@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 شفرة الفكرة المسروقة - IP CODE v1.0</title>
+    <meta name="game-id" content="ip-code-game-001">
+    <meta name="game-version" content="1.0">
+    <meta name="game-type" content="educational-game">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #f3f4f6; direction: rtl; }
+        
+        .cover-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .cover-screen.hidden {
+            display: none;
+        }
+        
+        .cover-content {
+            text-align: center;
+            animation: slideInUp 1s ease-out;
+        }
+        
+        @keyframes slideInUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .cover-title {
+            font-size: 3.5rem;
+            color: #fbbf24;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.8);
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px rgba(251, 191, 36, 0.8); }
+            50% { text-shadow: 0 0 40px rgba(251, 191, 36, 1); }
+        }
+        
+        .cover-subtitle {
+            font-size: 1.8rem;
+            color: #7c3aed;
+            margin-bottom: 40px;
+        }
+        
+        .magnifying-glass {
+            font-size: 120px;
+            margin-bottom: 30px;
+            animation: rotate 3s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .cover-button {
+            padding: 18px 60px;
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(249, 115, 22, 0.4);
+        }
+        
+        .cover-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(249, 115, 22, 0.6);
+        }
+        
+        .game-screen {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+        }
+        
+        .game-screen.show {
+            display: block;
+        }
+        
+        .game-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            color: #1f2937;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            min-height: 70vh;
+        }
+        
+        .info-page h1 {
+            font-size: 2.8rem;
+            color: #7c3aed;
+            margin-bottom: 40px;
+            text-align: center;
+            border-bottom: 3px solid #7c3aed;
+            padding-bottom: 20px;
+        }
+        
+        .info-content {
+            font-size: 1.15rem;
+            line-height: 2.2;
+        }
+        
+        .info-section {
+            background: #f0f4ff;
+            border-right: 5px solid #7c3aed;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        
+        .info-section h3 {
+            font-size: 1.4rem;
+            color: #7c3aed;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-section p {
+            margin: 10px 0;
+            color: #1f2937;
+        }
+        
+        .key-point {
+            background: #e7f5ff;
+            border-left: 4px solid #1971c2;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            font-weight: 500;
+            color: #0b5394;
+        }
+        
+        .level-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .level-header h2 {
+            font-size: 2rem;
+            color: #7c3aed;
+            margin-bottom: 15px;
+        }
+        
+        .level-info {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .score-display {
+            font-size: 1.3rem;
+            color: #7c3aed;
+            font-weight: bold;
+        }
+        
+        .question-number {
+            background: #7c3aed;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+        
+        .question-text {
+            color: #1f2937;
+            font-weight: 600;
+            margin-bottom: 25px;
+            line-height: 1.8;
+            font-size: 1.2rem;
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            border-right: 4px solid #7c3aed;
+        }
+        
+        .options {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px;
+            background: #f9fafb;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .option:hover {
+            border-color: #7c3aed;
+            background: #f3f0ff;
+        }
+        
+        .option input[type="radio"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        
+        .option.disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .option.correct {
+            background: #f0fdf4;
+            border-color: #059669;
+        }
+        
+        .option.wrong {
+            background: #fef2f2;
+            border-color: #dc2626;
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 18px;
+            border-radius: 10px;
+            display: none;
+            font-weight: 500;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback.correct {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 5px solid #059669;
+        }
+        
+        .feedback.wrong {
+            background: #fee2e2;
+            color: #7f1d1d;
+            border-left: 5px solid #dc2626;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 35px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .nav-button {
+            padding: 12px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .next-btn {
+            background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+            color: white;
+        }
+        
+        .next-btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 5px;
+            margin-top: 30px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #7c3aed, #5b21b6);
+            transition: width 0.3s;
+        }
+        
+        .results-page {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .trophy {
+            font-size: 150px;
+            animation: bounce 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+        
+        .results-title {
+            font-size: 3rem;
+            color: #fbbf24;
+            margin-bottom: 10px;
+        }
+        
+        .rewards-box {
+            background: rgba(124, 58, 237, 0.1);
+            border: 2px solid #7c3aed;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px auto;
+            max-width: 500px;
+        }
+        
+        .reward-item {
+            font-size: 1.3rem;
+            margin: 12px 0;
+            color: #1f2937;
+        }
+    </style>
+</head>
+<body>
+
+<div id="ipCodeCoverScreen" class="cover-screen">
+    <div class="cover-content">
+        <div class="magnifying-glass">🔍</div>
+        <h1 class="cover-title">شفرة الفكرة المسروقة</h1>
+        <p class="cover-subtitle">IP CODE v1.0</p>
+        <p style="color: #e5e7eb; font-size: 1.2rem; margin-bottom: 40px;">اكتشفي حماية الملكية الفكرية! 🎓</p>
+        <button class="cover-button" onclick="IPCodeGame.start()">▶️ ابدأي اللعبة الآن</button>
+    </div>
+</div>
+
+<div id="ipCodeGameScreen" class="game-screen">
+    <div class="game-container" id="ipCodeContainer"></div>
+</div>
+
+<script>
+// Namespaced Game Object to avoid conflicts
+const IPCodeGame = {
+    version: '1.0',
+    gameId: 'ip-code-game-001',
+    
+    pages: [
+        {
+            type: 'info',
+            title: '🔐 حقوق المؤلف (Copyright)',
+            content: `
+                <div class="info-content">
+                    <div class="key-point">
+                        💡 <strong>التعريف:</strong> هي الحقوق التي تحمي الأعمال الإبداعية مثل الكتب والموسيقى والرسومات والبرامج
+                    </div>
+                    <div class="info-section">
+                        <h3>📌 من يملك حقوق المؤلف؟</h3>
+                        <p><strong>أنتِ!</strong> بمجرد ما تنشئي عملاً إبداعياً، تملكين حقوقه تلقائياً بدون الحاجة لتسجيل رسمي.</p>
+                    </div>
+                    <div class="info-section">
+                        <h3>❌ ما لا يجوز فعله:</h3>
+                        <p>✗ نسخ عمل كامل وبيعه</p>
+                        <p>✗ استخدام صور بدون إذن</p>
+                        <p>✗ نقل مقالة كاملة (انتحال أدبي)</p>
+                    </div>
+                </div>
+            `
+        },
+        {
+            type: 'level',
+            level: 1,
+            title: '🔐 ورقة عمل: حقوق المؤلف',
+            questions: [
+                {q: 'إذا نسخت فنانة رسمة شهيرة وباعتها باسمها، هل هذا تعدٍ على الحقوق؟', options: [{text: 'نعم - سرقة فكرية تامة', correct: true}, {text: 'لا - الرسم ملك للجميع', correct: false}, {text: 'محدود - إذا غيرت التفاصيل', correct: false}, {text: 'لا يوجد حقوق للرسومات', correct: false}], explanation: 'الحقوق الفكرية محمية تلقائياً عند الإنشاء'},
+                {q: 'هل يجوز نسخ مقطع صغير من كتاب بدون إذن للاستخدام التعليمي؟', options: [{text: 'نعم - دائماً', correct: false}, {text: 'لا - أبداً', correct: false}, {text: 'محدود - الاستخدام العادل محدود', correct: true}, {text: 'نعم - إذا لم يبع الكتاب', correct: false}], explanation: 'الاستخدام العادل محمي لكن بشروط صارمة'},
+                {q: 'كاتبة أنشأت رواية ولم تسجلها. هل حقوقها محمية؟', options: [{text: 'نعم - الحماية تلقائية', correct: true}, {text: 'لا - يجب التسجيل الرسمي', correct: false}, {text: 'محدود - فقط إذا نشرتها', correct: false}, {text: 'لا - الحقوق تحتاج ترخيص', correct: false}], explanation: 'الحماية تلقائية بموجب القانون الدولي'},
+                {q: 'هل يمكن استخدام صورة من الإنترنت في مشروع تجاري؟', options: [{text: 'لا - يجب إذن من صاحب الصورة', correct: true}, {text: 'نعم - لأنها على الإنترنت', correct: false}, {text: 'محدود - إذا نسبت المصدر', correct: false}, {text: 'نعم - إذا غيرت الصورة', correct: false}], explanation: 'الاستخدام التجاري يحتاج إذن صريح'},
+                {q: 'طالبة نقلت مقالة كاملة من الويب في بحثها. هل مقبول؟', options: [{text: 'نعم - المعلومات متاحة', correct: false}, {text: 'لا - انتحال أدبي', correct: true}, {text: 'محدود - من موقع تعليمي', correct: false}, {text: 'نعم - طالما في الإنترنت', correct: false}], explanation: 'النقل الكامل يعتبر انتحالاً أدبياً'}
+            ]
+        },
+        {
+            type: 'info',
+            title: '™️ العلامات التجارية (Trademark)',
+            content: `
+                <div class="info-content">
+                    <div class="key-point">
+                        💡 <strong>التعريف:</strong> الاسم أو الشعار الذي يميز منتج أو خدمة عن الآخرين
+                    </div>
+                    <div class="info-section">
+                        <h3>🏢 أمثلة شهيرة:</h3>
+                        <p>Nike ✓ | Apple 🍎 | Mercedes 🚗</p>
+                    </div>
+                    <div class="info-section">
+                        <h3>📝 التسجيل والتجديد:</h3>
+                        <p>يجب تسجيل العلامة رسمياً وتجديدها كل 10 سنوات</p>
+                    </div>
+                </div>
+            `
+        },
+        {
+            type: 'level',
+            level: 2,
+            title: '™️ ورقة عمل: العلامات التجارية',
+            questions: [
+                {q: 'متجر أحذية استخدم اسم ماركة عالمية معروفة. قانوني؟', options: [{text: 'نعم - الأسماء للجميع', correct: false}, {text: 'لا - انتهاك تجاري واضح', correct: true}, {text: 'محدود - إذا غيرت الشعار', correct: false}, {text: 'نعم - إذا بدول أخرى', correct: false}], explanation: 'استخدام العلامة التجارية بدون ترخيص انتهاك واضح'},
+                {q: 'شركة استخدمت اسماً متشابهاً جداً لعلامة مشهورة. النتيجة؟', options: [{text: 'لا شيء - مختلف قليلاً', correct: false}, {text: 'انتهاك وخسارة الدعوى', correct: true}, {text: 'تحذير فقط', correct: false}, {text: 'يجوز إذا سلعة مختلفة', correct: false}], explanation: 'التشابه المربك يعتبر انتهاكاً'},
+                {q: 'هل يجوز تسجيل علامة مطابقة لموجودة؟', options: [{text: 'نعم - لو لم يعترضوا', correct: false}, {text: 'لا - سيرفض الطلب', correct: true}, {text: 'محدود - في بلد مختلف', correct: false}, {text: 'نعم - بدفع أعلى', correct: false}], explanation: 'المكتب يرفض العلامات المطابقة تلقائياً'},
+                {q: 'هل تسجيل كلمة عامة كعلامة تجارية يجوز؟', options: [{text: 'نعم - أي كلمة', correct: false}, {text: 'صعب - الكلمات العامة لا تسجل', correct: true}, {text: 'نعم - إذا استخدمتها كثيراً', correct: false}, {text: 'لا - العلامات فقط', correct: false}], explanation: 'الكلمات العامة ملك الجميع'},
+                {q: 'صاحب ماركة لم يدفع رسوم التجديد. تفقد الحماية؟', options: [{text: 'لا - دائمة', correct: false}, {text: 'نعم - الحماية تنتهي', correct: true}, {text: 'محدود - نصفية', correct: false}, {text: 'لا - بنشاط', correct: false}], explanation: 'التجديد الدوري ضروري'}
+            ]
+        }
+    ],
+    
+    state: {
+        currentPage: 0,
+        currentQuestion: 0,
+        score: 0,
+        answeredQuestions: 0
+    },
+    
+    start() {
+        document.getElementById('ipCodeCoverScreen').classList.add('hidden');
+        document.getElementById('ipCodeGameScreen').classList.add('show');
+        this.renderPage();
+    },
+    
+    renderPage() {
+        const page = this.pages[this.state.currentPage];
+        const container = document.getElementById('ipCodeContainer');
+        
+        if (!page) {
+            this.renderResults();
+            return;
+        }
+        
+        if (page.type === 'info') {
+            this.renderInfoPage(page);
+        } else if (page.type === 'level') {
+            this.renderLevelPage(page);
+        }
+    },
+    
+    renderInfoPage(page) {
+        const container = document.getElementById('ipCodeContainer');
+        const progressPercent = ((this.state.currentPage + 1) / this.pages.length) * 100;
+        
+        container.innerHTML = `
+            <div class="info-page">
+                <h1>${page.title}</h1>
+                ${page.content}
+                <div class="nav-buttons">
+                    <button class="nav-button next-btn" onclick="IPCodeGame.nextPage()">التالي →</button>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                </div>
+            </div>
+        `;
+    },
+    
+    renderLevelPage(page) {
+        const container = document.getElementById('ipCodeContainer');
+        this.state.currentQuestion = 0;
+        
+        container.innerHTML = `
+            <div class="level-page">
+                <div class="level-header">
+                    <h2>${page.title}</h2>
+                    <div class="level-info">
+                        <div class="score-display">📊 النقاط: <strong>${this.state.score}</strong></div>
+                        <div>السؤال <strong id="qNum">1</strong> من <strong>${page.questions.length}</strong></div>
+                    </div>
+                </div>
+                <div id="questionArea"></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="levelProgress" style="width: 0%"></div>
+                </div>
+            </div>
+        `;
+        
+        this.renderQuestion(page.questions[0], 0);
+    },
+    
+    renderQuestion(question, index) {
+        const area = document.getElementById('questionArea');
+        
+        area.innerHTML = `
+            <div class="question-container">
+                <div class="question-number">${index + 1}</div>
+                <div class="question-text">${question.q}</div>
+                <div class="options">
+                    ${question.options.map((opt, optIdx) => `
+                        <label class="option">
+                            <input type="radio" name="ipcode_answer" value="${optIdx}" onchange="IPCodeGame.checkAnswer(${index}, ${optIdx}, ${opt.correct}, '${question.explanation}', ${this.pages[this.state.currentPage].questions.length})">
+                            <span>${opt.text}</span>
+                        </label>
+                    `).join('')}
+                </div>
+                <div class="feedback" id="feedback"></div>
+            </div>
+        `;
+    },
+    
+    checkAnswer(qIdx, optIdx, isCorrect, explanation, totalQuestions) {
+        const feedback = document.getElementById('feedback');
+        const options = document.querySelectorAll('.option');
+        
+        options.forEach((opt, idx) => {
+            opt.classList.add('disabled');
+            if (idx === optIdx) {
+                opt.classList.add(isCorrect ? 'correct' : 'wrong');
+            }
+        });
+        
+        const feedbackClass = isCorrect ? 'correct' : 'wrong';
+        const feedbackText = isCorrect ? '✓ صحيح!' : '✗ خطأ';
+        feedback.className = `feedback show ${feedbackClass}`;
+        feedback.innerHTML = `<strong>${feedbackText}</strong><br><em>${explanation}</em>`;
+        
+        if (isCorrect) {
+            this.state.score += 10;
+            this.state.answeredQuestions++;
+        }
+        
+        const progressPercent = ((qIdx + 1) / totalQuestions) * 100;
+        document.getElementById('levelProgress').style.width = progressPercent + '%';
+        
+        setTimeout(() => {
+            this.nextQuestion(totalQuestions);
+        }, 2500);
+    },
+    
+    nextQuestion(totalQuestions) {
+        const page = this.pages[this.state.currentPage];
+        this.state.currentQuestion++;
+        
+        if (this.state.currentQuestion < page.questions.length) {
+            document.getElementById('qNum').textContent = this.state.currentQuestion + 1;
+            this.renderQuestion(page.questions[this.state.currentQuestion], this.state.currentQuestion);
+        } else {
+            this.nextPage();
+        }
+    },
+    
+    nextPage() {
+        this.state.currentPage++;
+        this.state.currentQuestion = 0;
+        this.renderPage();
+        window.scrollTo(0, 0);
+    },
+    
+    renderResults() {
+        const container = document.getElementById('ipCodeContainer');
+        const totalPossible = this.pages.filter(p => p.type === 'level').reduce((sum, p) => sum + p.questions.length, 0) * 10;
+        const percentage = (this.state.score / totalPossible) * 100;
+        
+        let award = '';
+        if (percentage >= 90) award = '💎 جائزة ذهبية';
+        else if (percentage >= 75) award = '🥈 جائزة فضية';
+        else if (percentage >= 60) award = '🥉 جائزة برونزية';
+        else award = '📜 شهادة الإتمام';
+        
+        container.innerHTML = `
+            <div class="results-page">
+                <div class="trophy">🏆</div>
+                <div class="results-title">مبروووك! 🎉</div>
+                <div class="rewards-box">
+                    <div class="reward-item">⭐ النقاط: <strong>${this.state.score}</strong></div>
+                    <div class="reward-item">📊 النسبة: <strong>${percentage.toFixed(1)}%</strong></div>
+                    <div class="reward-item">🎓 <strong>${award}</strong></div>
+                </div>
+                <button class="nav-button next-btn" onclick="location.reload()" style="padding: 15px 50px; font-size: 1.1rem; margin-top: 20px;">🎮 لعبة جديدة</button>
+            </div>
+        `;
+    }
+};
+</script>
+
+</body>
+</html>

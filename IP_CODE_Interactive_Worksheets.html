@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 شفرة الفكرة المسروقة - أوراق العمل التفاعلية</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #f3f4f6; }
+        body { direction: rtl; overflow-x: hidden; }
+        
+        .worksheet-container { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); }
+        .worksheet-card { background: white; border-radius: 20px; padding: 40px; max-width: 1000px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.4); color: #1f2937; }
+        .worksheet-card h2 { color: #7c3aed; margin-bottom: 10px; text-align: center; font-size: 1.8rem; }
+        .instructions { color: #666; text-align: center; margin-bottom: 25px; font-size: 1.05rem; }
+        
+        .header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid #e5e7eb; }
+        .score-display { font-size: 1.3rem; color: #7c3aed; font-weight: bold; }
+        .progress-text { color: #666; }
+        
+        .difficulty-toggle { display: flex; gap: 15px; margin-bottom: 30px; justify-content: center; flex-wrap: wrap; }
+        .difficulty-btn { padding: 12px 30px; border: 2px solid #ddd; border-radius: 10px; background: white; cursor: pointer; font-size: 1rem; transition: all 0.3s; }
+        .difficulty-btn.active { background: #7c3aed; color: white; border-color: #7c3aed; }
+        
+        .questions-grid { display: grid; gap: 25px; }
+        
+        .question-card { background: #f9fafb; padding: 25px; border-radius: 12px; border-right: 5px solid #7c3aed; transition: all 0.3s; }
+        .question-card.answered { background: #f0fdf4; border-right-color: #059669; }
+        .question-card.answered.wrong { background: #fef2f2; border-right-color: #dc2626; }
+        
+        .question-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px; }
+        .question-number { background: #7c3aed; color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .question-card.answered .question-number { background: #059669; }
+        .question-card.answered.wrong .question-number { background: #dc2626; }
+        
+        .question-text { color: #1f2937; font-weight: 600; margin-bottom: 18px; line-height: 1.5; font-size: 1.05rem; }
+        
+        .options { display: grid; gap: 10px; }
+        .option { display: flex; align-items: center; gap: 12px; padding: 12px; background: white; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .option:hover { border-color: #7c3aed; background: #f3f0ff; }
+        .option input[type="radio"] { width: 20px; height: 20px; cursor: pointer; }
+        
+        .option-label { cursor: pointer; flex: 1; }
+        .option input[type="radio"]:checked { accent-color: #7c3aed; }
+        
+        .option.correct { background: #f0fdf4; border-color: #059669; }
+        .option.correct input[type="radio"] { accent-color: #059669; }
+        
+        .option.wrong { background: #fef2f2; border-color: #dc2626; }
+        .option.wrong input[type="radio"] { accent-color: #dc2626; }
+        
+        .option.disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .feedback { margin-top: 15px; padding: 15px; border-radius: 8px; display: none; font-weight: 500; }
+        .feedback.show { display: block; }
+        .feedback.correct { background: #d1fae5; color: #065f46; border-left: 4px solid #059669; }
+        .feedback.wrong { background: #fee2e2; color: #7f1d1d; border-left: 4px solid #dc2626; }
+        .feedback-text { margin-bottom: 5px; }
+        .answer-explanation { font-size: 0.95rem; margin-top: 8px; font-style: italic; }
+        
+        .nav-buttons { display: flex; gap: 15px; margin-top: 35px; justify-content: center; }
+        .nav-button { padding: 12px 35px; border: none; border-radius: 10px; font-size: 1rem; cursor: pointer; transition: all 0.3s; font-weight: bold; }
+        .prev-btn { background: #ddd; color: #1f2937; }
+        .prev-btn:hover { background: #ccc; }
+        .next-btn { background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); color: white; }
+        .next-btn:hover { transform: translateY(-3px); }
+        .next-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .progress-bar { height: 8px; background: #e5e7eb; border-radius: 5px; margin-top: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #7c3aed, #5b21b6); transition: width 0.3s; }
+        
+        /* Results Screen */
+        .results-container { text-align: center; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 20px; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); }
+        .trophy { font-size: 150px; animation: bounce 1s ease-in-out infinite; margin-bottom: 20px; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-30px); } }
+        .results-title { font-size: 3rem; color: #fbbf24; margin-bottom: 10px; text-shadow: 0 0 20px rgba(251,191,36,0.5); }
+        .final-score { font-size: 2.2rem; color: #fff; margin: 20px 0; }
+        
+        .rewards-box { background: rgba(255,255,255,0.1); border: 2px solid #fbbf24; border-radius: 20px; padding: 30px; margin: 30px auto; backdrop-filter: blur(10px); max-width: 500px; }
+        .reward-item { font-size: 1.4rem; margin: 12px 0; color: #fef3c7; }
+        .restart-btn { background: #fbbf24; color: #1f2937; border: none; padding: 15px 50px; border-radius: 10px; font-size: 1.2rem; cursor: pointer; margin-top: 20px; font-weight: bold; transition: all 0.3s; }
+        .restart-btn:hover { background: #f59e0b; transform: scale(1.05); }
+        
+        @media (max-width: 768px) {
+            .results-title { font-size: 2rem; }
+            .trophy { font-size: 100px; }
+            .worksheet-card { padding: 20px; }
+            .header-info { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="gameContainer"></div>
+
+<script>
+// Sample questions with multiple choice answers
+const worksheetsData = [
+    {
+        levelNum: 1,
+        title: '🔐 ورقة عمل: حقوق المؤلف',
+        normalQuestions: [
+            {q: 'إذا نسخت فنانة رسمة شهيرة وباعتها باسمها، هل هذا تعدٍ على الحقوق؟', options: [{text: 'نعم - سرقة فكرية تامة', correct: true}, {text: 'لا - الرسم ملك للجميع', correct: false}, {text: 'محدود - إذا غيرت بعض التفاصيل', correct: false}, {text: 'لا يوجد حقوق للرسومات', correct: false}], explanation: 'الحقوق الفكرية محمية تلقائياً عند الإنشاء، ونسخ العمل بدون إذن يعتبر سرقة فكرية'},
+            {q: 'هل يجوز نسخ مقطع صغير من كتاب بدون إذن للاستخدام التعليمي؟', options: [{text: 'نعم - دائماً', correct: false}, {text: 'لا - أبداً', correct: false}, {text: 'محدود - الاستخدام العادل محدود ويحتاج توثيق', correct: true}, {text: 'نعم - إذا لم يبع الكتاب', correct: false}], explanation: 'الاستخدام العادل محمي لكن بحدود معينة، يجب نسب المصدر وعدم استخدام حجم كبير'},
+            {q: 'كاتبة أنشأت رواية ولم تسجلها. هل حقوقها محمية؟', options: [{text: 'نعم - الحماية تلقائية عند الإنشاء', correct: true}, {text: 'لا - يجب التسجيل الرسمي', correct: false}, {text: 'محدود - فقط إذا نشرتها', correct: false}, {text: 'لا - الحقوق تحتاج ترخيص', correct: false}], explanation: 'في معظم الدول، الحماية تلقائية عند الإنشاء، التسجيس الرسمي يضيف حماية إضافية فقط'},
+            {q: 'هل يمكن استخدام صورة من الإنترنت في مشروع تجاري بدون إذن؟', options: [{text: 'لا - يجب الحصول على إذن', correct: true}, {text: 'نعم - لأنها على الإنترنت', correct: false}, {text: 'محدود - إذا نسبت المصدر', correct: false}, {text: 'نعم - إذا غيرت الصورة قليلاً', correct: false}], explanation: 'الصور محمية بحقوق المؤلف، الاستخدام التجاري يحتاج إذن صريح من صاحبها'},
+            {q: 'طالبة نقلت مقالة كاملة من الويب في بحثها. هل هذا مقبول؟', options: [{text: 'نعم - المعلومات متاحة للجميع', correct: false}, {text: 'لا - انتحال أدبي وسرقة فكرية', correct: true}, {text: 'محدود - إذا من موقع تعليمي', correct: false}, {text: 'نعم - طالما في الإنترنت', correct: false}], explanation: 'نقل كامل المقالة يعتبر انتحالاً أدبياً، يجب إعادة الصياغة والنسب'},
+        ],
+        hardQuestions: [
+            {q: 'هل يملك المشتري حق نسخ عمل فني اشتراه (مثل لوحة زيتية)؟', options: [{text: 'نعم - اشتراها فملكها', correct: false}, {text: 'لا - يملك العمل الفيزيائي فقط', correct: true}, {text: 'محدود - يجوز نسخة واحدة فقط', correct: false}, {text: 'نعم - إذا قدمه هدية', correct: false}], explanation: 'الملكية الفيزيائية تختلف عن ملكية الحقوق الفكرية، المشتري يملك الكائن لكن ليس حق النسخ'},
+            {q: 'شركة تطبيقات استخدمت موسيقى بدون ترخيص في لعبة. النتيجة؟', options: [{text: 'لا شيء - الموسيقى متاحة', correct: false}, {text: 'دعوى قضائية وتعويضات', correct: true}, {text: 'تحذير فقط', correct: false}, {text: 'يجب دفع رسم صغير', correct: false}], explanation: 'استخدام الموسيقى بدون ترخيص يعرض الشركة لدعاوى قانونية وتعويضات مالية كبيرة'},
+            {q: 'هل يجوز استخدام أسلوب كاتب معروف (ليس الكلمات) في رواية جديدة؟', options: [{text: 'لا - الأسلوب محمي', correct: false}, {text: 'نعم - الأسلوب ليس محمياً، الكلمات نعم', correct: true}, {text: 'محدود - يجب نسب الأسلوب', correct: false}, {text: 'لا - جميع الكتابات محمية', correct: false}], explanation: 'الأسلوب العام والطرق ليست محمية بحقوق المؤلف، لكن الكلمات الفعلية محمية'},
+            {q: 'هل الرسائل الخاصة على السوشيال ميديا محمية بالحقوق الفكرية؟', options: [{text: 'لا - كل الإنترنت عام', correct: false}, {text: 'نعم - ملك صاحبها', correct: true}, {text: 'محدود - فقط الرسائل الطويلة', correct: false}, {text: 'لا - الشركة تملكها', correct: false}], explanation: 'محتوى المستخدم محمي بحقوق المؤلف حتى على السوشيال ميديا'},
+            {q: 'كاتبة استخدمت بنية قصة شهيرة لكن بأحداث مختلفة تماماً. انتحال؟', options: [{text: 'نعم - نسخ البنية', correct: false}, {text: 'محدود - الأساليس العامة ليست محمية', correct: true}, {text: 'لا - مختلفة تماماً', correct: false}, {text: 'يجب دفع رسوم', correct: false}], explanation: 'الأساليب والبنى العامة في السرد ليست محمية، لكن يجب عدم الاقتراب من النص الأصلي'}
+        ]
+    },
+    {
+        levelNum: 2,
+        title: '™️ ورقة عمل: العلامات التجارية',
+        normalQuestions: [
+            {q: 'متجر بيع أحذية استخدم اسم ماركة عالمية معروفة. قانوني؟', options: [{text: 'نعم - الأسماء للجميع', correct: false}, {text: 'لا - انتهاك تجاري', correct: true}, {text: 'محدود - إذا غيرت الشعار', correct: false}, {text: 'نعم - إذا بدولة أخرى', correct: false}], explanation: 'استخدام العلامة التجارية المشهورة بدون ترخيص يعتبر انتهاكاً وقد يسبب لبساً للعملاء'},
+            {q: 'شركة جديدة استخدمت اسم متشابه جداً لعلامة تجارية مشهورة. النتيجة؟', options: [{text: 'لا شيء - اسم مختلف', correct: false}, {text: 'انتهاك وقد تخسر الدعوى', correct: true}, {text: 'تحذير فقط', correct: false}, {text: 'يجوز إذا كانت سلعة مختلفة', correct: false}], explanation: 'التشابه المربك يعتبر انتهاكاً، حتى لو كانت السلعة مختلفة'},
+            {q: 'هل يجوز تسجيل علامة تجارية مطابقة لعلامة موجودة؟', options: [{text: 'نعم - لو لم يعترضوا', correct: false}, {text: 'لا - يرفض الطلب', correct: true}, {text: 'محدود - في بلد مختلف', correct: false}, {text: 'نعم - إذا دفعت أكثر', correct: false}], explanation: 'مكاتب العلامات التجارية ترفض تسجيل علامات مطابقة أو متشابهة جداً'},
+            {q: 'هل يمكن تسجيل كلمة عامة جداً كعلامة تجارية؟', options: [{text: 'نعم - أي كلمة', correct: false}, {text: 'صعب جداً - الكلمات العامة لا تسجل', correct: true}, {text: 'نعم - إذا استخدمتها كثيراً', correct: false}, {text: 'لا - العلامات تجارية فقط', correct: false}], explanation: 'الكلمات الوصفية والعامة لا تسجل كعلامات تجارية لأنها ملك الجميع'},
+            {q: 'صاحب ماركة لم يدفع رسوم التجديد. هل تفقد الحماية؟', options: [{text: 'لا - الحماية دائمة', correct: false}, {text: 'نعم - الحماية تنتهي', correct: true}, {text: 'محدود - حماية نصفية', correct: false}, {text: 'لا - إذا استخدمها بنشاط', correct: false}], explanation: 'العلامات التجارية تحتاج تجديد دوري (عادة كل 10 سنوات)، الإهمال يفقد الحماية'}
+        ],
+        hardQuestions: [
+            {q: 'هل يعتبر استخدام ماركة في اسم URL انتهاك حقوق؟', options: [{text: 'لا - الإنترنت عام', correct: false}, {text: 'محدود - يعتمد على السياق والنية', correct: true}, {text: 'نعم - دائماً', correct: false}, {text: 'لا - طالما ليس المتجر الرسمي', correct: false}], explanation: 'استخدام علامة في URL قد يكون انتهاكاً إذا كان يهدف للخلط أو الاستفادة من شهرة الماركة'},
+            {q: 'شركة استخدمت صوت معروف (دون كلمات) في إعلاناتها. محمي؟', options: [{text: 'لا - الأصوات ليست محمية', correct: false}, {text: 'نعم - الصوت يمكن أن يكون علامة مميزة', correct: true}, {text: 'محدود - إذا كان أصلياً', correct: false}, {text: 'لا - يجب تسجيل الكلمات', correct: false}], explanation: 'الأصوات المميزة (مثل أنغام الشركات) يمكن تسجيلها كعلامات تجارية'},
+            {q: 'هل يجوز استخدام ماركة معروفة في فن ساخر (Parody)؟', options: [{text: 'لا - الماركة محمية دائماً', correct: false}, {text: 'محدود - تحت حماية الحرية الفنية', correct: true}, {text: 'نعم - دائماً', correct: false}, {text: 'لا - حتى للسخرية', correct: false}], explanation: 'الساخرة الفنية محمية كحرية تعبير، لكن يجب ألا تكون مربكة تجارياً'},
+            {q: 'هل يملك الشخص المشهور حقوق اسمه كعلامة تجارية تلقائياً؟', options: [{text: 'نعم - اسمه ملكه', correct: false}, {text: 'محدود - يعتمد على التسجيل الرسمي', correct: true}, {text: 'لا - الأسماء للجميع', correct: false}, {text: 'نعم - إذا مشهور جداً', correct: false}], explanation: 'يجب التسجيل الرسمي لاسمك لكي تحصل على حماية العلامات التجارية'},
+            {q: 'شركة استخدمت اسم مدينة معروفة (مثل برلين) كعلامة. قانوني؟', options: [{text: 'نعم - أي اسم', correct: false}, {text: 'محدود - قد يكون عام جداً', correct: true}, {text: 'لا - الأماكن ملك العامة', correct: false}, {text: 'نعم - إذا بدول أخرى', correct: false}], explanation: 'الأسماء الجغرافية الشهيرة قد تكون عامة جداً وصعب تسجيلها، ما لم تكون لها معنى خاص'}
+        ]
+    },
+    {
+        levelNum: 3,
+        title: '⚙️ ورقة عمل: براءات الاختراع',
+        normalQuestions: [
+            {q: 'هل يجوز نسخ براءة اختراع موجودة بدون إذن؟', options: [{text: 'نعم - براءات قديمة', correct: false}, {text: 'لا - انتهاك براءة اختراع', correct: true}, {text: 'محدود - إذا أضفت شيء', correct: false}, {text: 'نعم - إذا غيرت قليلاً', correct: false}], explanation: 'براءة الاختراع تحمي الاختراع من النسخ، استخدامها بدون ترخيص يعتبر انتهاكاً'},
+            {q: 'مخترع نشر اختراعه العلني قبل التسجيل. هل يمكن حمايته؟', options: [{text: 'نعم - الأولوية للأول', correct: false}, {text: 'صعب جداً - النشر يلغي الحماية', correct: true}, {text: 'محدود - إذا سجل بعده', correct: false}, {text: 'نعم - إذا ضاف براءة لاحقاً', correct: false}], explanation: 'الحماية تفقد إذا نشرت الفكرة علناً قبل التسجيل الرسمي'},
+            {q: 'شركة استخدمت براءة اختراع منتهية الصلاحية. قانوني؟', options: [{text: 'لا - حماية مستمرة', correct: false}, {text: 'نعم - دخلت الملك العام', correct: true}, {text: 'محدود - تحتاج دفع رسم', correct: false}, {text: 'لا - يجب ترخيص', correct: false}], explanation: 'براءات الاختراع لها صلاحية محدودة (عادة 20 سنة)، بعدها تصبح ملك عام'},
+            {q: 'هل يجوز لطالب تحسين اختراع وتسجيل براءة باسمه؟', options: [{text: 'نعم - تحسينه ملكه', correct: false}, {text: 'لا - براءة الأصل لها الأولوية', correct: true}, {text: 'محدود - إذا تطوير كبير', correct: false}, {text: 'نعم - إذا مختلف تماماً', correct: false}], explanation: 'براءة الاختراع الأصلية لها حقوق الأولوية، التحسينات تحتاج براءة منفصلة'},
+            {q: 'هل براءة الاختراع تحمي في جميع البلدان؟', options: [{text: 'نعم - حماية دولية', correct: false}, {text: 'لا - حماية إقليمية فقط', correct: true}, {text: 'محدود - في دول متقدمة', correct: false}, {text: 'نعم - إذا من دول كبيرة', correct: false}], explanation: 'براءات الاختراع حماية إقليمية، يجب تسجيل منفصل في كل دولة'}
+        ],
+        hardQuestions: [
+            {q: 'هل يجوز للدول استخدام براءة في حالات الصحة العامة؟', options: [{text: 'لا - براءات محمية دائماً', correct: false}, {text: 'محدود - في ظروف استثنائية فقط', correct: true}, {text: 'نعم - دائماً للصحة العامة', correct: false}, {text: 'نعم - بدون رسوم', correct: false}], explanation: 'في حالات الطوارئ الصحية، يمكن للدول تجاوز براءات الاختراع (مثل أدوية COVID)'},
+            {q: 'شركة A طورت اختراع قبل B لكن سجلت متأخرة. من ينتصر؟', options: [{text: 'الشركة A - الأسبقية', correct: false}, {text: 'من سجل أولاً - تاريخ التسجيل يهم', correct: true}, {text: 'الشركة A - الحق الأصلي', correct: false}, {text: 'يتقاسمان الحقوق', correct: false}], explanation: 'تاريخ التسجيل الرسمي هو الأساس، ليس من طور الفكرة أولاً'},
+            {q: 'هل يجوز للباحث نشر بيانات براءة مسجلة قبل الموافقة؟', options: [{text: 'نعم - للبحث العلمي', correct: false}, {text: 'لا - قد يلغي الحماية', correct: true}, {text: 'محدود - إذا موثقة', correct: false}, {text: 'نعم - طالما من باحث', correct: false}], explanation: 'النشر المبكر قد يلغي حماية براءة الاختراع، يجب التصرف بحذر'},
+            {q: 'براءة اختراع حصلت على تحسينات كبيرة. براءة جديدة؟', options: [{text: 'لا - نفس الحماية', correct: false}, {text: 'نعم - براءة براءة اختراع إضافية', correct: true}, {text: 'محدود - إذا تطوير بسيط', correct: false}, {text: 'لا - يجب تجديد فقط', correct: false}], explanation: 'التحسينات الكبيرة تستحق براءة منفصلة (براءة براءة اختراع)'},
+            {q: 'شركة لم تدفع رسوم براءة لسنوات. تفقدها؟', options: [{text: 'لا - الحماية مستمرة', correct: false}, {text: 'محدود - الترك المتعمد قد يؤدي لفقدانها', correct: true}, {text: 'نعم - دائماً بدون دفع', correct: false}, {text: 'محدود - نصف الحماية', correct: false}], explanation: 'عدم دفع الرسوم المستمرة قد يؤدي لفقدان براءة الاختراع'}
+        ]
+    }
+];
+
+let gameState = {
+    currentPage: 0,
+    currentDifficulty: 'normal',
+    score: 0,
+    totalQuestions: 0,
+    answeredQuestions: 0
+};
+
+function initGame() {
+    renderPage();
+}
+
+function renderPage() {
+    const container = document.getElementById('gameContainer');
+    
+    if (gameState.currentPage < worksheetsData.length) {
+        const ws = worksheetsData[gameState.currentPage];
+        const questions = gameState.currentDifficulty === 'normal' ? ws.normalQuestions : ws.hardQuestions;
+        gameState.totalQuestions = questions.length;
+        
+        container.innerHTML = `
+            <div class="worksheet-container">
+                <div class="worksheet-card">
+                    <h2>${ws.title}</h2>
+                    <div class="instructions">اختاري الإجابة الصحيحة - ستظهر النتيجة مباشرة!</div>
+                    
+                    <div class="header-info">
+                        <div class="score-display">📊 النقاط: <strong>${gameState.score}</strong></div>
+                        <div class="progress-text">الورقة ${gameState.currentPage + 1} من ${worksheetsData.length}</div>
+                    </div>
+                    
+                    <div class="difficulty-toggle">
+                        <button class="difficulty-btn ${gameState.currentDifficulty === 'normal' ? 'active' : ''}" onclick="setDifficulty('normal')">
+                            📝 أسئلة عادية
+                        </button>
+                        <button class="difficulty-btn ${gameState.currentDifficulty === 'hard' ? 'active' : ''}" onclick="setDifficulty('hard')">
+                            🔥 أسئلة صعبة
+                        </button>
+                    </div>
+                    
+                    <div class="questions-grid" id="questionsGrid"></div>
+                    
+                    <div class="nav-buttons">
+                        ${gameState.currentPage > 0 ? '<button class="nav-button prev-btn" onclick="previousPage()">← الورقة السابقة</button>' : ''}
+                        <button class="nav-button next-btn" onclick="nextPage()" ${gameState.currentPage === worksheetsData.length - 1 ? 'style="width: 100%"' : ''}>
+                            ${gameState.currentPage < worksheetsData.length - 1 ? 'الورقة التالية →' : '🏆 انتهاء الورقات والحصول على الجوائز'}
+                        </button>
+                    </div>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${((gameState.currentPage + 1) / worksheetsData.length) * 100}%"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        renderQuestions(questions);
+    } else {
+        renderFinalResults();
+    }
+}
+
+function renderQuestions(questions) {
+    const grid = document.getElementById('questionsGrid');
+    grid.innerHTML = '';
+    
+    questions.forEach((q, idx) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `question-${idx}`;
+        
+        card.innerHTML = `
+            <div class="question-header">
+                <div class="question-number">${idx + 1}</div>
+            </div>
+            <div class="question-text">${q.q}</div>
+            <div class="options">
+                ${q.options.map((opt, optIdx) => `
+                    <label class="option">
+                        <input type="radio" name="q${idx}" value="${optIdx}" onchange="checkAnswer(${idx}, ${optIdx}, ${opt.correct}, '${q.explanation}')">
+                        <span class="option-label">${opt.text}</span>
+                    </label>
+                `).join('')}
+            </div>
+            <div class="feedback" id="feedback-${idx}"></div>
+        `;
+        
+        grid.appendChild(card);
+    });
+}
+
+function checkAnswer(qIdx, optIdx, isCorrect, explanation) {
+    const card = document.querySelector(`#question-${qIdx}`);
+    const feedback = document.getElementById(`feedback-${qIdx}`);
+    const options = card.querySelectorAll('.option');
+    
+    // Disable all options after answer
+    options.forEach((opt, idx) => {
+        opt.classList.add('disabled');
+        if (idx === optIdx) {
+            opt.classList.add(isCorrect ? 'correct' : 'wrong');
+        }
+    });
+    
+    // Show feedback
+    const feedbackClass = isCorrect ? 'correct' : 'wrong';
+    const feedbackText = isCorrect ? '✓ صحيح!' : '✗ خطأ';
+    feedback.className = `feedback show ${feedbackClass}`;
+    feedback.innerHTML = `
+        <div class="feedback-text">${feedbackText}</div>
+        <div class="answer-explanation">${explanation}</div>
+    `;
+    
+    // Update card styling
+    card.classList.add('answered');
+    if (!isCorrect) card.classList.add('wrong');
+    
+    // Update score
+    if (isCorrect) {
+        gameState.score += 10;
+        gameState.answeredQuestions++;
+    }
+}
+
+function setDifficulty(difficulty) {
+    gameState.currentDifficulty = difficulty;
+    const ws = worksheetsData[gameState.currentPage];
+    const questions = difficulty === 'normal' ? ws.normalQuestions : ws.hardQuestions;
+    document.querySelectorAll('.difficulty-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    renderQuestions(questions);
+    window.scrollTo(0, 0);
+}
+
+function nextPage() {
+    gameState.currentPage++;
+    gameState.currentDifficulty = 'normal';
+    renderPage();
+}
+
+function previousPage() {
+    gameState.currentPage--;
+    gameState.currentDifficulty = 'normal';
+    renderPage();
+}
+
+function renderFinalResults() {
+    const container = document.getElementById('gameContainer');
+    const maxScore = 6 * 25 * 10;
+    const percentage = Math.min(100, (gameState.score / maxScore) * 100);
+    
+    let award = '';
+    if (percentage >= 90) award = '💎 جائزة ذهبية - خبيرة حماية الملكية الفكرية';
+    else if (percentage >= 75) award = '🥈 جائزة فضية - متخصصة في الملكية الفكرية';
+    else if (percentage >= 60) award = '🥉 جائزة برونزية - متعلمة الملكية الفكرية';
+    else award = '📜 شهادة إتمام البرنامج التعليمي';
+    
+    container.innerHTML = `
+        <div class="results-container">
+            <div class="trophy">🏆</div>
+            <div class="results-title">مبروووك يا نور! 🎉</div>
+            <div class="final-score">لقد أنهيتِ جميع أوراق العمل التفاعلية!</div>
+            
+            <div class="rewards-box">
+                <div class="reward-item">⭐ النقاط النهائية: <strong>${gameState.score}</strong></div>
+                <div class="reward-item">📊 النسبة المئوية: <strong>${percentage.toFixed(1)}%</strong></div>
+                <div class="reward-item">🎓 <strong>${award}</strong></div>
+                <div class="reward-item">📝 أسئلة مجابة بشكل صحيح: <strong>${gameState.answeredQuestions}</strong></div>
+            </div>
+            
+            <button class="restart-btn" onclick="location.reload()">🎮 ابدأي لعبة جديدة</button>
+        </div>
+    `;
+}
+
+initGame();
+</script>
+
+</body>
+</html>
