@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شفرة الفكرة المسروقة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            color: #e5e7eb;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.5s; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Intro Screen */
+        .intro-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .intro-screen h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(to right, #fcd34d, #fed7aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .intro-screen .emoji { font-size: 4rem; margin-bottom: 20px; }
+        
+        .intro-story {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: #fef3c7;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 200px;
+        }
+        
+        .btn-kids {
+            background: linear-gradient(to right, #22c55e, #059669);
+            color: white;
+        }
+        
+        .btn-kids:hover {
+            transform: scale(1.05);
+            background: linear-gradient(to right, #16a34a, #047857);
+        }
+        
+        .btn-adults {
+            background: linear-gradient(to right, #2563eb, #4c1d95);
+            color: white;
+        }
+        
+        .btn-adults:hover {
+            transform: scale(1.05);
+            background: linear-gradient(to right, #1d4ed8, #3b0764);
+        }
+        
+        .btn-next {
+            background: linear-gradient(to right, #f59e0b, #d97757);
+            color: white;
+        }
+        
+        .btn-next:hover {
+            background: linear-gradient(to right, #d97706, #c2410c);
+        }
+        
+        /* Level Screen */
+        .level-screen {
+            animation: fadeIn 0.5s;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .header h2 {
+            font-size: 2rem;
+            color: #fcd34d;
+        }
+        
+        .score-box {
+            text-align: right;
+        }
+        
+        .score-box .score {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #4ade80;
+        }
+        
+        .level-indicator {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+        
+        .keys-indicator {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .key-slot {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #4b5563;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .key-slot.collected {
+            background: #22c55e;
+            border-color: #22c55e;
+        }
+        
+        .story-box {
+            background: linear-gradient(135deg, rgba(120, 53, 15, 0.3), rgba(146, 64, 14, 0.3));
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            line-height: 1.8;
+            color: #fef3c7;
+            font-style: italic;
+        }
+        
+        .questions-container {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .question-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .question-card:hover {
+            border-color: #4b5563;
+        }
+        
+        .question-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: white;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .option {
+            padding: 12px 15px;
+            background: #1f2937;
+            border: 2px solid #4b5563;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #e5e7eb;
+            text-align: right;
+        }
+        
+        .option:hover {
+            border-color: #6b7280;
+            background: #374151;
+        }
+        
+        .option.selected {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.2);
+        }
+        
+        .option.correct {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.2);
+            color: #dcfce7;
+        }
+        
+        .option.incorrect {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.2);
+            color: #fee2e2;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #1f2937;
+            border-radius: 4px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #22c55e, #059669);
+            transition: width 0.3s;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            background: linear-gradient(to right, #f59e0b, #d97757);
+            color: white;
+        }
+        
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Final Screen */
+        .final-screen {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .final-screen .emoji {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .final-screen h1 {
+            font-size: 2.5rem;
+            color: #fcd34d;
+            margin-bottom: 30px;
+        }
+        
+        .final-content {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .final-score {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #4ade80;
+            margin: 20px 0;
+        }
+        
+        .lessons-list {
+            text-align: right;
+            line-height: 1.8;
+            margin: 20px 0;
+        }
+        
+        .lessons-list li {
+            margin: 10px 0;
+        }
+        
+        .final-message {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #dbeafe;
+            line-height: 1.8;
+        }
+        
+        .btn-restart {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            background: linear-gradient(to right, #a855f7, #9333ea);
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            .intro-screen h1 { font-size: 2rem; }
+            .header { flex-direction: column; gap: 15px; text-align: center; }
+            button { min-width: 150px; }
+            .button-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Info Screen -->
+        <div id="info" class="screen active" style="padding: 40px 20px; background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 27, 75, 0.9)); border-radius: 10px; position: relative;">
+            <div style="position: absolute; top: 20px; right: 20px; text-align: center;">
+                <div style="font-size: 3rem; font-weight: 900; color: #4ade80;" id="timerDisplay">90</div>
+                <div style="color: #9ca3af; font-size: 0.9rem;">ثانية</div>
+            </div>
+
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h1 style="font-size: 2.5rem; color: #fcd34d; margin-bottom: 30px; text-align: center; font-weight: 900;">📚 تعريف الملكية الفكرية</h1>
+                
+                <div style="background: rgba(30, 41, 59, 0.8); border-left: 4px solid #f59e0b; padding: 20px; margin-bottom: 25px; border-radius: 5px;">
+                    <h2 style="color: #fef3c7; font-size: 1.3rem; margin-bottom: 10px;">🎯 ما هي الملكية الفكرية؟</h2>
+                    <p style="color: #e5e7eb; line-height: 1.8;">
+                        الملكية الفكرية (IP) هي الحقوق القانونية التي تحمي الأعمال الإبداعية والابتكارات. أي شيء تخترعه أو تبتكره يصبح ملكًا لك، والقانون يحميك من السرقة والتقليد.
+                    </p>
+                </div>
+
+                <h2 style="color: #fcd34d; font-size: 1.5rem; margin-top: 30px; margin-bottom: 15px;">🔑 أنواع حماية الملكية الفكرية:</h2>
+
+                <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+                    <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); padding: 15px; border-radius: 8px;">
+                        <h3 style="color: #4ade80; margin-bottom: 8px;">📖 حقوق المؤلف (Copyright)</h3>
+                        <p style="color: #e5e7eb; font-size: 0.95rem;">
+                            تحمي الأعمال الإبداعية: كتب، أغاني، صور، فيديوهات، تصاميم وكود برمجي. تلقائيًا عند الإنشاء ولا تحتاج تسجيل.
+                        </p>
+                    </div>
+
+                    <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 15px; border-radius: 8px;">
+                        <h3 style="color: #60a5fa; margin-bottom: 8px;">™️ العلامات التجارية (Trademarks)</h3>
+                        <p style="color: #e5e7eb; font-size: 0.95rem;">
+                            تحمي الأسماء والشعارات والألوان التي تميز شركتك. تساعد الناس في معرفة من صنع المنتج. تحتاج تسجيل رسمي.
+                        </p>
+                    </div>
+
+                    <div style="background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); padding: 15px; border-radius: 8px;">
+                        <h3 style="color: #c084fc; margin-bottom: 8px;">💡 براءات الاختراع (Patents)</h3>
+                        <p style="color: #e5e7eb; font-size: 0.95rem;">
+                            تحمي الاختراعات والتقنيات الجديدة. تمنع الآخرين من صنع أو بيع اختراعك. تحتاج تسجيل وتستمر لـ 20 سنة.
+                        </p>
+                    </div>
+
+                    <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 15px; border-radius: 8px;">
+                        <h3 style="color: #fcd34d; margin-bottom: 8px;">🔐 الأسرار التجارية (Trade Secrets)</h3>
+                        <p style="color: #e5e7eb; font-size: 0.95rem;">
+                            تحمي المعلومات السرية للشركة: قائمة العملاء، الصيغ، استراتيجيات. تبقى محمية طالما بقيت سرية. لا تحتاج تسجيل.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="background: rgba(120, 53, 15, 0.3); border: 1px solid rgba(245, 158, 11, 0.3); padding: 20px; margin-top: 30px; border-radius: 8px;">
+                    <h2 style="color: #fef3c7; font-size: 1.3rem; margin-bottom: 10px;">⚡ لماذا الملكية الفكرية مهمة؟</h2>
+                    <ul style="color: #e5e7eb; line-height: 1.8; margin-right: 20px;">
+                        <li>✅ تحمي عملك من التقليد والسرقة</li>
+                        <li>✅ تعطيك قيمة مالية (يمكن بيع الحقوق)</li>
+                        <li>✅ تحمي سمعتك وهويتك</li>
+                        <li>✅ تشجع الابتكار والإبداع</li>
+                        <li>✅ توفر حلول قانونية ضد المنتهكين</li>
+                    </ul>
+                </div>
+
+                <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 20px; margin-top: 20px; border-radius: 8px;">
+                    <h2 style="color: #fca5a5; font-size: 1.3rem; margin-bottom: 10px;">⚠️ ما يجب تجنبه:</h2>
+                    <ul style="color: #e5e7eb; line-height: 1.8; margin-right: 20px;">
+                        <li>❌ تقليد علامات تجارية مشهورة</li>
+                        <li>❌ استخدام صور/موسيقى بدون إذن</li>
+                        <li>❌ كشف أسرار تجارية للمنافسين</li>
+                        <li>❌ نسخ كود برمجي لآخرين</li>
+                        <li>❌ عدم توثيق الحقوق في الفريق</li>
+                    </ul>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 30px;">
+                    <button style="flex: 2; padding: 20px; font-size: 1.2rem; background: linear-gradient(to right, #22c55e, #059669); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='linear-gradient(to right, #16a34a, #047857)'" onmouseout="this.style.background='linear-gradient(to right, #22c55e, #059669)'" onclick="goToIntro();">
+                        ✅ فهمت! انطلق للعبة 🚀
+                    </button>
+                    <button style="flex: 1; padding: 20px; font-size: 1rem; background: rgba(107, 114, 128, 0.5); color: #e5e7eb; border: 2px solid #6b7280; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='rgba(107, 114, 128, 0.7)'" onmouseout="this.style.background='rgba(107, 114, 128, 0.5)'" onclick="skipInfo();">
+                        ⏭️ تخطي
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Intro Screen -->
+        <div id="intro" class="screen intro-screen">
+            <div class="emoji">🔐</div>
+            <h1>شفرة الفكرة المسروقة</h1>
+            <p style="margin-bottom: 10px; color: #9ca3af;">The Cipher of the Stolen Idea</p>
+            
+            <div class="intro-story">
+                غدًا سيُفتتح معرض المستقبل للابتكار، وقبل الافتتاح بساعات فقط تصل رسالة غامضة:<br><br>
+                «المشروع الذي ستشاهدونه... ليس ملكًا لمن يدّعي أنه صاحبه.»<br><br>
+                اكتشف من السارق الحقيقي، وتعلم أسرار حماية الملكية الفكرية من خلال التحقيق.
+            </div>
+            
+            <div class="button-group">
+                <button class="btn-kids" onclick="startGame('kids')">🎮 للأطفال والشباب</button>
+                <button class="btn-adults" onclick="startGame('adults')">🔬 للكبار والمختصين</button>
+            </div>
+        </div>
+
+        <!-- Level Screen -->
+        <div id="level" class="screen level-screen">
+            <div class="header">
+                <div>
+                    <h2 id="levelTitle"></h2>
+                    <p style="color: #9ca3af; margin-top: 5px;" id="levelSubtitle"></p>
+                </div>
+                <div class="score-box">
+                    <div class="score" id="score">⭐ 0</div>
+                    <div class="level-indicator" id="levelNum"></div>
+                </div>
+            </div>
+            
+            <div class="keys-indicator" id="keysIndicator"></div>
+            
+            <div class="story-box" id="story"></div>
+            
+            <div class="questions-container" id="questions"></div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress" style="width: 0%;"></div>
+            </div>
+            
+            <button class="btn-submit" id="submitBtn" onclick="submitLevel()" disabled>
+                ✅ تحقق من الإجابات
+            </button>
+        </div>
+
+        <!-- Final Screen -->
+        <div id="final" class="screen final-screen">
+            <div class="emoji">🏆</div>
+            <h1>احتفالاً بحلك اللغز!</h1>
+            
+            <div class="final-content">
+                <div class="final-score" id="finalScore">⭐ 0</div>
+                <p style="color: #9ca3af; font-size: 1.1rem;">نقاط النجاح</p>
+                
+                <p style="margin-top: 30px; color: #fef3c7; font-size: 1.1rem;">جمعت جميع المفاتيح الـ 6:</p>
+                <div style="font-size: 3rem; margin: 15px 0;">
+                    🔑 🔑 🔑 🔑 🔑 🔑
+                </div>
+            </div>
+            
+            <div class="final-message">
+                <strong>📖 القصة الحقيقية:</strong><br><br>
+                لم يكن هناك سارق واحد. كانت المشكلة أن فريق المشروع لم يوثق الحقوق والمساهمات بوضوح.<br><br>
+                <em>«احمِ فكرتك قبل أن تضطر لإثبات أنها لك»</em>
+            </div>
+            
+            <div style="background: rgba(30, 58, 138, 0.2); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; padding: 20px; margin-bottom: 30px; text-align: right;">
+                <h3 style="color: #dbeafe; margin-bottom: 15px;">📚 تعلمت:</h3>
+                <ul class="lessons-list" style="list-style: none;">
+                    <li>✅ حقوق المؤلف وأهمية نسب العمل</li>
+                    <li>✅ العلامات التجارية وحماية الهوية</li>
+                    <li>✅ براءات الاختراع والتوثيق</li>
+                    <li>✅ الأسرار التجارية والبيانات السرية</li>
+                    <li>✅ أهمية الاتفاقات الواضحة بين الفريق</li>
+                </ul>
+            </div>
+            
+            <button class="btn-restart" onclick="resetGame()">
+                🔄 العب مرة أخرى
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            difficulty: null,
+            currentLevel: 0,
+            score: 0,
+            answers: {},
+            keysCollected: new Set()
+        };
+
+        let timerInterval = null;
+        let timeRemaining = 90;
+
+        // Start timer when page loads
+        function startInfoTimer() {
+            timeRemaining = 90;
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    goToIntro();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const display = document.getElementById('timerDisplay');
+            if (display) {
+                display.textContent = timeRemaining;
+                
+                // Change color based on remaining time
+                if (timeRemaining <= 10) {
+                    display.style.color = '#ef4444';
+                } else if (timeRemaining <= 30) {
+                    display.style.color = '#f59e0b';
+                } else {
+                    display.style.color = '#4ade80';
+                }
+            }
+        }
+
+        function goToIntro() {
+            clearInterval(timerInterval);
+            document.getElementById('info').classList.remove('active');
+            document.getElementById('intro').classList.add('active');
+        }
+
+        function skipInfo() {
+            clearInterval(timerInterval);
+            goToIntro();
+        }
+
+        // Initialize timer on page load
+        window.addEventListener('load', startInfoTimer);
+
+        const levelsData = {
+            0: {
+                title: '🎨 المستوى الأول: اللوحة التي اختفى اسمها',
+                subtitle: 'اكتشف من صاحب العمل الحقيقي',
+                story: 'دخلنا غرفة التصميم ووجدنا صورًا وتصاميم جميلة منشورة على الإنترنت... لكن بأسماء مختلفة! يجب أن نفهم من صاحب كل عمل وحقوق المؤلف الحقيقية.',
+                kids: [
+                    { q: 'وجدنا صورة جميلة بدون اسم المصور. هل نستخدمها؟', a: [
+                        { t: 'نعم، أي شيء على الإنترنت حر', c: false },
+                        { t: 'لا، حتى بدون اسم فهي ملك المصور', c: true },
+                        { t: 'نعم، طالما نضع رابط الموقع', c: false }
+                    ]},
+                    { q: 'الطريقة الصحيحة لنسب عمل فني:', a: [
+                        { t: 'تجاهل اسم الفنان', c: false },
+                        { t: 'كتابة © (سنة) - اسم الفنان', c: true },
+                        { t: 'نسبه لنفسك', c: false }
+                    ]},
+                    { q: 'نور رسمت شعارًا. من يملكه؟', a: [
+                        { t: 'نور تملكه', c: true },
+                        { t: 'شركة المشروع', c: false },
+                        { t: 'الجميع', c: false }
+                    ]},
+                    { q: 'معنى حقوق المؤلف:', a: [
+                        { t: 'حق الشخص في التحكم بعمله', c: true },
+                        { t: 'حق شراء أي عمل فني', c: false },
+                        { t: 'حق النسخ بدون إذن', c: false }
+                    ]},
+                    { q: 'إذا استخدمنا صورة لفنان آخر:', a: [
+                        { t: 'نطلب إذن من الفنان', c: true },
+                        { t: 'نستخدمها بدون إذن', c: false },
+                        { t: 'نغير الصورة قليلًا', c: false }
+                    ]}
+                ],
+                adults: [
+                    { q: 'من صاحب حقوق العمل الفني بدون عقد؟', a: [
+                        { t: 'الفنان المبدع تلقائيًا', c: true },
+                        { t: 'الشركة الموظفة', c: false },
+                        { t: 'الدولة', c: false }
+                    ]},
+                    { q: 'الحقوق الأدبية vs الاقتصادية:', a: [
+                        { t: 'أدبية = نسب / اقتصادية = استخدام وربح', c: true },
+                        { t: 'متطابقة', c: false },
+                        { t: 'الأدبية أهم', c: false }
+                    ]},
+                    { q: 'عقد ينقل الحقوق للشركة، من يملك الشعار؟', a: [
+                        { t: 'المصمم', c: false },
+                        { t: 'الشركة', c: true },
+                        { t: 'كلاهما', c: false }
+                    ]},
+                    { q: 'النشر على الإنترنت يعني فقدان الحقوق؟', a: [
+                        { t: 'نعم، تنازل تام', c: false },
+                        { t: 'لا، لكن حدد الشروط واضحة', c: true },
+                        { t: 'الإنترنت يملكها', c: false }
+                    ]},
+                    { q: 'معنى Creative Commons:', a: [
+                        { t: 'ترخيص بشروط معينة للاستخدام', c: true },
+                        { t: 'تنازل كامل', c: false },
+                        { t: 'للبيع التجاري فقط', c: false }
+                    ]}
+                ]
+            },
+            1: {
+                title: '🏪 المستوى الثاني: متجر النسخ',
+                subtitle: 'احذر من تقليد العلامات التجارية',
+                story: 'وصلنا لمتجر يبيع منتجات تحمل شعارات شبيهة جدًا بشعار NOVA. نحتاج فهم الفرق بين الأصلي والمقلد.',
+                kids: [
+                    { q: 'الفرق بين الشعار الأصلي والمقلد:', a: [
+                        { t: 'لا يوجد فرق', c: false },
+                        { t: 'المقلد يخدع الناس', c: true },
+                        { t: 'المقلد أرخص', c: false }
+                    ]},
+                    { q: 'رامي يبيع منتجًا بشعار شبه NOVA:', a: [
+                        { t: 'تقليد غير قانوني', c: true },
+                        { t: 'منافسة عادلة', c: false },
+                        { t: 'استلهام من الأصلي', c: false }
+                    ]},
+                    { q: 'لماذا الشركات تسجل شعاراتها؟', a: [
+                        { t: 'لتزيين الموقع', c: false },
+                        { t: 'لحماية من التقليد', c: true },
+                        { t: 'لدفع رسوم', c: false }
+                    ]},
+                    { q: 'نتيجة تقليد شعار مشهور:', a: [
+                        { t: 'لا شيء', c: false },
+                        { t: 'مقاضاة وإيقاف المنتج', c: true },
+                        { t: 'تصير مشهور', c: false }
+                    ]},
+                    { q: 'الشعار يخبر الناس:', a: [
+                        { t: 'السعر', c: false },
+                        { t: 'من صنع المنتج', c: true },
+                        { t: 'المكان', c: false }
+                    ]}
+                ],
+                adults: [
+                    { q: 'الفرق بين Logo و TM و ®:', a: [
+                        { t: 'Logo = صورة / TM = اسم / ® = مسجل قانونيًا', c: true },
+                        { t: 'نفس الشيء', c: false },
+                        { t: 'Logo أهم', c: false }
+                    ]},
+                    { q: 'ما يمكن تسجيله كعلامة تجارية:', a: [
+                        { t: 'الاسم + الشعار + الألوان + الصوت', c: true },
+                        { t: 'الأسماء فقط', c: false },
+                        { t: 'الصور من الإنترنت', c: false }
+                    ]},
+                    { q: 'متى يكون شعار "مشابهًا جدًا":', a: [
+                        { t: 'إذا قد يخدع المستهلك', c: true },
+                        { t: 'أي اختلاف بسيط', c: false },
+                        { t: 'إذا اسم مختلف', c: false }
+                    ]},
+                    { q: 'مدة حماية العلامة المسجلة:', a: [
+                        { t: 'سنة واحدة', c: false },
+                        { t: '10 سنوات قابلة للتجديد', c: true },
+                        { t: 'مدى الحياة', c: false }
+                    ]},
+                    { q: 'تسجيل واحد عالمي يكفي؟', a: [
+                        { t: 'لا، التسجيل إقليمي', c: true },
+                        { t: 'نعم، واحد عالمي', c: false },
+                        { t: 'فقط الدول الكبرى', c: false }
+                    ]}
+                ]
+            },
+            2: {
+                title: '🔬 المستوى الثالث: المختبر السري',
+                subtitle: 'من يملك الاختراع حقًا؟',
+                story: 'في المختبر، وجدنا نموذجًا أوليًا وملفات. لكن هل الفكرة وحدها تثبت الملكية؟',
+                kids: [
+                    { q: 'براءة الاختراع تحمي:', a: [
+                        { t: 'مجرد الفكرة', c: false },
+                        { t: 'الاختراع الفعلي الموثق', c: true },
+                        { t: 'الاسم فقط', c: false }
+                    ]},
+                    { q: 'أي من هذا يحتاج براءة اختراع:', a: [
+                        { t: 'آلة جديدة', c: true },
+                        { t: 'فكرة بدون تطبيق', c: false },
+                        { t: 'قصة خيال', c: false }
+                    ]},
+                    { q: 'رامي يقول نفس الفكرة، هل سرق؟', a: [
+                        { t: 'نعم بالتأكيد', c: false },
+                        { t: 'قد يكون توصل لها مستقل', c: true },
+                        { t: 'ربما نحتاج أدلة', c: true }
+                    ]},
+                    { q: 'لماذا مهم تسجيل التاريخ؟', a: [
+                        { t: 'لا أهمية', c: false },
+                        { t: 'لإثبات من اخترعه أولًا', c: true },
+                        { t: 'للدعاية', c: false }
+                    ]},
+                    { q: 'الفرق بين براءة والسر التجاري:', a: [
+                        { t: 'براءة = محمية / سر = طالما يبقى سريًا', c: true },
+                        { t: 'لا يوجد فرق', c: false },
+                        { t: 'السر أفضل', c: false }
+                    ]}
+                ],
+                adults: [
+                    { q: 'متطلبات براءة الاختراع:', a: [
+                        { t: 'جديدة + غير واضحة + قابلة للتطبيق', c: true },
+                        { t: 'جديدة فقط', c: false },
+                        { t: 'مفيدة للإنسانية', c: false }
+                    ]},
+                    { q: 'مدة حماية براءة الاختراع:', a: [
+                        { t: '20 سنة من التقديم', c: true },
+                        { t: 'سنة واحدة', c: false },
+                        { t: 'مدى الحياة', c: false }
+                    ]},
+                    { q: 'Novelty Search يعني:', a: [
+                        { t: 'فحص إذا كان جديدًا فعلًا', c: true },
+                        { t: 'بحث عن الأشهر', c: false },
+                        { t: 'إعلان عن الاختراع', c: false }
+                    ]},
+                    { q: 'نشر التفاصيل قبل براءة:', a: [
+                        { t: 'قد تفقد الحق في البراءة', c: true },
+                        { t: 'لا مشكلة', c: false },
+                        { t: 'تصير مشهور', c: false }
+                    ]},
+                    { q: 'من يملك براءة الاختراع:', a: [
+                        { t: 'يعتمد على عقد العمل والقانون', c: true },
+                        { t: 'المخترع دائمًا', c: false },
+                        { t: 'الشركة دائمًا', c: false }
+                    ]}
+                ]
+            },
+            3: {
+                title: '🔐 المستوى الرابع: الخزنة الرقمية',
+                subtitle: 'حماية البيانات السرية',
+                story: 'اكتشفنا مجلدًا CONFIDENTIAL بأسرار المشروع. أي بيانات يجب حماية كسر تجاري؟',
+                kids: [
+                    { q: 'السر التجاري يجب أن يكون:', a: [
+                        { t: 'معروفًا للجميع', c: false },
+                        { t: 'محميًا وليس متاحًا للعامة', c: true },
+                        { t: 'مكتوبًا على ورقة', c: false }
+                    ]},
+                    { q: 'ما يمكن حمايته كسر تجاري:', a: [
+                        { t: 'قائمة العملاء + الصيغة + السعر', c: true },
+                        { t: 'الاسم فقط', c: false },
+                        { t: 'الشعار', c: false }
+                    ]},
+                    { q: 'آدم أعطى الكود لغريب، هذا:', a: [
+                        { t: 'خيانة ثقة', c: true },
+                        { t: 'حرية شخصية', c: false },
+                        { t: 'مشاركة معرفة', c: false }
+                    ]},
+                    { q: 'لحماية الأسرار التجارية:', a: [
+                        { t: 'لا شيء، الحماية تلقائية', c: false },
+                        { t: 'توثيق + فحص الدخول + عقود', c: true },
+                        { t: 'نشرها على الإنترنت', c: false }
+                    ]},
+                    { q: 'العقوبة إذا سرق السر:', a: [
+                        { t: 'لا توجد', c: false },
+                        { t: 'تعويض + إيقاف الاستخدام', c: true },
+                        { t: 'تحذير فقط', c: false }
+                    ]}
+                ],
+                adults: [
+                    { q: 'السر التجاري vs براءة الاختراع:', a: [
+                        { t: 'سر = طالما سريًا / براءة = مدة محددة', c: true },
+                        { t: 'متطابقتان', c: false },
+                        { t: 'السر يحمي الدولة', c: false }
+                    ]},
+                    { q: 'متطلبات "سر تجاري" قانونيًا:', a: [
+                        { t: 'غير معروف + إجراءات حماية + قيمة', c: true },
+                        { t: 'فقط غير معروف', c: false },
+                        { t: 'مسجل حكوميًا', c: false }
+                    ]},
+                    { q: 'Misappropriation يعني:', a: [
+                        { t: 'الحصول غير القانوني والاستخدام', c: true },
+                        { t: 'الحصول القانوني', c: false },
+                        { t: 'معرفة السر', c: false }
+                    ]},
+                    { q: 'نموذج العمل يحمى كسر تجاري:', a: [
+                        { t: 'نعم، إذا فريد ومحمي', c: true },
+                        { t: 'لا، النماذج عامة', c: false },
+                        { t: 'فقط مع تسجيل', c: false }
+                    ]},
+                    { q: 'موظف سابق يستخدم معلومات:', a: [
+                        { t: 'قانوني دائمًا', c: false },
+                        { t: 'غير قانوني مع اتفاقية سرية', c: true },
+                        { t: 'يعتمد على اسمه', c: false }
+                    ]}
+                ]
+            },
+            4: {
+                title: '👥 المستوى الخامس: غرفة المشتبه بهم',
+                subtitle: 'جمع الأدلة والحقائق',
+                story: 'الأدلة تشير لاتجاهات مختلفة. لا يمكننا اتهام أحد بدون فهم العقود الحقيقية.',
+                kids: [
+                    { q: 'أي دليل أقوى عند التحقيق:', a: [
+                        { t: 'رسالة بريد مع تاريخ واسم', c: true },
+                        { t: 'قول شخص بدون إثبات', c: false },
+                        { t: 'صورة غير واضحة', c: false }
+                    ]},
+                    { q: 'نور أرسلت الشعار بأمر من ليان، هل سرقت؟', a: [
+                        { t: 'نعم بالتأكيد', c: false },
+                        { t: 'لا، قد تكون بإذن', c: true },
+                        { t: 'ربما نحتاج أدلة', c: true }
+                    ]},
+                    { q: 'رامي بدأ عمله قبل NOVA، معناه:', a: [
+                        { t: 'لم يسرق', c: true },
+                        { t: 'سرق', c: false },
+                        { t: 'واحد كاذب', c: false }
+                    ]},
+                    { q: 'آدم وصل الملف لكن الكود من كتابته، هل سرق:', a: [
+                        { t: 'نعم بالتأكيد', c: false },
+                        { t: 'ربما، نحتاج معرفة الحقوق', c: true },
+                        { t: 'لا، هو الكاتب', c: false }
+                    ]},
+                    { q: 'الاتفاقيات مهمة لأنها:', a: [
+                        { t: 'مملة فقط', c: false },
+                        { t: 'تحدد من يملك ماذا', c: true },
+                        { t: 'للعامة', c: false }
+                    ]}
+                ],
+                adults: [
+                    { q: 'Chain of Custody يعني:', a: [
+                        { t: 'تتبع دقيق لكل دليل', c: true },
+                        { t: 'السجل البريدي', c: false },
+                        { t: 'قائمة الموظفين', c: false }
+                    ]},
+                    { q: 'أقوى دليل:', a: [
+                        { t: 'دليل موثق مع metadata', c: true },
+                        { t: 'قول شخصي', c: false },
+                        { t: 'تخمين منطقي', c: false }
+                    ]},
+                    { q: 'إثبات التطوير المستقل:', a: [
+                        { t: 'وثائق + تواريخ + عدم وصول لمعلومات', c: true },
+                        { t: 'لا طريقة', c: false },
+                        { t: 'قوله بدون إثبات', c: false }
+                    ]},
+                    { q: 'أهمية فحص اتفاقيات السرية:', a: [
+                        { t: 'تحدد من وعد بعدم كشف معلومات', c: true },
+                        { t: 'لا أهمية', c: false },
+                        { t: 'شكلي فقط', c: false }
+                    ]},
+                    { q: 'من يملك مساهمة موظف بمشروع جماعي:', a: [
+                        { t: 'يعتمد على العقد والقانون', c: true },
+                        { t: 'الموظف دائمًا', c: false },
+                        { t: 'الشركة دائمًا', c: false }
+                    ]}
+                ]
+            },
+            5: {
+                title: '⚖️ المستوى السادس: المحاكمة النهائية',
+                subtitle: 'الحكم النهائي والحقيقة',
+                story: 'الوقت قد حان لاتخاذ القرار. كل عنصر من المشروع له صاحب حقيقي.',
+                kids: [
+                    { q: 'الشعار NOVA - من يملكه:', a: [
+                        { t: 'نور إذا لم يوجد عقد', c: true },
+                        { t: 'ليان', c: false },
+                        { t: 'يعتمد على العقد', c: true }
+                    ]},
+                    { q: 'الصور التوضيحية - من يملكها:', a: [
+                        { t: 'المصور', c: true },
+                        { t: 'فريق المشروع', c: false },
+                        { t: 'يعتمد على الاتفاق', c: true }
+                    ]},
+                    { q: 'الكود البرمجي - من يملكه:', a: [
+                        { t: 'آدم المبرمج', c: true },
+                        { t: 'الفريق', c: false },
+                        { t: 'المنصة', c: false }
+                    ]},
+                    { q: 'الاختراع (النموذج) - من يملكه:', a: [
+                        { t: 'الفريق الذي طوره', c: true },
+                        { t: 'المخترع الأول وحده', c: false },
+                        { t: 'كل واحد متساوي', c: false }
+                    ]},
+                    { q: 'قائمة العملاء - من يملكها:', a: [
+                        { t: 'فريق المشروع / الشركة', c: true },
+                        { t: 'آدم', c: false },
+                        { t: 'الجميع', c: false }
+                    ]}
+                ],
+                adults: [
+                    { q: 'الشعار يملكه ___ إلا بعقد تنازل:', a: [
+                        { t: 'المصمم', c: true },
+                        { t: 'فريق المشروع', c: false },
+                        { t: 'الشركة الممولة', c: false }
+                    ]},
+                    { q: 'مشروع جماعي بدون عقد، الحل:', a: [
+                        { t: 'نزاع قانوني محتمل', c: true },
+                        { t: 'لا مشكلة', c: false },
+                        { t: 'عقد الآن لتسجيل الوضع', c: true }
+                    ]},
+                    { q: 'الفريق يريد حقوق مشتركة، يجب:', a: [
+                        { t: 'توثيق نسبة ملكية وحقوق', c: true },
+                        { t: 'الثقة فقط', c: false },
+                        { t: 'إعطاء كل الحقوق لواحد', c: false }
+                    ]},
+                    { q: 'موظف "عامل مستقل" متى:', a: [
+                        { t: 'عقد محدود وينقل الحقوق', c: true },
+                        { t: 'دائمًا إذا غير موظف', c: false },
+                        { t: 'لا فرق', c: false }
+                    ]},
+                    { q: 'أفضل توقيت لاتفاق الملكية:', a: [
+                        { t: 'قبل بدء المشروع', c: true },
+                        { t: 'بعد الانتهاء', c: false },
+                        { t: 'عند نزاع', c: false }
+                    ]}
+                ]
+            }
+        };
+
+        function resetGame() {
+            gameState = {
+                difficulty: null,
+                currentLevel: 0,
+                score: 0,
+                answers: {},
+                keysCollected: new Set()
+            };
+            document.getElementById('final').classList.remove('active');
+            document.getElementById('level').classList.remove('active');
+            document.getElementById('intro').classList.remove('active');
+            document.getElementById('info').classList.add('active');
+            startInfoTimer();
+        }
+
+        function startGame(diff) {
+            clearInterval(timerInterval);
+            gameState.difficulty = diff;
+            gameState.currentLevel = 0;
+            // عرض الفيديو أولاً
+            document.getElementById('intro').classList.remove('active');
+            document.getElementById('videoScreen').classList.add('active');
+        }
+
+        function showLevel() {
+            const level = levelsData[gameState.currentLevel];
+            const questions = gameState.difficulty === 'kids' ? level.kids : level.adults;
+
+            document.getElementById('intro').classList.remove('active');
+            document.getElementById('level').classList.add('active');
+            
+            document.getElementById('levelTitle').textContent = level.title;
+            document.getElementById('levelSubtitle').textContent = level.subtitle;
+            document.getElementById('levelNum').textContent = `المستوى ${gameState.currentLevel + 1} من 6`;
+            document.getElementById('score').textContent = `⭐ ${gameState.score}`;
+            document.getElementById('story').textContent = level.story;
+
+            // Update keys indicator
+            let keysHTML = '';
+            for (let i = 0; i < 6; i++) {
+                keysHTML += `<div class="key-slot ${gameState.keysCollected.has(i) ? 'collected' : ''}">
+                    ${gameState.keysCollected.has(i) ? '🔑' : '🔒'}
+                </div>`;
+            }
+            document.getElementById('keysIndicator').innerHTML = keysHTML;
+
+            // Render questions
+            let questionsHTML = '';
+            questions.forEach((q, idx) => {
+                questionsHTML += `<div class="question-card">
+                    <div class="question-title">${q.q}</div>
+                    <div class="options">`;
+                q.a.forEach((opt, optIdx) => {
+                    questionsHTML += `<button class="option" onclick="selectAnswer(${idx}, ${optIdx}, ${opt.c})">${opt.t}</button>`;
+                });
+                questionsHTML += `</div></div>`;
+            });
+            document.getElementById('questions').innerHTML = questionsHTML;
+
+            document.getElementById('progress').style.width = `${(gameState.currentLevel / 6) * 100}%`;
+            document.getElementById('submitBtn').disabled = true;
+        }
+
+        function selectAnswer(qIdx, optIdx, isCorrect) {
+            const btn = document.querySelectorAll('.question-card')[qIdx].querySelectorAll('.option')[optIdx];
+            
+            // Remove previous selection from this question
+            document.querySelectorAll('.question-card')[qIdx].querySelectorAll('.option').forEach(b => {
+                b.classList.remove('selected', 'correct', 'incorrect');
+            });
+
+            btn.classList.add('selected');
+            if (isCorrect) {
+                btn.classList.add('correct');
+                if (!gameState.answers[`q${qIdx}`]) {
+                    gameState.score += 10;
+                    document.getElementById('score').textContent = `⭐ ${gameState.score}`;
+                }
+            } else {
+                btn.classList.add('incorrect');
+            }
+            gameState.answers[`q${qIdx}`] = isCorrect;
+
+            // Check if all answered
+            const questions = gameState.difficulty === 'kids' ? levelsData[gameState.currentLevel].kids : levelsData[gameState.currentLevel].adults;
+            if (Object.keys(gameState.answers).length === questions.length) {
+                document.getElementById('submitBtn').disabled = false;
+            }
+        }
+
+        function submitLevel() {
+            gameState.keysCollected.add(gameState.currentLevel);
+            gameState.currentLevel++;
+
+            if (gameState.currentLevel >= 6) {
+                // Show final screen
+                document.getElementById('level').classList.remove('active');
+                document.getElementById('final').classList.add('active');
+                document.getElementById('finalScore').textContent = `⭐ ${gameState.score}`;
+            } else {
+                gameState.answers = {};
+                showLevel();
+            }
+        }
+
+        function backToIntro() {
+            document.getElementById('videoScreen').classList.remove('active');
+            document.getElementById('intro').classList.add('active');
+        }
+
+        function continueToGame() {
+            document.getElementById('videoScreen').classList.remove('active');
+            gameState.currentLevel = 0;
+            showLevel();
+        }
+    </script>
+</body>
+</html>
