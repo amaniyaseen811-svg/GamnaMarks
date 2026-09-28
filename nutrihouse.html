@@ -244,6 +244,66 @@ button:focus-visible{outline:3px solid var(--hard);outline-offset:3px}
 .cv-lesson{margin:18px 0 2px;color:#dfe7ff;font-weight:700}
 .cv-credit{margin:4px 0 0;color:#9fb0d6;font-size:.82rem;max-width:560px}
 @media (prefers-reduced-motion: reduce){.cv-orbit span{animation:none;display:none}}
+
+/* ===== Intro video ===== */
+#intro.active{display:flex;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;background:#000}
+.iv-wrap{position:relative;width:100%;max-width:560px;margin:auto}
+#introVid{width:100%;max-height:100vh;max-height:100dvh;display:block;background:#000}
+.iv-skip{position:absolute;top:14px;left:14px;background:rgba(0,0,0,.55);color:#fff;border:1.5px solid #f2ca73;border-radius:999px;padding:8px 16px;font:inherit;font-weight:800;cursor:pointer}
+.iv-play{position:absolute;inset:0;margin:auto;width:220px;height:64px;border-radius:999px;border:2px solid #fff2c4;background:linear-gradient(180deg,#ffe08a,#f2b93b);color:#14305a;font:inherit;font-weight:800;font-size:1.2rem;cursor:pointer;animation:btnPulse 1.6s ease-in-out infinite}
+/* ===== Modes ===== */
+#modes{padding:30px 14px 40px;max-width:900px;margin:0 auto;text-align:center}
+#modes h2{font-size:2rem}#modes .lead{color:var(--muted);font-weight:700}
+.mode-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:14px}
+.mode{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:16px 10px;cursor:pointer;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:4px;font:inherit;color:var(--ink)}
+.mode .mi{font-size:2.4rem}.mode b{font-size:1.15rem}.mode span{color:var(--muted);font-size:.85rem;font-weight:700}
+.mode:hover,.mode.sel{border-color:var(--hard);transform:translateY(-2px)}
+.names{margin:20px auto 0;max-width:420px;background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:16px;display:grid;gap:10px}
+.names input{font:inherit;padding:10px 12px;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+/* ===== Trophy ===== */
+#trophy.active{display:flex;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;background:radial-gradient(circle at 50% 40%,#2b4a8e,#0a1330 70%);color:#fff;text-align:center;overflow:hidden}
+.tr-wrap{position:relative;padding:20px}
+.tr-rays{position:absolute;left:50%;top:120px;width:700px;height:700px;margin:-350px;background:repeating-conic-gradient(rgba(242,202,115,.18) 0 10deg,transparent 10deg 20deg);border-radius:50%;animation:spin 18s linear infinite;pointer-events:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tr-cup{position:relative;font-size:9rem;line-height:1;animation:cup 1.8s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(255,210,110,.8))}
+@keyframes cup{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-12px) scale(1.08)}}
+.tr-wrap h2{font-size:2.3rem;color:#f2ca73;position:relative}
+.tr-sub{position:relative;color:#dfe7ff;font-weight:700}
+.tr-pts{position:relative;display:inline-block;margin:6px 0 18px;padding:6px 20px;border-radius:999px;background:#f2ca73;color:#14305a;font-weight:800;font-size:1.3rem;animation:btnPulse 1.4s ease-in-out infinite}
+/* ===== Worksheet ===== */
+#ws{padding:24px 14px 40px;max-width:860px;margin:0 auto}
+.ws-head{text-align:center}.ws-head h2{font-size:2rem}.ws-head p{color:var(--muted);font-weight:700;margin:2px 0 14px}
+.ws-list{list-style:none;padding:0;margin:0;display:grid;gap:12px;counter-reset:q}
+.ws-q{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px 14px;counter-increment:q}
+.ws-q p{margin:0 0 8px;font-weight:800}
+.ws-q p::before{content:counter(q) ". ";color:var(--hard)}
+.ws-q label{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border-radius:8px;cursor:pointer;font-weight:600}
+.ws-q label:hover{background:var(--chip)}
+.ws-q label.ok{background:var(--go);color:#fff}
+.ws-q label.no{background:var(--bad);color:#fff}
+.ws-q.miss{border-color:var(--bad)}
+.ws-foot{position:sticky;bottom:0;background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:12px;margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+.ws-score{font-weight:800;font-size:1.1rem;width:100%;text-align:center}
+@media print{.ws-foot,.hud{display:none!important}body{background:#fff}.ws-q{break-inside:avoid}}
+/* ===== Genie ===== */
+#genie.active{display:flex;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;background:radial-gradient(circle at 50% 30%,#4b2a86,#140a2e 70%);color:#fff;text-align:center;overflow:hidden}
+.gn-wrap{position:relative;padding:20px;max-width:720px}
+.gn-smoke{position:absolute;left:50%;top:40px;width:320px;height:320px;margin-left:-160px;border-radius:50%;background:radial-gradient(circle,rgba(160,120,255,.6),transparent 70%);filter:blur(10px);animation:smoke 3s ease-in-out infinite}
+@keyframes smoke{50%{transform:scale(1.15);opacity:.7}}
+.gn-genie{position:relative;font-size:8rem;line-height:1;animation:float 3s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-16px)}}
+.gn-wrap h2{position:relative;font-size:2.2rem;color:#ffd87a}
+.gn-wrap p{position:relative;color:#e6dcff;font-weight:700}
+.gn-lamps{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+.lamp{perspective:600px;height:170px;cursor:pointer;background:none;border:none;font:inherit;color:inherit;padding:0}
+.lamp .in{position:relative;width:100%;height:100%;transition:transform .8s;transform-style:preserve-3d}
+.lamp.open .in{transform:rotateY(180deg)}
+.lamp .f,.lamp .b{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;border:2px solid #ffd87a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px}
+.lamp .f{background:linear-gradient(160deg,#3a2270,#1d1040);font-size:3.2rem;animation:lampGlow 1.8s ease-in-out infinite}
+@keyframes lampGlow{50%{box-shadow:0 0 24px rgba(255,216,122,.7)}}
+.lamp .b{background:linear-gradient(160deg,#ffe08a,#f2b93b);color:#2a1650;transform:rotateY(180deg);font-weight:800}
+.lamp .b i{font-style:normal;font-size:2.4rem}
+.lamp.dim{opacity:.55}
 </style>
 </head>
 <body>
@@ -326,6 +386,7 @@ button:focus-visible{outline:3px solid var(--hard);outline-offset:3px}
       <span class="brand">NutriHouse</span>
     </div>
     <div class="grp">
+      <span class="pill" id="turn" hidden></span>
       <span class="pill" id="timer">⏱ 40:00</span>
       <span class="pill" id="hearts">❤️❤️❤️</span>
       <span class="pill" id="score">⭐ 0</span>
@@ -359,9 +420,62 @@ button:focus-visible{outline:3px solid var(--hard);outline-offset:3px}
         <div style="font-size:3.4rem">🏡</div>
         <h2>فيلا NutriHouse اكتملت</h2>
         <p>أضاء البيت كله: كل غرفة ومسبح وحديقة وسور بنيتها بمعلومة صحيحة عن غذائك وصحتك.</p>
-        <button class="btn" id="toResults">شاهد نتيجتك</button>
+        <button class="btn" id="toResults">🏆 استلم الكأس</button>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="intro" class="screen">
+  <div class="iv-wrap">
+    <video id="introVid" playsinline preload="auto"><source src="nutrihouse-video.mp4" type="video/mp4"></video>
+    <button class="iv-play" id="ivPlay">▶ شاهد الفيديو</button>
+    <button class="iv-skip" id="skipVid">تخطَّ ⏭</button>
+  </div>
+</section>
+
+<section id="modes" class="screen">
+  <h2>🎮 اختر طريقة اللعب</h2>
+  <p class="lead">العب وحدك، أو تحدَّ زميلًا، أو نافس بفريقك، أو اختبر نفسك.</p>
+  <div class="mode-grid" id="modeGrid"></div>
+  <div class="names" id="namesBox" hidden>
+    <h3 id="namesTitle">أسماء اللاعبين</h3>
+    <input id="p1" maxlength="20" placeholder="الاسم الأول">
+    <input id="p2" maxlength="20" placeholder="الاسم الثاني">
+    <button class="btn" id="namesGo">لنبدأ</button>
+  </div>
+</section>
+
+<section id="trophy" class="screen">
+  <div class="tr-wrap">
+    <div class="tr-rays"></div>
+    <div class="tr-cup">🏆</div>
+    <h2>كأس مهندس NutriHouse</h2>
+    <p class="tr-sub" id="trSub"></p>
+    <div class="tr-pts">+30 نقطة</div>
+    <button class="btn" id="toWs1">📝 ورقة العمل الأولى</button>
+  </div>
+</section>
+
+<section id="ws" class="screen">
+  <div class="ws-head"><h2 id="wsTitle"></h2><p id="wsSub"></p></div>
+  <ol class="ws-list" id="wsList"></ol>
+  <div class="ws-foot">
+    <div class="ws-score" id="wsScore"></div>
+    <button class="btn" id="wsSubmit">تسليم الورقة</button>
+    <button class="btn" id="wsNext" hidden></button>
+    <button class="btn ghost" id="wsPrint">🖨️ طباعة</button>
+  </div>
+</section>
+
+<section id="genie" class="screen">
+  <div class="gn-wrap">
+    <div class="gn-smoke"></div>
+    <div class="gn-genie">🧞</div>
+    <h2>أنا مارد NutriHouse!</h2>
+    <p id="gnMsg">بنيتَ فيلتك بالمعلومة الصحيحة… اختر مصباحًا واحدًا لتكشف جائزتك.</p>
+    <div class="gn-lamps" id="gnLamps"></div>
+    <button class="btn" id="gnBack" hidden>العودة للنتائج</button>
   </div>
 </section>
 
@@ -375,8 +489,12 @@ button:focus-visible{outline:3px solid var(--hard);outline-offset:3px}
     <div class="stat"><b id="rRate">—</b><span>التقدير</span></div>
   </div>
   <div class="order" id="rOrder"></div>
+  <div class="order" id="rBreak"></div>
+  <div class="order" id="rPlayers" hidden></div>
   <div class="res-btns">
-    <button class="btn" id="againBtn">ابنِ فيلا جديدة</button>
+    <button class="btn" id="genieBtn">🧞 المارد وجائزتك</button>
+    <button class="btn" id="wsFromRes" hidden>📝 أوراق العمل</button>
+    <button class="btn ghost" id="againBtn">ابنِ فيلا جديدة</button>
     <button class="btn ghost" id="resHome">الرئيسية</button>
   </div>
 </section>
@@ -442,6 +560,75 @@ function buildCover(){
     const cs=$('#cvStyle');cs.style.opacity=0;setTimeout(()=>{cs.textContent=names[cvIdx];cs.style.opacity=1},300);
   },3800);
 }
+
+/* ---------- Modes, video, trophy, worksheets, genie ---------- */
+const WS={"ws1": [["ما الوحدة البنائية للبروتينات؟", "الأحماض الأمينية", ["السكريات الأحادية", "الجليسرول", "الفيتامينات"]], ["ما المصدر الأساسي والسريع للطاقة في الجسم؟", "الكربوهيدرات", ["البروتينات", "الفيتامينات", "الأملاح المعدنية"]], ["ما الكاشف المستخدم للكشف عن النشا؟", "محلول اليود", ["كاشف بيوريت", "الإيثانول", "الماء"]], ["ما لون محلول اليود عند وضعه على غذاء غني بالنشا؟", "أزرق داكن مائل للسواد", ["بنفسجي", "أحمر", "يبقى بنيًا مصفرًا"]], ["ما الاسم الآخر لسكر الحليب؟", "اللاكتوز", ["السكروز", "المالتوز", "الفركتوز"]], ["ما الاسم العلمي لسكر المائدة؟", "السكروز", ["الجلوكوز", "اللاكتوز", "الجالاكتوز"]], ["ما الاسم الآخر لسكر الشعير؟", "المالتوز", ["السكروز", "الفركتوز", "اللاكتوز"]], ["الفركتوز يُسمّى أيضًا…", "سكر الفواكه", ["سكر الحليب", "سكر المائدة", "سكر الشعير"]], ["أين يُخزَّن الجلايكوجين في جسم الإنسان؟", "في الكبد والعضلات", ["في الجلد", "في العظام", "في المعدة"]], ["في أي مادة يذوب الزيت؟", "الإيثانول", ["الماء", "محلول اليود", "كاشف بيوريت"]], ["أي مما يلي مثال على دهون غير مشبعة؟", "زيت الزيتون", ["الزبدة", "السمن الحيواني", "الشحوم"]], ["ممّ تتكون الدهون الثلاثية؟", "أحماض دهنية وجليسرول", ["أحماض أمينية", "سكريات أحادية", "عناصر معدنية"]], ["إلى أي لون يتحول كاشف بيوريت عند وجود البروتين؟", "البنفسجي", ["الأزرق الداكن", "الأخضر", "الأصفر"]], ["أي مما يلي مصدر نباتي للبروتين؟", "العدس", ["الزبدة", "السكر", "زيت الذرة"]], ["ما فائدة الألياف للجهاز الهضمي؟", "تساعد في حركة الأمعاء", ["تعطي طاقة سريعة", "تبني العظام", "تنقل الأكسجين"]], ["أي فيتامين يصنعه الجلد عند التعرض لأشعة الشمس؟", "فيتامين D", ["فيتامين C", "فيتامين A", "فيتامين K"]], ["أين يوجد فيتامين C بكثرة؟", "الحمضيات كالبرتقال والليمون", ["الزبدة", "السكر الأبيض", "الزيوت"]], ["ما وظيفة الكالسيوم في الجسم؟", "بناء العظام والأسنان", ["تكوين الهيموجلوبين", "عمل الغدة الدرقية", "إذابة الدهون"]], ["الحديد ضروري لتكوين…", "الهيموجلوبين في الدم", ["العظام", "هرمون الغدة الدرقية", "الأغشية الخلوية"]], ["شرب كمية كافية من الماء يحمي الجسم من…", "الجفاف", ["نقص الحديد", "السمنة", "تسوس الأسنان"]]], "ws2": [["وضعت طالبة محلول اليود على قطعة خبز فتحول لونه أزرق داكنًا، ووضعته على بياض البيض فبقي بنيًا مصفرًا. ماذا تستنتج؟", "الخبز يحتوي على النشا، وبياض البيض لا يحتوي عليه", ["كلاهما يحتوي على النشا", "بياض البيض يحتوي على النشا فقط", "الخبز يحتوي على البروتين فقط"]], ["أي زوج (السكر ← نوعه) صحيح؟", "الجالاكتوز ← سكر أحادي", ["اللاكتوز ← سكر أحادي", "النشا ← سكر ثنائي", "المالتوز ← سكر متعدد"]], ["لماذا يصل الجلوكوز إلى الدم دون هضم؟", "لأنه سكر أحادي يُمتص مباشرة", ["لأنه سكر متعدد", "لأنه بروتين", "لأنه يذوب في الدهون"]], ["أي ترتيب صحيح من الأبسط إلى الأعقد؟", "جلوكوز ← سكروز ← نشا", ["نشا ← سكروز ← جلوكوز", "سكروز ← جلوكوز ← نشا", "جلوكوز ← نشا ← سكروز"]], ["ما الذي يجمع النشا والجلايكوجين والسليلوز؟", "كلها سكريات متعددة", ["كلها سكريات أحادية", "كلها بروتينات", "كلها تُهضم بسهولة في الإنسان"]], ["كم جزيئًا من الأحماض الدهنية يرتبط بجزيء جليسرول واحد في الدهون الثلاثية؟", "ثلاثة", ["واحد", "اثنان", "عشرون"]], ["لماذا تكون الزبدة صلبة وزيت الزيتون سائلًا في درجة حرارة الغرفة؟", "لأن الزبدة دهون مشبعة وزيت الزيتون دهون غير مشبعة", ["لأن الزبدة بروتين", "لأن زيت الزيتون يذوب في الماء", "لأن الزبدة سكر متعدد"]], ["أعطيت عينتين مجهولتين: الأولى فيها بروتين والثانية فيها نشا. كيف تميّز بينهما؟", "كاشف بيوريت يعطي البنفسجي مع البروتين، واليود يعطي الأزرق الداكن مع النشا", ["نستخدم الماء فقط", "نستخدم الإيثانول مع العينتين", "اليود يعطي البنفسجي مع البروتين"]], ["ما المقصود بالأحماض الأمينية الأساسية؟", "أحماض لا يصنعها الجسم ويجب الحصول عليها من الغذاء", ["أحماض يصنعها الجسم بكثرة", "أحماض توجد في الدهون فقط", "أحماض تذوب في الماء فقط"]], ["شخص نباتي يعتمد على البقوليات مصدرًا وحيدًا للبروتين. ما النصيحة الأنسب؟", "أن ينوّع مصادر البروتين ليحصل على جميع الأحماض الأمينية الأساسية", ["أن يترك البروتين نهائيًا", "أن يكتفي بالسكريات", "أن يشرب الزيت بدل البروتين"]], ["وضعنا قطرة زيت في أنبوب فيه ماء ورججناه ثم تركناه. ماذا نلاحظ؟", "ينفصل الزيت عن الماء على شكل قطرات أو طبقة", ["يذوب الزيت تمامًا", "يتحول الماء إلى اللون البنفسجي", "يتحول الزيت إلى نشا"]], ["ما الذي يميّز الفيتامينات عن الكربوهيدرات؟", "يحتاجها الجسم بكميات قليلة ولا تُعد مصدرًا للطاقة", ["يحتاجها الجسم بكميات كبيرة للطاقة", "تتكون من أحماض أمينية", "لا يحتاجها الجسم"]], ["أي مجموعة كلها فيتامينات تذوب في الدهون؟", "A و D و E و K", ["C و B و A", "C و D و K", "B و E و C"]], ["طالبة نادرًا ما تتعرض لأشعة الشمس. أي فيتامين قد تعاني من نقصه؟", "فيتامين D", ["فيتامين C", "فيتامين B", "لا يتأثر أي فيتامين"]], ["لماذا يُضاف اليود إلى ملح الطعام؟", "للحفاظ على عمل الغدة الدرقية", ["لبناء العظام", "لتكوين الهيموجلوبين", "لإذابة الدهون"]], ["أي نمط غذائي يقلل خطر أمراض القلب والأوعية الدموية؟", "غني بالألياف والخضروات وقليل الدهون المشبعة والسكريات والأملاح", ["غني بالدهون المشبعة والسكريات", "خالٍ من الماء والألياف", "يعتمد على الأطعمة المالحة"]], ["ما أكثر الأمراض المسببة للوفاة في فلسطين؟", "أمراض القلب والأوعية الدموية", ["الزكام", "كسور العظام", "تسوس الأسنان"]], ["أي عبارة صحيحة عن الماء؟", "مذيب عام ينظّم حرارة الجسم، لكنه لا يمدّه بالطاقة", ["مصدر مركّز للطاقة", "يتكون من الكربون والأكسجين", "يشكّل نسبة صغيرة من الجسم"]], ["أي مجموعة كلها من مغذيات الوقاية والتنظيم؟", "الفيتامينات والأملاح المعدنية والماء", ["الكربوهيدرات والدهون والبروتينات", "البروتينات والماء والدهون", "النشا والسليلوز والجلايكوجين"]], ["ماذا يسبب ارتفاع السكر في الدم لفترة طويلة؟", "تلف الأوعية الدموية وأعضاء مثل الكلى", ["تقوية العظام", "زيادة الفيتامينات", "تحسين عمل الغدة الدرقية"]]]};
+const MODES=[['solo','🧑‍🎓','فردي','ابنِ فيلتك وحدك'],['duel','⚔️','تحدٍّ ثنائي','لاعبان يتناوبان على الأسئلة'],['teams','👥','فرق','فريقان يتنافسان على البناء'],['class','🏫','جماعي (الصف)','الصف كله يبني معًا'],['exam','📝','امتحان','بلا تلميحات ولا خريطة معلومات']];
+function buildModes(){
+  const g=$('#modeGrid');g.innerHTML='';$('#namesBox').hidden=true;
+  MODES.forEach(([k,ic,nm,ds])=>{const b=document.createElement('button');b.className='mode';b.innerHTML=`<span class="mi">${ic}</span><b>${nm}</b><span>${ds}</span>`;
+    b.onclick=()=>{sfx.pick();G.mode=k;document.querySelectorAll('.mode').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');
+      if(k==='duel'||k==='teams'){$('#namesBox').hidden=false;$('#namesTitle').textContent=k==='duel'?'أسماء اللاعبين':'أسماء الفريقين';$('#p1').placeholder=k==='duel'?'اللاعب الأول':'الفريق الأول';$('#p2').placeholder=k==='duel'?'اللاعب الثاني':'الفريق الثاني';$('#p1').focus()}
+      else{G.players=null;show('info')}};
+    g.appendChild(b)});
+}
+$('#namesGo').onclick=()=>{const d=G.mode==='duel';G.players=[{name:$('#p1').value.trim()||(d?'اللاعب الأول':'الفريق الأول'),score:0},{name:$('#p2').value.trim()||(d?'اللاعب الثاني':'الفريق الثاني'),score:0}];G.turn=0;show('info')};
+function isMulti(){return !!(G.players&&(G.mode==='duel'||G.mode==='teams'))}
+function updTurn(){const t=$('#turn');if(isMulti()){t.hidden=false;t.textContent='🎯 الدور: '+G.players[G.turn].name}else t.hidden=true}
+function startIntro(){
+  show('intro');const v=$('#introVid');$('#ivPlay').hidden=false;
+  v.onended=()=>{v.pause();buildModes();show('modes')};
+  v.onerror=()=>{buildModes();show('modes')};
+  const src=v.querySelector('source');src.onerror=()=>{buildModes();show('modes')};
+  try{v.currentTime=0;const p=v.play();if(p&&p.then)p.then(()=>{$('#ivPlay').hidden=true}).catch(()=>{$('#ivPlay').hidden=false})}catch(e){}
+}
+$('#ivPlay').onclick=()=>{const v=$('#introVid');v.play().then(()=>{$('#ivPlay').hidden=true}).catch(()=>{buildModes();show('modes')})};
+$('#skipVid').onclick=()=>{$('#introVid').pause();buildModes();show('modes')};
+function toTrophy(){
+  if(!G.trophy){G.trophy=true;G.score+=30}
+  $('#trSub').textContent=`بنيتَ ${STYLES[G.style][1]} كاملة بأقسامها السبعة`;
+  sfx.win();confetti();show('trophy');
+}
+let WSK='ws1',WSQ=[],WS_WARNED=false;
+function openWs(k){
+  WSK=k;WS_WARNED=false;const hard=k==='ws2';
+  $('#wsTitle').textContent=hard?'📝 ورقة العمل الثانية (متقدمة)':'📝 ورقة العمل الأولى (أساسية)';
+  $('#wsSub').textContent=hard?'20 سؤالًا أصعب: تحليل واستنتاج · 3 نقاط لكل إجابة صحيحة':'20 سؤالًا عامًا عن الدرس · نقطتان لكل إجابة صحيحة';
+  WSQ=WS[k].map(([q,a,w])=>({q,a,opts:shuffle([a,...w])}));
+  $('#wsList').innerHTML=WSQ.map((x,i)=>`<li class="ws-q" id="wq${i}"><p>${x.q}</p>${x.opts.map((o,j)=>`<label><input type="radio" name="w${i}" value="${j}"> <span>${o}</span></label>`).join('')}</li>`).join('');
+  $('#wsScore').textContent='';$('#wsSubmit').hidden=false;$('#wsNext').hidden=true;show('ws');
+}
+$('#wsSubmit').onclick=()=>{
+  let c=0,un=0;
+  WSQ.forEach((x,i)=>{const sel=document.querySelector(`input[name="w${i}"]:checked`);if(!sel)un++});
+  if(un>0&&!WS_WARNED){WS_WARNED=true;$('#wsScore').textContent=`⚠️ بقي ${un} سؤالًا بلا إجابة. اضغط «تسليم الورقة» مرة أخرى للتسليم كما هي.`;return}
+  WS_WARNED=false;
+  WSQ.forEach((x,i)=>{const li=$('#wq'+i);const sel=li.querySelector('input:checked');
+    li.querySelectorAll('label').forEach(l=>{const o=l.querySelector('span').textContent;l.querySelector('input').disabled=true;if(o===x.a)l.classList.add('ok')});
+    if(sel&&x.opts[+sel.value]===x.a)c++;else{li.classList.add('miss');if(sel)sel.parentElement.classList.add('no')}});
+  const per=WSK==='ws2'?3:2;G[WSK]=c;G.score+=c*per;updHUD();
+  $('#wsScore').textContent=`النتيجة: ${c} من 20 · +${c*per} نقطة`;
+  $('#wsSubmit').hidden=true;const nx=$('#wsNext');nx.hidden=false;nx.textContent=WSK==='ws1'?'📝 ورقة العمل الثانية':'📊 النتائج';
+  c>=15?sfx.win():sfx.good();window.scrollTo({top:0,behavior:'smooth'});
+};
+$('#wsNext').onclick=()=>{if(WSK==='ws1')openWs('ws2');else results(false)};
+$('#wsPrint').onclick=()=>{try{window.print()}catch(e){}};
+const REWARDS=[['⭐','+25 نقطة ذهبية',25],['🏅','وسام المهندس الذهبي',0],['🎓','لقب: خبير المغذيات',0],['💎','+15 نقطة إضافية',15],['📜','شهادة تقدير من المارد',0],['⚡','بطاقة بناء سريع للجولة القادمة',0],['🌟','+10 نقاط ونجمة التميّز',10]];
+function openGenie(){
+  const box=$('#gnLamps');box.innerHTML='';$('#gnBack').hidden=true;
+  $('#gnMsg').textContent=G.genie?`جائزتك: ${G.genie}`:'بنيتَ فيلتك بالمعلومة الصحيحة… اختر مصباحًا واحدًا لتكشف جائزتك.';
+  const pick=shuffle(REWARDS).slice(0,3);
+  pick.forEach(r=>{const b=document.createElement('button');b.className='lamp';b.innerHTML=`<div class="in"><div class="f">🪔</div><div class="b"><i>${r[0]}</i>${r[1]}</div></div>`;
+    b.onclick=()=>{if(G.genie)return;sfx.win();b.classList.add('open');G.genie=r[1];if(r[2]){G.score+=r[2];G.genieBonus=r[2]}
+      setTimeout(()=>{box.querySelectorAll('.lamp').forEach(x=>{if(x!==b){x.classList.add('open','dim')}});$('#gnMsg').textContent='🎉 مبروك! جائزتك: '+r[1];$('#gnBack').hidden=false},900)};
+    box.appendChild(b)});
+  if(G.genie)$('#gnBack').hidden=false;
+  show('genie');
+}
+$('#gnBack').onclick=()=>results(false,true);
+$('#genieBtn').onclick=openGenie;
+$('#wsFromRes').onclick=()=>openWs('ws1');
+$('#toWs1').onclick=()=>openWs('ws1');
 /* ---------- World ---------- */
 function buildWorld(){
   const SV=styledV(G.style||'cottage');
@@ -459,7 +646,7 @@ function buildWorld(){
 }
 
 /* ---------- State ---------- */
-const G={style:'cottage',size:'large',n:6,done:{},order:[],score:0,time:2400,total:2400,tid:null,cur:null,qi:0,qs:[],hearts:3,missed:false,secPts:0,sound:true,busy:false};
+const G={mode:'solo',players:null,turn:0,trophy:false,ws1:null,ws2:null,genie:null,genieBonus:0,style:'cottage',size:'large',n:6,done:{},order:[],score:0,time:2400,total:2400,tid:null,cur:null,qi:0,qs:[],hearts:3,missed:false,secPts:0,sound:true,busy:false};
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$('#'+id).classList.add('active');window.scrollTo(0,0);if(id==='cover')buildCover();else clearInterval(cvTimer)}
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -475,9 +662,10 @@ function zoomTo(t,ms){return new Promise(res=>{if(reduced||!ms){setVB(t);res();r
 
 function startGame(size){
   const n=size==='small'?4:7,tt=size==='small'?1800:2700;
-  Object.assign(G,{size,n,done:{},order:[],score:0,time:tt,total:tt,cur:null,qi:0,hearts:3,missed:false,secPts:0,busy:false});
+  Object.assign(G,{trophy:false,ws1:null,ws2:null,genie:null,genieBonus:0,turn:0,size,n,done:{},order:[],score:0,time:tt,total:tt,cur:null,qi:0,hearts:3,missed:false,secPts:0,busy:false});
   $('.world-wrap').prepend($('#world'));
-  buildWorld();updHUD();show('game');$('#finalBox').hidden=true;showChooser(true);
+  if(G.players)G.players.forEach(p=>p.score=0);$('#infoBtn').style.display=G.mode==='exam'?'none':'';
+  buildWorld();updHUD();updTurn();show('game');$('#finalBox').hidden=true;showChooser(true);
   clearInterval(G.tid);G.tid=setInterval(tick,1000);
 }
 function tick(){G.time--;updHUD();if(G.time<=0){clearInterval(G.tid);closeModal();results(true)}}
@@ -515,20 +703,20 @@ function answer(btn,t){
   const q=G.qs[G.qi],d=SEC[G.cur];
   if(t===q.a){
     btn.classList.add('right');document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
-    const pts=G.missed?5:10;G.score+=pts;G.secPts+=pts;updHUD();sfx.good();setTimeout(sfx.thud,250);
+    const pts=G.missed?5:10;G.score+=pts;G.secPts+=pts;if(isMulti())G.players[G.turn].score+=pts;updHUD();sfx.good();setTimeout(sfx.thud,250);
     const slot=$('#slot-'+G.cur);$('#ghost-'+G.cur).style.opacity=0;
     q.rev.forEach(i=>slot.querySelectorAll(`.st[data-s="${i+1}"]`).forEach(e=>e.classList.add('on')));
     toast('✅ أُضيف: '+q.rev.map(i=>d.qs[i][0]).join(' + '));
     $('#fb').textContent=`✅ صحيح! +${pts}`;$('#fb').className='fb good';
-    $('#linkText').textContent=q.link;$('#link').classList.add('show');
+    if(G.mode!=='exam'){$('#linkText').textContent=q.link;$('#link').classList.add('show')}
     const last=G.qi===G.n-1;$('#nextBtn').textContent=last?`🎉 إكمال ${d.name}`:'السؤال التالي';$('#nextBtn').style.display='block';
   }else{
     btn.classList.add('wrong');btn.disabled=true;G.missed=true;G.hearts--;updHUD();sfx.bad();
-    $('#fb').textContent=`❌ ليست الإجابة الصحيحة. 💡 راجع بطاقة «${d.nut}» في خريطة المعلومات 📘`;$('#fb').className='fb bad';
+    $('#fb').textContent=G.mode==='exam'?'❌ ليست الإجابة الصحيحة':`❌ ليست الإجابة الصحيحة. 💡 راجع بطاقة «${d.nut}» في خريطة المعلومات 📘`;$('#fb').className='fb bad';
     if(G.hearts<=0)collapse();
   }
 }
-$('#nextBtn').onclick=()=>{if(G.qi===G.n-1){completeSection();return}G.qi++;G.missed=false;renderQ()};
+$('#nextBtn').onclick=()=>{if(isMulti()){G.turn=1-G.turn;updTurn()}if(G.qi===G.n-1){completeSection();return}G.qi++;G.missed=false;renderQ()};
 function resetSlot(k){$('#slot-'+k).querySelectorAll('.st').forEach(e=>e.classList.remove('on'));$('#ghost-'+k).style.opacity=''}
 function collapse(){
   const d=SEC[G.cur];
@@ -558,14 +746,17 @@ function finale(){
   toast('🏡 فيلا NutriHouse اكتملت');sfx.win();confetti();
 }
 function confetti(){if(reduced)return;const e=['🎉','⭐','🥕','🍎','💧','🌾','🍊','🥬','🫒'];for(let i=0;i<40;i++){const s=document.createElement('span');s.className='conf';s.textContent=e[i%e.length];s.style.left=Math.random()*100+'vw';s.style.animationDuration=(2.4+Math.random()*2)+'s';s.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(s);setTimeout(()=>s.remove(),5200)}}
-function results(timeout){
+function results(timeout,keep){
   clearInterval(G.tid);
-  const max=G.n*7*10+7*30,pct=G.score/max,used=G.total-Math.max(0,G.time);
+  const base=G.n*7*10+7*30,wsGot=(G.ws1||0)*2+(G.ws2||0)*3,buildPts=G.score-wsGot-(G.trophy?30:0)-G.genieBonus,pct=Math.max(0,buildPts)/base,used=G.total-Math.max(0,G.time);
   $('#resTitle').textContent=timeout?'⏱ انتهى الوقت':(G.order.length===7?'🏡 فيلتك جاهزة!':'النتيجة');
   $('#rScore').textContent=G.score;$('#rTime').textContent=`${Math.floor(used/60)}:${String(used%60).padStart(2,'0')}`;
   $('#rDone').textContent=`${G.order.length}/7`;
   $('#rRate').textContent=pct>=.9?'ممتاز 🌟':pct>=.75?'جيد جدًا':pct>=.6?'جيد':'راجع الدرس';
   $('#rOrder').textContent=STYLES[G.style][0]+' '+STYLES[G.style][1]+' · '+(G.order.length?('ترتيب بنائك: '+G.order.map(k=>SEC[k].icon+' '+SEC[k].name).join(' ← ')):'لم يكتمل أي قسم بعد.');
+  $('#rBreak').innerHTML=`🏗️ نقاط البناء: ${Math.max(0,buildPts)}${G.trophy?' · 🏆 الكأس: 30':''} · 📝 ورقة العمل 1: ${G.ws1==null?'—':G.ws1+'/20'} · 📝 ورقة العمل 2: ${G.ws2==null?'—':G.ws2+'/20'}${G.genie?' · 🧞 '+G.genie:''}`;
+  const rp=$('#rPlayers');if(isMulti()){const ps=G.players.slice().sort((a,b)=>b.score-a.score);rp.hidden=false;rp.innerHTML=(ps[0].score===ps[1].score?'🤝 تعادل! ':'🥇 الفائز: '+ps[0].name+' · ')+G.players.map(p=>`${p.name}: ${p.score}`).join(' · ')}else rp.hidden=true;
+  $('#wsFromRes').hidden=G.ws1!=null;
   setVB([0,0,800,500]);$('#world').classList.remove('focus');
   $('#resWorld').appendChild($('#world'));show('results');
 }
@@ -577,12 +768,12 @@ $('#infoGrid').innerHTML=infoHTML();
 buildCover();
 $('#infoGo').onclick=()=>{buildStyles();show('styles')};
 $('#infoBtn').onclick=()=>{modal(`<h2 style="text-align:center">📘 خريطة المعلومات</h2><div class="info-grid">${infoHTML()}</div><div class="row"><button class="btn" id="mOk">رجوع للبناء</button></div>`);$('#modalCard').classList.add('wide');$('#mOk').onclick=closeModal};
-$('#startBtn').onclick=()=>{sfx.pick();show('info')};
+$('#startBtn').onclick=()=>{sfx.pick();startIntro()};
 document.querySelectorAll('.size-card').forEach(b=>b.onclick=()=>startGame(b.dataset.size));
 $('#soundBtn').onclick=()=>{G.sound=!G.sound;$('#soundBtn').textContent=G.sound?'🔊':'🔇'};
 $('#homeBtn').onclick=()=>{modal(`<div class="big">🏠</div><h2>العودة للرئيسية؟</h2><p>سيتوقف البناء ويضيع تقدمك.</p><div class="row"><button class="btn" id="mYes">نعم، ارجع</button><button class="btn ghost" id="mNo">أكمل البناء</button></div>`);$('#mYes').onclick=()=>{closeModal();clearInterval(G.tid);show('cover')};$('#mNo').onclick=closeModal};
-$('#toResults').onclick=()=>results(false);
-$('#againBtn').onclick=()=>{buildStyles();show('styles')};
+$('#toResults').onclick=toTrophy;
+$('#againBtn').onclick=()=>{buildModes();show('modes')};
 $('#resHome').onclick=()=>show('cover');
 })();
 </script>
