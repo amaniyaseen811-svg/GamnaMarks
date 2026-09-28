@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فحص الملفات</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
+        body { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            direction: rtl;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2rem;
+        }
+        .file-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+        .file-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+        }
+        .file-item.found {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .file-item.not-found {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .icon {
+            font-size: 1.5rem;
+        }
+        .summary {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .summary.success {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+        .summary.error {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+            color: #721c24;
+        }
+        .info-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 فحص الملفات</h1>
+        
+        <ul class="file-list" id="fileList"></ul>
+        
+        <div class="summary" id="summary"></div>
+        
+        <div class="info-box">
+            <strong>ملاحظة مهمة:</strong><br>
+            جميع الملفات يجب أن تكون في <strong>نفس المجلد</strong> مع هذا الملف.
+        </div>
+    </div>
+
+    <script>
+        // قائمة الملفات المطلوبة
+        const requiredFiles = [
+            {
+                name: 'luebt_alfikra_almsuruqa.html',
+                description: 'ملف اللعبة الرئيسي'
+            },
+            {
+                name: 'ipcode-cover.mp4',
+                description: 'فيديو الـ Cover (169 KB)'
+            },
+            {
+                name: 'CIPHER_NARRATIVE_STORY_FINAL.mp4',
+                description: 'الفيديو الأساسي (99 MB)'
+            }
+        ];
+
+        let allFound = true;
+        const fileListHTML = requiredFiles.map(file => {
+            // نحاول تحميل الملف
+            return new Promise((resolve) => {
+                fetch(file.name, { method: 'HEAD' })
+                    .then(response => {
+                        const found = response.ok;
+                        if (!found) allFound = false;
+                        resolve({
+                            found,
+                            html: `
+                                <li class="file-item ${found ? 'found' : 'not-found'}">
+                                    <span class="icon">${found ? '✅' : '❌'}</span>
+                                    <div>
+                                        <strong>${file.name}</strong><br>
+                                        <small>${file.description}</small>
+                                    </div>
+                                </li>
+                            `
+                        });
+                    })
+                    .catch(() => {
+                        allFound = false;
+                        resolve({
+                            found: false,
+                            html: `
+                                <li class="file-item not-found">
+                                    <span class="icon">❌</span>
+                                    <div>
+                                        <strong>${file.name}</strong><br>
+                                        <small>${file.description}</small>
+                                    </div>
+                                </li>
+                            `
+                        });
+                    });
+            });
+        });
+
+        Promise.all(fileListHTML).then(results => {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = results.map(r => r.html).join('');
+
+            const summary = document.getElementById('summary');
+            if (allFound) {
+                summary.className = 'summary success';
+                summary.innerHTML = `
+                    <h2>✅ ممتاز! جميع الملفات موجودة</h2>
+                    <p style="margin-top: 10px;">بإمكانك الآن فتح لعبة اللوجو!</p>
+                    <button onclick="window.open('luebt_alfikra_almsuruqa.html')" 
+                            style="margin-top: 15px; padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem;">
+                        🎮 افتحي اللعبة الآن
+                    </button>
+                `;
+            } else {
+                summary.className = 'summary error';
+                summary.innerHTML = `
+                    <h2>❌ بعض الملفات ناقصة</h2>
+                    <p style="margin-top: 10px;">تأكدي أن جميع الملفات في نفس المجلد</p>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
