@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>If Clauses — أكاديمية إلمورا</title>
+<title>أكاديمية إلمورا — If Clauses</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cinzel:wght@500;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -21,7 +21,6 @@
   --curse:#57bd6a;
   --wrong:#c0392b;
 }
-
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{
@@ -31,7 +30,6 @@ body{
   display:flex;align-items:center;justify-content:center;
   padding:0;overflow-x:hidden;
 }
-
 body::before{
   content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
@@ -39,7 +37,7 @@ body::before{
     radial-gradient(900px 500px at 50% 110%, rgba(141,33,48,.14), transparent 60%);
 }
 
-/* ===== الإطار ===== */
+/* ---------- الإطار ---------- */
 .frame{
   position:relative;z-index:1;
   width:100%;max-width:760px;min-height:100dvh;
@@ -47,7 +45,7 @@ body::before{
   background:linear-gradient(180deg,#0d1119,#0a0d14);
 }
 
-/* ===== الشريط العلوي ===== */
+/* ---------- الشريط العلوي ---------- */
 .topbar{
   display:flex;align-items:center;gap:10px;
   padding:10px 14px;
@@ -55,7 +53,6 @@ body::before{
   border-bottom:1px solid rgba(216,163,63,.25);
   position:sticky;top:0;z-index:20;backdrop-filter:blur(8px);
 }
-
 .icon-btn{
   background:rgba(216,163,63,.1);
   border:1px solid rgba(216,163,63,.35);
@@ -64,80 +61,106 @@ body::before{
   font-size:15px;cursor:pointer;display:grid;place-items:center;
   transition:.2s;
 }
-
 .icon-btn:hover{background:rgba(216,163,63,.22)}
 .icon-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-
-.timer{
-  font-family:'Cinzel',serif;font-size:14px;color:var(--gold-soft);
-  padding:6px 12px;background:rgba(216,163,63,.1);
-  border:1px solid rgba(216,163,63,.3);border-radius:6px;
-  letter-spacing:1px;
-}
-
-.timer.warning{color:#ff9800;border-color:#ff9800}
-.timer.critical{color:var(--wrong);border-color:var(--wrong)}
-
 .lives{display:flex;gap:4px;font-size:17px;letter-spacing:1px}
 .life{filter:drop-shadow(0 0 5px rgba(141,33,48,.9))}
 .life.lost{opacity:.2;filter:grayscale(1)}
-
 .spacer{flex:1}
-
-.score{
+.trophy{
   font-family:'Cinzel',serif;font-size:13px;color:var(--gold-soft);
   border:1px solid rgba(216,163,63,.3);border-radius:20px;padding:5px 12px;
   background:rgba(216,163,63,.07);
 }
 
-/* ===== المشهد ===== */
+/* ---------- المشهد ---------- */
 .stage{flex:1;display:flex;flex-direction:column}
-
+/* ---------- الإطار السحري ---------- */
 .scene-wrap{
   position:relative;margin:12px 12px 0;padding:5px;
   border-radius:18px;overflow:hidden;
   background:#120f08;
   box-shadow:0 10px 40px rgba(0,0,0,.6), 0 0 0 1px rgba(216,163,63,.35);
 }
-
 .scene-wrap .halo{
   position:absolute;top:50%;left:50%;width:190%;aspect-ratio:1;
   transform:translate(-50%,-50%);
   background:conic-gradient(#d8a33f,#f7e3ad,#8d2130,#8fd8ff,#d8a33f);
   animation:spin 9s linear infinite;opacity:.85;
 }
-
 @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
 
 .scene-img{
   position:relative;width:100%;z-index:2;
   aspect-ratio:3/4;overflow:hidden;background:#0a0d14;
-  border-radius:14px;display:flex;align-items:center;justify-content:center;
+  border-radius:14px;
 }
-
+/* الخلفية: نسخة مكبّرة ومموّهة تملا الفراغ */
 .scene-img .bg{
   position:absolute;inset:0;width:100%;height:100%;
   object-fit:cover;filter:blur(22px) saturate(1.2) brightness(.55);
   transform:scale(1.25);
+  animation:bgDrift 24s ease-in-out infinite alternate;
+}
+@keyframes bgDrift{
+  0%{transform:scale(1.25) translate(-2%,-2%)}
+  100%{transform:scale(1.35) translate(2%,2%)}
 }
 
+/* الصورة الأساسية: كاملة بدون أي قص */
 .scene-img .fg{
   position:absolute;inset:0;width:100%;height:100%;z-index:1;
   object-fit:contain;
   filter:drop-shadow(0 6px 24px rgba(0,0,0,.65));
-  animation:fadeIn 1s ease-out both;
+  animation:fadeIn 1s ease-out both, breathe 16s ease-in-out 1s infinite alternate;
+}
+@keyframes fadeIn{from{opacity:0;transform:scale(1.03)}to{opacity:1;transform:scale(1)}}
+@keyframes breathe{
+  0%{transform:scale(1)}
+  100%{transform:scale(1.035)}
 }
 
-@keyframes fadeIn{from{opacity:0;transform:scale(1.03)}to{opacity:1;transform:scale(1)}}
+/* زوايا ذهبية */
+.cnr{position:absolute;width:26px;height:26px;z-index:4;pointer-events:none;
+  border:2px solid var(--gold-soft);opacity:.9;
+  filter:drop-shadow(0 0 5px rgba(216,163,63,.8));}
+.cnr.tl{top:8px;left:8px;border-right:0;border-bottom:0;border-radius:8px 0 0 0}
+.cnr.tr{top:8px;right:8px;border-left:0;border-bottom:0;border-radius:0 8px 0 0}
+.cnr.bl{bottom:8px;left:8px;border-right:0;border-top:0;border-radius:0 0 0 8px}
+.cnr.br{bottom:8px;right:8px;border-left:0;border-top:0;border-radius:0 0 8px 0}
 
-/* ===== اللوح/المحتوى ===== */
+/* وهج سحري يمر فوق المشهد */
+.scene-img .glow{
+  position:absolute;inset:-30%;pointer-events:none;z-index:2;
+  background:radial-gradient(circle at 50% 50%, rgba(216,163,63,.18), transparent 55%);
+  animation:sweep 13s ease-in-out infinite alternate;
+}
+@keyframes sweep{
+  0%{transform:translate(-22%,-14%)}
+  100%{transform:translate(22%,14%)}
+}
+
+/* الشرارات الطايرة */
+.sparks{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:3}
+.sparks i{
+  position:absolute;bottom:-14px;display:block;border-radius:50%;
+  background:#ffe9b0;
+  box-shadow:0 0 8px 2px rgba(255,214,120,.85);
+  animation:rise linear infinite;
+}
+@keyframes rise{
+  0%{transform:translateY(0) translateX(0) scale(.5);opacity:0}
+  12%{opacity:1}
+  70%{opacity:.9}
+  100%{transform:translateY(-115%) translateX(var(--dx)) scale(1.1);opacity:0}
+}
+
+/* ---------- لوح الرقّ ---------- */
 .panel{
   flex:1;padding:18px 16px 30px;
   display:flex;flex-direction:column;gap:14px;
   animation:riseUp .5s ease-out both;
-  overflow-y:auto;
 }
-
 @keyframes riseUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
 .narr{
@@ -146,7 +169,6 @@ body::before{
   border-inline-start:3px solid var(--gold);
   border-radius:0 10px 10px 0;padding:13px 15px;
 }
-
 .narr strong{color:var(--gold-soft)}
 
 .quest{
@@ -156,11 +178,9 @@ body::before{
   border:1px solid rgba(216,163,63,.4);border-radius:12px;
   padding:16px 18px;
 }
-
 .quest .blank{color:var(--gold);letter-spacing:2px}
 
 .opts{display:flex;flex-direction:column;gap:9px}
-
 .opt{
   display:flex;align-items:center;gap:12px;
   background:var(--stone);border:1px solid rgba(216,163,63,.22);
@@ -168,25 +188,29 @@ body::before{
   font-family:'Cinzel',serif;font-size:17px;color:var(--parch);
   cursor:pointer;transition:.18s;text-align:left;direction:ltr;width:100%;
 }
-
 .opt .tag{
   font-size:12px;width:24px;height:24px;flex:none;border-radius:6px;
   display:grid;place-items:center;
   background:rgba(216,163,63,.16);color:var(--gold-soft);
 }
-
 .opt:hover:not(:disabled){background:var(--stone-2);border-color:var(--gold);transform:translateX(-3px)}
 .opt:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .opt:disabled{cursor:default}
 .opt.good{background:rgba(87,189,106,.16);border-color:var(--curse);color:#dcffe4}
 .opt.bad{background:rgba(192,57,43,.16);border-color:var(--wrong);color:#ffdcd8}
+.opt.ar{font-family:'Tajawal',sans-serif;direction:rtl;text-align:right;font-size:16px}
+.opt.ar:hover:not(:disabled){transform:translateX(3px)}
+
+/* أقفال */
+.opt.lock-gold{border-color:rgba(216,163,63,.6)}
+.opt.lock-silver{border-color:rgba(190,200,215,.55)}
+.opt.lock-pink{border-color:rgba(226,160,170,.55)}
 
 .hint{
   font-size:14px;line-height:1.8;color:var(--parch-dim);
   background:rgba(143,216,255,.07);border:1px dashed rgba(143,216,255,.3);
   border-radius:10px;padding:11px 13px;
 }
-
 .hint b{color:var(--spell)}
 
 .cta{
@@ -196,900 +220,1888 @@ body::before{
   cursor:pointer;width:100%;transition:.2s;
   box-shadow:0 5px 20px rgba(216,163,63,.28);
 }
-
-.cta:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(216,163,63,.4)}
-.cta:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-.cta.dark{background:#1a1a1a;color:var(--parch);box-shadow:0 5px 20px rgba(0,0,0,.5)}
-.cta.dark:hover{background:#252525}
-
-/* ===== نمط اللعب ===== */
-.modes{
-  display:grid;grid-template-columns:1fr 1fr;gap:10px;
-  margin:10px 0;
+.cta:hover{filter:brightness(1.09);transform:translateY(-1px)}
+.cta:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.cta.ghost{
+  background:transparent;color:var(--gold-soft);
+  border:1px solid rgba(216,163,63,.5);box-shadow:none;margin-top:10px;
 }
+.cta.ghost:hover{background:rgba(216,163,63,.12)}
+.cta.dark{background:linear-gradient(180deg,var(--crimson),#5e131f);color:#ffe9ec;box-shadow:0 5px 20px rgba(141,33,48,.3)}
 
-.mode-btn{
-  background:var(--stone);border:1px solid rgba(216,163,63,.2);
-  border-radius:11px;padding:15px;
-  color:var(--parch);cursor:pointer;
-  text-align:center;font-weight:600;font-size:15px;
-  transition:.2s;
+/* ---------- الغلاف ---------- */
+.cover{position:relative;flex:1;display:flex;flex-direction:column;justify-content:flex-end;min-height:100dvh}
+.cover-bg{position:absolute;inset:0}
+.cover-bg video{width:100%;height:100%;object-fit:cover}
+.cover-bg img{width:100%;height:100%;object-fit:cover;animation:kenburns 26s ease-in-out infinite alternate}
+.cover-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,10,17,.55),rgba(8,10,17,.78) 45%,rgba(8,10,17,.97))}
+.cover-in{position:relative;z-index:2;padding:26px 20px 40px;text-align:center}
+.kicker{font-family:'Cinzel',serif;font-size:12px;letter-spacing:4px;color:var(--gold);margin-bottom:10px}
+.title{font-family:'Amiri',serif;font-weight:700;font-size:clamp(30px,8vw,46px);line-height:1.25;color:#fff;text-shadow:0 0 26px rgba(216,163,63,.45)}
+.title span{color:var(--gold-soft);display:block;font-family:'Cinzel',serif;font-size:.48em;letter-spacing:5px;margin-top:8px}
+.sub{font-size:15.5px;color:var(--parch-dim);margin:14px auto 22px;max-width:430px;line-height:1.9}
+
+/* ---------- شاشة الفيديو ---------- */
+.vidscreen{position:relative;flex:1;min-height:100dvh;background:#000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center}
+.vidscreen video{width:100%;max-height:100dvh;object-fit:contain;background:#000}
+.vidbar{position:absolute;bottom:0;left:0;right:0;padding:16px;z-index:5;
+  display:flex;gap:10px;background:linear-gradient(transparent,rgba(0,0,0,.85))}
+.vidbar .cta{flex:1}
+
+/* ---------- بطاقة القاعدة ---------- */
+.rule{
+  background:var(--stone);border:1px solid rgba(216,163,63,.28);
+  border-radius:13px;padding:15px;
 }
-
-.mode-btn:hover{background:var(--stone-2);border-color:var(--gold)}
-.mode-btn.active{background:var(--gold);color:#1a1206;border-color:var(--gold)}
-
-/* ===== معلومات المرحلة ===== */
-.stage-info{
-  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;
-  margin:10px 0;
+.rule h3{
+  font-family:'Cinzel',serif;font-size:16px;color:var(--gold);
+  display:flex;align-items:center;gap:9px;margin-bottom:9px;direction:ltr;
 }
-
-.info-card{
-  background:rgba(216,163,63,.08);border:1px solid rgba(216,163,63,.25);
-  border-radius:9px;padding:12px;text-align:center;font-size:13px;
+.rule h3 em{
+  font-style:normal;font-family:'Tajawal';font-size:12.5px;
+  color:var(--parch-dim);font-weight:500;
 }
-
-.info-card .label{color:var(--parch-dim);font-size:11px;text-transform:uppercase;letter-spacing:0.5px}
-.info-card .value{color:var(--gold-soft);font-size:16px;font-weight:700;margin-top:4px}
-
-/* ===== زر الإيقاف الطارئ ===== */
-.emergency-pause{
-  position:fixed;bottom:20px;right:20px;width:56px;height:56px;
-  border-radius:50%;background:linear-gradient(135deg,var(--crimson),#a01840);
-  border:2px solid var(--gold);color:#fff;
-  cursor:pointer;z-index:30;display:grid;place-items:center;
-  font-size:24px;box-shadow:0 4px 20px rgba(141,33,48,.5);
-  transition:.2s;
-  animation:pulse 2s ease-in-out infinite;
+.rule .form{
+  direction:ltr;text-align:left;font-family:'Cinzel',serif;font-size:14.5px;
+  background:rgba(8,10,17,.55);border-radius:8px;padding:9px 11px;color:var(--gold-soft);margin-bottom:8px;
 }
+.rule .ex{direction:ltr;text-align:left;font-family:'Cinzel',serif;font-size:14.5px;color:#fff;opacity:.92}
+.rule p{font-size:14px;color:var(--parch-dim);line-height:1.8;margin-bottom:8px}
 
-.emergency-pause:hover{transform:scale(1.1);box-shadow:0 6px 30px rgba(141,33,48,.8)}
-.emergency-pause:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-
-@keyframes pulse{0%,100%{box-shadow:0 4px 20px rgba(141,33,48,.5)}50%{box-shadow:0 6px 30px rgba(141,33,48,.8)}}
-
-/* ===== المودال ===== */
-.modal{
-  position:fixed;inset:0;background:rgba(0,0,0,.8);
-  display:none;align-items:center;justify-content:center;
-  z-index:50;animation:fadeIn .3s ease-out;
+/* ---------- أنماط اللعب ---------- */
+.mode{
+  display:flex;align-items:center;gap:14px;width:100%;text-align:right;
+  background:var(--stone);border:1px solid rgba(216,163,63,.28);
+  border-radius:14px;padding:15px;color:var(--parch);cursor:pointer;
+  font-family:'Tajawal',sans-serif;transition:.2s;margin-bottom:10px;
 }
+.mode:hover{background:var(--stone-2);border-color:var(--gold);transform:translateX(3px)}
+.mode .mi{width:44px;height:44px;flex:none;border-radius:12px;display:grid;
+  place-items:center;font-size:22px;background:rgba(216,163,63,.15)}
+.mode .mt{font-weight:700;font-size:16px}
+.mode .md{font-size:13px;color:var(--parch-dim);margin-top:2px}
 
-.modal.show{display:flex}
-
-.modal-content{
-  background:linear-gradient(180deg,#0d1119,#0a0d14);
-  border:1px solid rgba(216,163,63,.4);border-radius:16px;
-  padding:30px;max-width:500px;width:90%;
-  box-shadow:0 20px 60px rgba(0,0,0,.8);
-  animation:slideUp .3s ease-out;
+.field{
+  width:100%;background:var(--stone);border:1px solid rgba(216,163,63,.35);
+  border-radius:11px;padding:14px;color:var(--parch);font-family:'Tajawal',sans-serif;
+  font-size:16px;text-align:center;margin-bottom:10px;
 }
+.field:focus{outline:2px solid var(--gold);outline-offset:1px}
 
-@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
-
-.modal-title{
-  font-family:'Cinzel',serif;font-size:22px;color:var(--gold-soft);
-  margin-bottom:15px;text-align:center;
+.lbrow{
+  display:flex;align-items:center;gap:11px;padding:11px 13px;
+  border-bottom:1px solid rgba(216,163,63,.14);font-size:14.5px;
 }
+.lbrow .rk{width:28px;height:28px;flex:none;border-radius:50%;display:grid;place-items:center;
+  font-family:'Cinzel',serif;font-size:13px;background:rgba(216,163,63,.16);color:var(--gold-soft)}
+.lbrow .rk.g1{background:var(--gold);color:#1a1206}
+.lbrow .rk.g2{background:#c8ccd4;color:#1a1206}
+.lbrow .rk.g3{background:#c98a52;color:#1a1206}
+.lbrow .nm{flex:1;font-weight:500}
+.lbrow .sc{font-family:'Cinzel',serif;color:var(--gold-soft);font-size:15px}
+.lbrow .dt{font-size:11px;color:var(--parch-dim)}
+.lbbox{background:var(--stone);border:1px solid rgba(216,163,63,.22);
+  border-radius:13px;overflow:hidden;max-height:56vh;overflow-y:auto}
+.lbempty{padding:26px;text-align:center;color:var(--parch-dim);font-size:14px}
 
-.modal-body{
-  font-size:15px;line-height:1.8;color:var(--parch);
-  margin-bottom:20px;
-}
-
-.modal-actions{
-  display:flex;gap:10px;
-}
-
-.modal-actions button{
-  flex:1;padding:12px;border:none;border-radius:9px;
-  cursor:pointer;font-weight:600;font-size:14px;transition:.2s;
-}
-
-.btn-continue{
-  background:var(--gold);color:#1a1206;
-}
-
-.btn-continue:hover{background:#f0cd82}
-
-.btn-cancel{
-  background:var(--stone);color:var(--parch);border:1px solid rgba(216,163,63,.3);
-}
-
-.btn-cancel:hover{background:var(--stone-2)}
-
-/* ===== شاشة الغلاف ===== */
-.cover-screen{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:30px;padding:40px 20px;text-align:center;
-}
-
-.cover-title{
-  font-family:'Cinzel',serif;font-size:48px;font-weight:700;
-  color:var(--gold-soft);letter-spacing:2px;
-  text-shadow:0 4px 20px rgba(216,163,63,.3);
-}
-
-.cover-subtitle{
-  font-size:18px;color:var(--parch-dim);
-}
-
-.start-btn{
-  padding:16px 40px;font-size:18px;
-  background:linear-gradient(135deg,var(--gold),#f0cd82);
-  color:#1a1206;border:none;border-radius:12px;
-  cursor:pointer;font-weight:700;
-  box-shadow:0 8px 30px rgba(216,163,63,.4);
-  transition:.3s;
-}
-
-.start-btn:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(216,163,63,.6)}
-
-/* ===== شاشة النتائج ===== */
-.results-screen{
-  display:flex;flex-direction:column;align-items:center;gap:20px;padding:30px 20px;
-}
-
-.medal{
-  font-size:80px;margin:20px 0;
-}
-
-.results-title{
-  font-family:'Cinzel',serif;font-size:28px;color:var(--gold-soft);
-}
-
-.results-data{
-  display:grid;grid-template-columns:1fr 1fr;gap:15px;width:100%;max-width:400px;
-}
-
-.result-item{
-  background:rgba(216,163,63,.1);border:1px solid rgba(216,163,63,.3);
-  border-radius:9px;padding:15px;text-align:center;
-}
-
-.result-label{font-size:12px;color:var(--parch-dim);text-transform:uppercase;letter-spacing:0.5px}
-.result-value{font-size:20px;font-weight:700;color:var(--gold-soft);margin-top:5px}
-
-/* ===== الفيديو ===== */
-.video-container{
-  width:100%;background:#000;border-radius:12px;overflow:hidden;
-  margin:15px 0;
-}
-
-video{width:100%;height:auto;display:block}
-
-/* ===== أوراق العمل ===== */
-.wsheet{
-  display:flex;flex-direction:column;gap:12px;margin:15px 0;
-}
-
-.wsbtn{
-  display:flex;align-items:center;gap:15px;
-  background:var(--stone);border:1px solid rgba(216,163,63,.2);
-  border-radius:11px;padding:15px;color:var(--parch);cursor:pointer;
-  transition:.2s;text-align:left;
-}
-
-.wsbtn:hover{background:var(--stone-2);border-color:var(--gold)}
-.wsbtn .n{
-  font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--gold-soft);
-  flex:none;
-}
-
-.wsbtn span{flex:1}
-.wsbtn small{
-  display:block;font-size:12px;color:var(--parch-dim);margin-top:4px;
-}
-
-/* ===== الهدايا ===== */
-.gifts{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0;
-}
-
+/* ---------- صناديق المارد ---------- */
+.gifts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .gift{
-  width:70px;height:70px;border:2px solid rgba(216,163,63,.3);
-  border-radius:9px;background:rgba(216,163,63,.1);
-  cursor:pointer;font-size:32px;display:grid;place-items:center;
-  transition:.3s;
+  background:linear-gradient(180deg,rgba(143,216,255,.14),rgba(20,26,38,.9));
+  border:1px solid rgba(143,216,255,.4);border-radius:13px;
+  padding:20px 10px;font-size:30px;cursor:pointer;transition:.2s;
+  display:grid;place-items:center;
 }
-
-.gift:hover:not(:disabled){background:rgba(216,163,63,.2);transform:scale(1.05)}
-.gift:disabled{cursor:default;opacity:.5}
-
+.gift:hover{transform:translateY(-3px);border-color:var(--spell);
+  box-shadow:0 6px 20px rgba(143,216,255,.28)}
+.gift:disabled{opacity:.35;cursor:default;transform:none}
 .giftout{
-  font-size:16px;background:rgba(87,189,106,.15);
-  border:1px solid var(--curse);border-radius:10px;padding:15px;
-  text-align:center;color:#dcffe4;font-weight:600;
+  font-size:16px;line-height:1.9;text-align:center;color:#dff3ff;
+  background:rgba(143,216,255,.12);border:1px solid rgba(143,216,255,.45);
+  border-radius:12px;padding:15px;
 }
 
-/* ===== الحالات الخاصة ===== */
-.pause-display{
-  display:none;align-items:center;justify-content:center;
-  flex-direction:column;gap:15px;
+/* ---------- الجوائز ---------- */
+.prize{display:grid;place-items:center;padding:8px 0 4px}
+.prize svg{width:min(58vw,230px);height:auto;
+  filter:drop-shadow(0 0 26px rgba(216,163,63,.65));
+  animation:float 3.4s ease-in-out infinite alternate}
+@keyframes float{from{transform:translateY(0) rotate(-1.5deg)}to{transform:translateY(-12px) rotate(1.5deg)}}
+.prize.gem svg{filter:drop-shadow(0 0 30px rgba(143,216,255,.75))}
+
+.wsheet{display:flex;flex-direction:column;gap:11px}
+.wsbtn{
+  display:flex;align-items:center;gap:13px;text-align:right;
+  background:var(--stone);border:1px solid rgba(216,163,63,.3);
+  border-radius:13px;padding:15px;color:var(--parch);cursor:pointer;
+  font-family:'Tajawal',sans-serif;font-size:16px;transition:.2s;width:100%;
 }
+.wsbtn:hover{background:var(--stone-2);border-color:var(--gold);transform:translateX(3px)}
+.wsbtn .n{width:38px;height:38px;flex:none;border-radius:10px;display:grid;place-items:center;
+  font-family:'Cinzel',serif;font-size:17px;background:rgba(216,163,63,.18);color:var(--gold-soft)}
+.wsbtn small{display:block;color:var(--parch-dim);font-size:13px;margin-top:2px}
+.wsbtn.hard .n{background:rgba(141,33,48,.28);color:#ffc2cb}
 
-.pause-display.active{display:flex}
+.ws-body{direction:ltr;text-align:left;line-height:1.95;font-size:15px}
+.ws-body .ws-h{display:block;direction:rtl;text-align:right;color:var(--gold-soft);margin:12px 0 4px}
+.ws-body .ws-h:first-child{margin-top:0}
+.ws-ans{border-color:rgba(87,189,106,.5)}
 
-.countdown{
-  font-size:72px;font-family:'Cinzel',serif;
-  color:var(--gold-soft);font-weight:700;
+/* ---------- النهاية ---------- */
+.end{text-align:center;padding:10px 0}
+.end .big{font-family:'Amiri',serif;font-size:30px;color:var(--gold-soft);margin-bottom:10px}
+.end .score{font-family:'Cinzel',serif;font-size:15px;color:var(--parch-dim);margin-bottom:6px}
+
+.flash{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:0}
+.flash.go{animation:fl .5s ease-out}
+@keyframes fl{0%{opacity:0}30%{opacity:.85}100%{opacity:0}}
+.flash.win{background:radial-gradient(circle at 50% 50%,rgba(143,216,255,.9),transparent 65%)}
+.flash.lose{background:radial-gradient(circle at 50% 50%,rgba(192,57,43,.85),transparent 65%)}
+
+.shake{animation:sh .4s}
+@keyframes sh{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
 }
-
-@media (max-width:480px){
-  .stage-info{grid-template-columns:1fr 1fr}
-  .modes{grid-template-columns:1fr}
-  .cover-title{font-size:36px}
-  .results-data{grid-template-columns:1fr}
-  .gifts{grid-template-columns:repeat(3,1fr)}
+@media(min-width:761px){
+  body{padding:0}
+  .scene-img{aspect-ratio:4/3}
+  .frame{min-height:100dvh;border-inline:1px solid rgba(216,163,63,.15)}
 }
-
 </style>
 </head>
+<!-- ===== PlayVerse Chat + Room (mudmaj) ===== -->
+<script>
+/* =========================================================
+   PlayVerse Chat  —  playverse-chat.js
+   دردشة صفّية آمنة لمنصة PlayVerse
+   ---------------------------------------------------------
+   • رسائل جاهزة فقط (لا كتابة حرة إطلاقًا) + إيموجي طائرة
+   • زر "ارفعي إيدك" ✋
+   • لوحة تحكم كاملة للمعلمة: كتم / مسح / إغلاق الشات
+   • فلتر كلمات ممنوعة (يُطبَّق على أسماء الطلاب)
+   • 8 لغات — يتبع لغة المنصة تلقائيًا (pv_lang)
+   • يعمل على الفايربيس نفسه، بدون أي إعداد إضافي
+   ---------------------------------------------------------
+   هذا الملف مدمج داخل اللعبة ويعمل تلقائيًا بلا أي إعداد.
+   ========================================================= */
+(function () {
+  'use strict';
+  if (window.PVChat) return;
+
+  /* ============ إعدادات الفايربيس (نفس مشروع المنصة) ============ */
+  var FB_CONFIG = {
+    apiKey: "AIzaSyADxQ7-3UDxYD3VTOoVrn7d6516_5bqd5Y",
+    authDomain: "cursed-castle-bb43b.firebaseapp.com",
+    projectId: "cursed-castle-bb43b",
+    storageBucket: "cursed-castle-bb43b.firebasestorage.app",
+    messagingSenderId: "458563878259",
+    appId: "1:458563878259:web:715ce9f960b2972ccd9906"
+  };
+  var SDK = 'https://www.gstatic.com/firebasejs/10.12.0/';
+
+  /* ============ الإيموجي ============ */
+  var EMOJI = ['👏', '😀', '🥳', '🤩', '😮', '🤔', '😕', '😢',
+             '😭', '😡', '🎉', '🔥', '🌟', '❤️', '👍', '🙌'];
+
+  /* ============ العبارات الجاهزة (12 للطالب / 10 للمعلمة) ============ */
+  var T = {
+    ar: {
+      chat: 'الدردشة', msgs: 'رسائل', emoji: 'تفاعل', hand: 'ارفعي إيدك ✋',
+      teacher: 'لوحة المعلمة', mute: 'كتم', unmute: 'فك الكتم', clear: 'مسح الشات',
+      closeChat: 'إغلاق الشات', openChat: 'فتح الشات', isClosed: 'الشات مغلق من المعلمة',
+      isMuted: 'تم كتمك مؤقتًا', hands: 'أيادٍ مرفوعة', none: 'لا يوجد',
+      filter: 'الكلمات الممنوعة', addWord: 'أضيفي كلمة', save: 'حفظ',
+      badName: 'الاسم غير مناسب، اختاري اسمًا آخر', slow: 'انتظري لحظة…',
+      cleared: 'تم مسح الشات', saved: 'تم الحفظ', teacherTag: 'المعلمة',
+      confirmClear: 'مسح كل الرسائل؟',
+      freeOn: 'الكتابة الحرة: مفتوحة', freeOff: 'الكتابة الحرة: مغلقة',
+      write: 'اكتبي رسالة…', sendBtn: 'إرسال', tooLong: 'الرسالة طويلة',
+      badWord: 'في كلمة غير مناسبة', noNum: 'ممنوع إرسال أرقام طويلة',
+      ph: ['يلا نبدأ! 🚀', 'جاهزة ✋', 'أحسنت! 👏', 'بحتاج مساعدة 🙋', 'ممكن نعيد؟ 🔁',
+        'فهمت ✅', 'ما فهمت ❓', 'لحظة من فضلك ⏳', 'فريقنا رائع! 🌟',
+        'حظ موفق للجميع 🍀', 'شكرًا 🌸', 'مع السلامة 👋'],
+      tph: ['نبدأ الآن 🚀', 'ركّزوا معي 👀', 'أحسنتم جميعًا 👏', 'بقيت دقيقة ⏱',
+        'الهدوء من فضلكم 🤫', 'أعيدوا المحاولة 🔁', 'إجابة صحيحة ✅',
+        'راجعوا السؤال ❓', 'استراحة قصيرة ☕', 'انتهى الوقت 🏁']
+    },
+    en: {
+      chat: 'Chat', msgs: 'Messages', emoji: 'React', hand: 'Raise hand ✋',
+      teacher: 'Teacher panel', mute: 'Mute', unmute: 'Unmute', clear: 'Clear chat',
+      closeChat: 'Close chat', openChat: 'Open chat', isClosed: 'Chat closed by teacher',
+      isMuted: 'You are muted', hands: 'Raised hands', none: 'None',
+      filter: 'Blocked words', addWord: 'Add a word', save: 'Save',
+      badName: 'That name is not allowed, pick another', slow: 'Please wait…',
+      cleared: 'Chat cleared', saved: 'Saved', teacherTag: 'Teacher',
+      confirmClear: 'Delete all messages?',
+      freeOn: 'Free typing: ON', freeOff: 'Free typing: OFF',
+      write: 'Write a message…', sendBtn: 'Send', tooLong: 'Message too long',
+      badWord: 'Inappropriate word', noNum: 'Long numbers not allowed',
+      ph: ["Let's start! 🚀", "I'm ready ✋", 'Well done! 👏', 'I need help 🙋', 'Can we repeat? 🔁',
+        'Got it ✅', "I don't get it ❓", 'One moment ⏳', 'Great team! 🌟',
+        'Good luck everyone 🍀', 'Thank you 🌸', 'Bye 👋'],
+      tph: ['Starting now 🚀', 'Eyes on me 👀', 'Well done all 👏', 'One minute left ⏱',
+        'Quiet please 🤫', 'Try again 🔁', 'Correct ✅', 'Re-read the question ❓',
+        'Short break ☕', "Time's up 🏁"]
+    },
+    fr: {
+      chat: 'Discussion', msgs: 'Messages', emoji: 'Réagir', hand: 'Lever la main ✋',
+      teacher: 'Panneau enseignant', mute: 'Muet', unmute: 'Réactiver', clear: 'Effacer',
+      closeChat: 'Fermer', openChat: 'Ouvrir', isClosed: 'Discussion fermée',
+      isMuted: 'Vous êtes en sourdine', hands: 'Mains levées', none: 'Aucune',
+      filter: 'Mots interdits', addWord: 'Ajouter un mot', save: 'Enregistrer',
+      badName: 'Nom non autorisé', slow: 'Patientez…', cleared: 'Effacé', saved: 'Enregistré',
+      teacherTag: 'Enseignante', confirmClear: 'Tout supprimer ?',
+      ph: ['On commence ! 🚀', 'Je suis prête ✋', 'Bravo ! 👏', "J'ai besoin d'aide 🙋",
+        'On répète ? 🔁', "J'ai compris ✅", 'Je ne comprends pas ❓', 'Un instant ⏳',
+        'Super équipe ! 🌟', 'Bonne chance 🍀', 'Merci 🌸', 'Au revoir 👋'],
+      tph: ['On commence 🚀', 'Regardez-moi 👀', 'Bravo à tous 👏', 'Une minute ⏱',
+        'Silence 🤫', 'Réessayez 🔁', 'Correct ✅', 'Relisez la question ❓',
+        'Petite pause ☕', 'Temps écoulé 🏁']
+    },
+    es: {
+      chat: 'Chat', msgs: 'Mensajes', emoji: 'Reaccionar', hand: 'Levantar la mano ✋',
+      teacher: 'Panel docente', mute: 'Silenciar', unmute: 'Activar', clear: 'Borrar chat',
+      closeChat: 'Cerrar chat', openChat: 'Abrir chat', isClosed: 'Chat cerrado',
+      isMuted: 'Estás silenciada', hands: 'Manos levantadas', none: 'Ninguna',
+      filter: 'Palabras bloqueadas', addWord: 'Añadir palabra', save: 'Guardar',
+      badName: 'Nombre no permitido', slow: 'Espera…', cleared: 'Chat borrado', saved: 'Guardado',
+      teacherTag: 'Maestra', confirmClear: '¿Borrar todo?',
+      ph: ['¡Empecemos! 🚀', 'Lista ✋', '¡Muy bien! 👏', 'Necesito ayuda 🙋',
+        '¿Repetimos? 🔁', 'Entendido ✅', 'No entiendo ❓', 'Un momento ⏳',
+        '¡Gran equipo! 🌟', 'Suerte a todos 🍀', 'Gracias 🌸', 'Adiós 👋'],
+      tph: ['Empezamos 🚀', 'Atención 👀', 'Bien hecho 👏', 'Un minuto ⏱',
+        'Silencio 🤫', 'Inténtalo de nuevo 🔁', 'Correcto ✅', 'Lee la pregunta ❓',
+        'Descanso ☕', 'Se acabó el tiempo 🏁']
+    },
+    sv: {
+      chat: 'Chatt', msgs: 'Meddelanden', emoji: 'Reagera', hand: 'Räck upp handen ✋',
+      teacher: 'Lärarpanel', mute: 'Tysta', unmute: 'Slå på', clear: 'Rensa chatt',
+      closeChat: 'Stäng chatt', openChat: 'Öppna chatt', isClosed: 'Chatten är stängd',
+      isMuted: 'Du är tystad', hands: 'Uppräckta händer', none: 'Inga',
+      filter: 'Blockerade ord', addWord: 'Lägg till ord', save: 'Spara',
+      badName: 'Namnet är inte tillåtet', slow: 'Vänta…', cleared: 'Rensat', saved: 'Sparat',
+      teacherTag: 'Lärare', confirmClear: 'Radera allt?',
+      ph: ['Nu kör vi! 🚀', 'Jag är redo ✋', 'Bra jobbat! 👏', 'Jag behöver hjälp 🙋',
+        'Kan vi ta om? 🔁', 'Jag förstår ✅', 'Jag förstår inte ❓', 'Ett ögonblick ⏳',
+        'Bra lag! 🌟', 'Lycka till 🍀', 'Tack 🌸', 'Hej då 👋'],
+      tph: ['Vi börjar 🚀', 'Titta hit 👀', 'Bra jobbat allihop 👏', 'En minut kvar ⏱',
+        'Tyst tack 🤫', 'Försök igen 🔁', 'Rätt ✅', 'Läs frågan igen ❓',
+        'Kort paus ☕', 'Tiden är slut 🏁']
+    },
+    ru: {
+      chat: 'Чат', msgs: 'Сообщения', emoji: 'Реакция', hand: 'Поднять руку ✋',
+      teacher: 'Панель учителя', mute: 'Заглушить', unmute: 'Включить', clear: 'Очистить чат',
+      closeChat: 'Закрыть чат', openChat: 'Открыть чат', isClosed: 'Чат закрыт',
+      isMuted: 'Вы заглушены', hands: 'Поднятые руки', none: 'Нет',
+      filter: 'Запрещённые слова', addWord: 'Добавить слово', save: 'Сохранить',
+      badName: 'Имя недопустимо', slow: 'Подождите…', cleared: 'Очищено', saved: 'Сохранено',
+      teacherTag: 'Учитель', confirmClear: 'Удалить всё?',
+      ph: ['Начинаем! 🚀', 'Я готова ✋', 'Молодец! 👏', 'Мне нужна помощь 🙋',
+        'Повторим? 🔁', 'Поняла ✅', 'Не поняла ❓', 'Минутку ⏳',
+        'Отличная команда! 🌟', 'Удачи всем 🍀', 'Спасибо 🌸', 'Пока 👋'],
+      tph: ['Начинаем 🚀', 'Внимание 👀', 'Молодцы 👏', 'Осталась минута ⏱',
+        'Тишина 🤫', 'Попробуйте снова 🔁', 'Верно ✅', 'Перечитайте вопрос ❓',
+        'Перерыв ☕', 'Время вышло 🏁']
+    },
+    zh: {
+      chat: '聊天', msgs: '消息', emoji: '表情', hand: '举手 ✋',
+      teacher: '教师面板', mute: '禁言', unmute: '解除禁言', clear: '清空聊天',
+      closeChat: '关闭聊天', openChat: '开启聊天', isClosed: '聊天已关闭',
+      isMuted: '你已被禁言', hands: '举手名单', none: '无',
+      filter: '禁用词', addWord: '添加词语', save: '保存',
+      badName: '该名字不被允许', slow: '请稍候…', cleared: '已清空', saved: '已保存',
+      teacherTag: '老师', confirmClear: '删除全部消息？',
+      ph: ['开始吧！🚀', '我准备好了 ✋', '做得好！👏', '我需要帮助 🙋',
+        '可以再来一次吗？🔁', '我明白了 ✅', '我不明白 ❓', '请稍等 ⏳',
+        '我们的团队很棒！🌟', '祝大家好运 🍀', '谢谢 🌸', '再见 👋'],
+      tph: ['现在开始 🚀', '看这里 👀', '大家做得好 👏', '还有一分钟 ⏱',
+        '请安静 🤫', '再试一次 🔁', '正确 ✅', '重读题目 ❓',
+        '短暂休息 ☕', '时间到 🏁']
+    },
+    hi: {
+      chat: 'चैट', msgs: 'संदेश', emoji: 'प्रतिक्रिया', hand: 'हाथ उठाएँ ✋',
+      teacher: 'शिक्षक पैनल', mute: 'म्यूट', unmute: 'अनम्यूट', clear: 'चैट साफ़ करें',
+      closeChat: 'चैट बंद करें', openChat: 'चैट खोलें', isClosed: 'चैट बंद है',
+      isMuted: 'आप म्यूट हैं', hands: 'उठे हुए हाथ', none: 'कोई नहीं',
+      filter: 'प्रतिबंधित शब्द', addWord: 'शब्द जोड़ें', save: 'सहेजें',
+      badName: 'यह नाम स्वीकार्य नहीं', slow: 'कृपया रुकें…', cleared: 'साफ़ हो गया', saved: 'सहेजा गया',
+      teacherTag: 'शिक्षिका', confirmClear: 'सभी संदेश हटाएँ?',
+      ph: ['चलो शुरू करें! 🚀', 'मैं तैयार हूँ ✋', 'शाबाश! 👏', 'मुझे मदद चाहिए 🙋',
+        'क्या दोहरा सकते हैं? 🔁', 'समझ गई ✅', 'समझ नहीं आया ❓', 'एक पल ⏳',
+        'हमारी टीम बढ़िया है! 🌟', 'सबको शुभकामनाएँ 🍀', 'धन्यवाद 🌸', 'अलविदा 👋'],
+      tph: ['अब शुरू करते हैं 🚀', 'मेरी ओर देखें 👀', 'सब बढ़िया 👏', 'एक मिनट बाकी ⏱',
+        'कृपया शांत रहें 🤫', 'फिर कोशिश करें 🔁', 'सही ✅', 'प्रश्न दोबारा पढ़ें ❓',
+        'छोटा विराम ☕', 'समय समाप्त 🏁']
+    }
+  };
+
+  /* ============ قائمة الكلمات الممنوعة الأوّلية ============
+     المعلمة تقدر تزيد/تشيل من لوحة التحكم بدون رفع الملف من جديد.
+     الكلمات القصيرة (٣ أحرف أو أقل) تُطابَق ككلمة كاملة فقط،
+     عشان ما تمنع كلمات بريئة مثل "كسر" أو "مكسور".            */
+  var BASE_WORDS = [
+    'كلب', 'حمار', 'غبي', 'احمق', 'تافه', 'حقير', 'وسخ', 'خنزير',
+    'زباله', 'قذر', 'سافل', 'متخلف', 'بهيمه', 'لعنه', 'يلعن',
+    'كس', 'طيز', 'خرا', 'عرص', 'شرموط', 'منيوك', 'زق', 'زبي',
+    'fuck', 'shit', 'bitch', 'idiot', 'stupid', 'ugly', 'dumb'
+  ];
+
+  /* ============ أدوات ============ */
+  function lang() {
+    var c = 'ar';
+    try { c = localStorage.getItem('pv_lang') || 'ar'; } catch (e) { }
+    return T[c] ? c : 'ar';
+  }
+  function t() {
+    var o = T[lang()] || T.ar;
+    /* مفاتيح الكتابة الحرة قد تكون غير مترجمة في كل اللغات */
+    var k = ['freeOn','freeOff','write','sendBtn','tooLong','badWord','noNum'];
+    for (var i = 0; i < k.length; i++) if (!o[k[i]]) o[k[i]] = T.en[k[i]];
+    return o;
+  }
+  function isRTL() { var c = lang(); return c === 'ar' || c === 'he' || c === 'fa'; }
+
+  /* تطبيع النص العربي: تشكيل، مدّ، ألف/همزة، ة/ه، ى/ي، أرقام بدل حروف */
+  function norm(s) {
+    if (!s) return '';
+    s = String(s).toLowerCase();
+    s = s.replace(/[\u064B-\u065F\u0670\u0640]/g, '');      // تشكيل + المدّ ـ
+    s = s.replace(/[أإآا]/g, 'ا').replace(/ة/g, 'ه')
+      .replace(/[ىي]/g, 'ي').replace(/ؤ/g, 'و').replace(/ئ/g, 'ي');
+    s = s.replace(/3/g, 'ع').replace(/7/g, 'ح').replace(/5/g, 'خ')
+      .replace(/9/g, 'ص').replace(/8/g, 'ق').replace(/2/g, 'ا').replace(/6/g, 'ط');
+    s = s.replace(/[^\p{L}\p{N}]+/gu, ' ').replace(/\s+/g, ' ').trim();
+    return s;
+  }
+
+  var wordList = BASE_WORDS.slice();
+
+  function isBad(text) {
+    var n = norm(text);
+    if (!n) return false;
+    var tokens = n.split(' ');
+    for (var i = 0; i < wordList.length; i++) {
+      var w = norm(wordList[i]);
+      if (!w) continue;
+      if (w.length <= 3) {                       // كلمة قصيرة → مطابقة تامة
+        if (tokens.indexOf(w) !== -1) return true;
+      } else {                                    // كلمة طويلة → تضمين
+        if (n.indexOf(w) !== -1) return true;
+      }
+    }
+    return false;
+  }
+
+  /* ============ الفايربيس (تطبيق مُسمّى حتى لا يتعارض مع اللعبة) ============ */
+  var FB = null, fbPromise = null;
+  function initFB() {
+    if (FB) return Promise.resolve(FB);
+    if (fbPromise) return fbPromise;
+    fbPromise = (async function () {
+      try {
+        var a = await import(SDK + 'firebase-app.js');
+        var f = await import(SDK + 'firebase-firestore.js');
+        var app;
+        try { app = a.getApp('pvchat'); }
+        catch (e) { app = a.initializeApp(FB_CONFIG, 'pvchat'); }
+        FB = Object.assign({ db: f.getFirestore(app) }, f);
+        return FB;
+      } catch (e) { console.warn('[PVChat] Firebase off', e); return null; }
+    })();
+    return fbPromise;
+  }
+
+  /* ============ الحالة ============ */
+  var S = {
+    room: '', name: '', role: 'student',
+    open: true, free: false, muted: [], hands: [],
+    msgs: [], unread: 0, panelOpen: false,
+    lastSend: 0, started: false, unsubMsgs: null, unsubRoom: null
+  };
+
+  /* ============ الواجهة ============ */
+  var CSS = `
+.pvc-fab{position:fixed;bottom:16px;inset-inline-start:16px;z-index:99990;
+  width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;font-size:24px;
+  background:linear-gradient(180deg,var(--gold2,#f6d976),var(--gold,#e0b73c));
+  color:#20180a;box-shadow:0 8px 22px rgba(0,0,0,.35);display:none;
+  align-items:center;justify-content:center;transition:transform .15s}
+.pvc-fab:active{transform:scale(.93)}
+.pvc-badge{position:absolute;top:-4px;inset-inline-end:-4px;min-width:20px;height:20px;
+  border-radius:10px;background:var(--red,#e2504a);color:#fff;font-size:12px;font-weight:800;
+  display:none;align-items:center;justify-content:center;padding:0 5px}
+.pvc-panel{position:fixed;bottom:0;inset-inline-start:0;z-index:99991;
+  width:min(380px,100%);max-height:min(74vh,560px);display:none;flex-direction:column;
+  background:var(--navy2,#0f2350);color:var(--ink,#eaf0ff);
+  border:1.5px solid var(--line,rgba(224,183,60,.28));border-bottom:0;
+  border-radius:18px 18px 0 0;box-shadow:0 -10px 34px rgba(0,0,0,.45);
+  font-family:inherit;overflow:hidden}
+.pvc-panel.on{display:flex}
+.pvc-head{display:flex;align-items:center;gap:8px;padding:10px 12px;
+  border-bottom:1px solid var(--line,rgba(255,255,255,.12));flex:0 0 auto}
+.pvc-head b{flex:1;font-size:16px;color:var(--gold,#e0b73c)}
+.pvc-x{background:transparent;border:0;color:inherit;font-size:22px;cursor:pointer;line-height:1;padding:2px 6px}
+.pvc-tabs{display:flex;gap:6px;padding:8px 10px 0;flex:0 0 auto}
+.pvc-tab{flex:1;padding:8px;border-radius:10px;border:1px solid var(--line,rgba(255,255,255,.15));
+  background:transparent;color:inherit;font:inherit;font-weight:700;font-size:13px;cursor:pointer}
+.pvc-tab.on{background:var(--gold,#e0b73c);color:#20180a;border-color:transparent}
+.pvc-body{flex:1 1 auto;overflow-y:auto;padding:10px 12px;min-height:120px}
+.pvc-msg{margin:6px 0;font-size:14px;line-height:1.5}
+.pvc-msg .who{color:var(--gold,#e0b73c);font-weight:800}
+.pvc-msg.t .who{color:var(--teal,#2ec6b6)}
+.pvc-msg.hand{color:var(--teal,#2ec6b6);font-weight:700}
+.pvc-empty{opacity:.6;font-size:13px;text-align:center;padding:18px 0}
+.pvc-foot{flex:0 0 auto;border-top:1px solid var(--line,rgba(255,255,255,.12));
+  padding:8px 10px 12px;max-height:190px;overflow-y:auto}
+.pvc-chips{display:flex;flex-wrap:wrap;gap:6px}
+.pvc-chip{padding:8px 10px;border-radius:12px;cursor:pointer;font:inherit;font-size:13px;
+  font-weight:700;border:1px solid var(--line,rgba(255,255,255,.2));
+  background:var(--card,rgba(255,255,255,.06));color:inherit}
+.pvc-chip:active{transform:scale(.95)}
+.pvc-emo{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.pvc-emo button{font-size:24px;padding:8px 0;border-radius:12px;cursor:pointer;
+  border:1px solid var(--line,rgba(255,255,255,.15));background:var(--card,rgba(255,255,255,.06))}
+.pvc-hand{width:100%;margin-top:8px;padding:10px;border-radius:12px;border:0;cursor:pointer;
+  font:inherit;font-weight:800;background:var(--teal,#2ec6b6);color:#04231f}
+.pvc-note{font-size:12px;opacity:.75;text-align:center;padding:6px 0}
+.pvc-tools{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.pvc-tools button{flex:1 1 46%;padding:9px;border-radius:10px;border:1px solid var(--line,rgba(255,255,255,.2));
+  background:var(--card,rgba(255,255,255,.06));color:inherit;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.pvc-list{display:flex;flex-direction:column;gap:5px}
+.pvc-row{display:flex;align-items:center;gap:8px;font-size:13px;
+  background:var(--card,rgba(255,255,255,.05));padding:7px 9px;border-radius:10px}
+.pvc-row span{flex:1}
+.pvc-row button{padding:5px 9px;border-radius:8px;border:0;cursor:pointer;font:inherit;
+  font-size:12px;font-weight:700;background:var(--gold,#e0b73c);color:#20180a}
+.pvc-in{width:100%;padding:9px;border-radius:10px;font:inherit;font-size:14px;text-align:inherit;
+  border:1px solid var(--line,rgba(255,255,255,.2));background:rgba(0,0,0,.28);color:inherit;margin:4px 0}
+.pvc-h3{font-size:13px;font-weight:800;color:var(--gold,#e0b73c);margin:10px 0 4px}
+.pvc-fly{position:fixed;z-index:99989;font-size:34px;pointer-events:none;
+  animation:pvcFly 2.1s ease-out forwards}
+@keyframes pvcFly{0%{transform:translateY(0) scale(.5);opacity:0}
+  15%{transform:translateY(-20px) scale(1.15);opacity:1}
+  100%{transform:translateY(-190px) scale(.9);opacity:0}}
+.pvc-toast{position:fixed;bottom:84px;inset-inline-start:16px;z-index:99992;
+  background:rgba(0,0,0,.85);color:#fff;padding:9px 14px;border-radius:12px;font-size:13px;
+  font-family:inherit;opacity:0;transition:opacity .25s}
+.pvc-toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.pvc-fly{animation-duration:.01ms}}
+.pvc-launch{position:fixed;bottom:82px;inset-inline-start:16px;z-index:99990;
+  width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;font-size:24px;
+  background:var(--navy2,#0f2350);color:var(--gold,#e0b73c);
+  border:1.5px solid var(--line,rgba(224,183,60,.35));
+  box-shadow:0 8px 22px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center}
+.pvc-launch:active{transform:scale(.93)}
+.pvc-dlg{position:fixed;inset:0;z-index:99995;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.62);padding:18px;font-family:inherit}
+.pvc-dlg.on{display:flex}
+.pvc-box{width:min(360px,100%);background:var(--navy2,#0f2350);color:var(--ink,#eaf0ff);
+  border:1.5px solid var(--line,rgba(224,183,60,.28));border-radius:18px;padding:16px;
+  box-shadow:0 16px 44px rgba(0,0,0,.5);max-height:88vh;overflow-y:auto}
+.pvc-box h4{margin:0 0 4px;font-size:17px;color:var(--gold,#e0b73c)}
+.pvc-box p{margin:0 0 10px;font-size:12.5px;opacity:.8;line-height:1.6}
+.pvc-b{width:100%;padding:12px;border-radius:12px;border:0;cursor:pointer;margin-top:8px;
+  font:inherit;font-weight:800;font-size:15px;
+  background:linear-gradient(180deg,var(--gold2,#f6d976),var(--gold,#e0b73c));color:#20180a}
+.pvc-b.alt{background:var(--teal,#2ec6b6);color:#04231f}
+.pvc-b.gh{background:transparent;color:inherit;border:1px solid var(--line,rgba(255,255,255,.25));font-weight:700}
+.pvc-write{display:flex;gap:6px;margin-top:8px}
+.pvc-write input{flex:1;padding:10px;border-radius:12px;font:inherit;font-size:14px;
+  border:1px solid var(--line,rgba(255,255,255,.2));background:rgba(0,0,0,.28);color:inherit;
+  text-align:inherit}
+.pvc-write button{padding:10px 14px;border-radius:12px;border:0;cursor:pointer;font:inherit;
+  font-weight:800;background:var(--gold,#e0b73c);color:#20180a}
+.pvc-code{text-align:center;font-size:30px;font-weight:900;letter-spacing:5px;
+  color:var(--gold,#e0b73c);padding:10px 0}
+`;
+
+  var fab, badge, panel, headTitle, bodyEl, footEl, tabsEl, toastEl;
+  var tab = 'msgs';
+
+  function el(tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html != null) e.innerHTML = html;
+    return e;
+  }
+
+  function toast(msg) {
+    if (!toastEl) { toastEl = el('div', 'pvc-toast'); document.body.appendChild(toastEl); }
+    toastEl.textContent = msg;
+    toastEl.classList.add('on');
+    clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(function () { toastEl.classList.remove('on'); }, 2200);
+  }
+
+  function buildUI() {
+    var st = el('style'); st.textContent = CSS; document.head.appendChild(st);
+
+    fab = el('button', 'pvc-fab', '💬');
+    badge = el('span', 'pvc-badge', '0');
+    fab.appendChild(badge);
+    fab.onclick = togglePanel;
+    document.body.appendChild(fab);
+
+    panel = el('div', 'pvc-panel');
+    panel.dir = isRTL() ? 'rtl' : 'ltr';
+
+    var head = el('div', 'pvc-head');
+    headTitle = el('b', null, t().chat);
+    var x = el('button', 'pvc-x', '✕'); x.onclick = togglePanel;
+    head.appendChild(headTitle); head.appendChild(x);
+
+    tabsEl = el('div', 'pvc-tabs');
+    bodyEl = el('div', 'pvc-body');
+    footEl = el('div', 'pvc-foot');
+
+    panel.appendChild(head); panel.appendChild(tabsEl);
+    panel.appendChild(bodyEl); panel.appendChild(footEl);
+    document.body.appendChild(panel);
+
+    renderTabs();
+    renderFoot();
+    renderBody();
+  }
+
+  function renderTabs() {
+    tabsEl.innerHTML = '';
+    var list = [['msgs', t().msgs], ['emoji', t().emoji]];
+    if (S.role === 'teacher') list.push(['teacher', t().teacher]);
+    list.forEach(function (p) {
+      var b = el('button', 'pvc-tab' + (tab === p[0] ? ' on' : ''), p[1]);
+      b.onclick = function () { tab = p[0]; renderTabs(); renderBody(); renderFoot(); };
+      tabsEl.appendChild(b);
+    });
+  }
+
+  function togglePanel() {
+    S.panelOpen = !S.panelOpen;
+    panel.classList.toggle('on', S.panelOpen);
+    if (S.panelOpen) { S.unread = 0; updateBadge(); renderBody(); }
+  }
+
+  function updateBadge() {
+    badge.style.display = S.unread > 0 ? 'flex' : 'none';
+    badge.textContent = S.unread > 9 ? '9+' : String(S.unread);
+  }
+
+  /* ---------- عرض الرسائل ---------- */
+  function msgText(m) {
+    var L = T[lang()];
+    if (typeof m.x === 'string') return m.x;
+    if (m.p === -1) return '✋ ' + (L.hand.replace(' ✋', ''));
+    if (typeof m.e === 'number') return EMOJI[m.e] || '•';
+    var arr = (m.r === 't') ? L.tph : L.ph;
+    return arr[m.p] != null ? arr[m.p] : '…';
+  }
+
+  function renderBody() {
+    if (tab === 'teacher') return renderTeacher();
+    bodyEl.innerHTML = '';
+    var list = S.msgs.filter(function (m) { return typeof m.e !== 'number'; });
+    if (!list.length) { bodyEl.appendChild(el('div', 'pvc-empty', '—')); return; }
+    list.forEach(function (m) {
+      var cls = 'pvc-msg' + (m.r === 't' ? ' t' : '') + (m.p === -1 ? ' hand' : '');
+      var who = m.r === 't' ? t().teacherTag : esc(m.n);
+      bodyEl.appendChild(el('div', cls, '<span class="who">' + who + ':</span> ' + esc(msgText(m))));
+    });
+    bodyEl.scrollTop = bodyEl.scrollHeight;
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
+
+  /* ---------- أسفل اللوحة ---------- */
+  function renderFoot() {
+    footEl.innerHTML = '';
+    if (tab === 'teacher') return;
+
+    if (!S.open && S.role !== 'teacher') {
+      footEl.appendChild(el('div', 'pvc-note', t().isClosed)); return;
+    }
+    if (S.muted.indexOf(S.name) !== -1 && S.role !== 'teacher') {
+      footEl.appendChild(el('div', 'pvc-note', t().isMuted)); return;
+    }
+
+    if (tab === 'emoji') {
+      var grid = el('div', 'pvc-emo');
+      EMOJI.forEach(function (e, i) {
+        var b = el('button', null, e);
+        b.onclick = function () { send({ e: i }); };
+        grid.appendChild(b);
+      });
+      footEl.appendChild(grid);
+      return;
+    }
+
+    var chips = el('div', 'pvc-chips');
+    var arr = (S.role === 'teacher') ? t().tph : t().ph;
+    arr.forEach(function (txt, i) {
+      var b = el('button', 'pvc-chip', txt);
+      b.onclick = function () { send({ p: i }); };
+      chips.appendChild(b);
+    });
+    footEl.appendChild(chips);
+
+    if (S.role !== 'teacher') {
+      var h = el('button', 'pvc-hand', t().hand);
+      h.onclick = function () { send({ p: -1 }); };
+      footEl.appendChild(h);
+    }
+
+    /* الكتابة الحرة — تظهر فقط إذا فتحتها المعلمة */
+    if (S.free) {
+      var wrap = el('div', 'pvc-write');
+      var inp = el('input');
+      inp.placeholder = t().write; inp.maxLength = 120;
+      var bs = el('button', null, t().sendBtn);
+      function doSend() {
+        var v = inp.value.trim();
+        if (!v) return;
+        if (v.length > 120) { toast(t().tooLong); return; }
+        if (isBad(v)) { toast(t().badWord); return; }
+        if (/\d[\s.\-]?\d[\s.\-]?\d[\s.\-]?\d[\s.\-]?\d[\s.\-]?\d/.test(v)) { toast(t().noNum); return; }
+        inp.value = '';
+        send({ x: v });
+      }
+      bs.onclick = doSend;
+      inp.onkeydown = function (e) { if (e.key === 'Enter') doSend(); };
+      wrap.appendChild(inp); wrap.appendChild(bs);
+      footEl.appendChild(wrap);
+    }
+  }
+
+  /* ---------- لوحة المعلمة ---------- */
+  function renderTeacher() {
+    bodyEl.innerHTML = '';
+    footEl.innerHTML = '';
+
+    var tools = el('div', 'pvc-tools');
+    var bClose = el('button', null, S.open ? t().closeChat : t().openChat);
+    bClose.onclick = function () { setRoom({ open: !S.open }); };
+    var bClear = el('button', null, t().clear);
+    bClear.onclick = function () { if (confirm(t().confirmClear)) clearMsgs(); };
+    var bFree = el('button', null, S.free ? '✏️ ' + t().freeOn : '🔒 ' + t().freeOff);
+    if (S.free) { bFree.style.background = 'var(--teal,#2ec6b6)'; bFree.style.color = '#04231f'; }
+    bFree.onclick = function () { setRoom({ free: !S.free }); };
+    tools.appendChild(bClose); tools.appendChild(bClear); tools.appendChild(bFree);
+    bodyEl.appendChild(tools);
+
+    /* أيادٍ مرفوعة */
+    bodyEl.appendChild(el('div', 'pvc-h3', t().hands));
+    var hands = [];
+    S.msgs.forEach(function (m) { if (m.p === -1 && hands.indexOf(m.n) === -1) hands.push(m.n); });
+    if (!hands.length) bodyEl.appendChild(el('div', 'pvc-note', t().none));
+    else {
+      var hl = el('div', 'pvc-list');
+      hands.forEach(function (n) { hl.appendChild(el('div', 'pvc-row', '<span>✋ ' + esc(n) + '</span>')); });
+      bodyEl.appendChild(hl);
+    }
+
+    /* الطلاب + الكتم */
+    var names = [];
+    S.msgs.forEach(function (m) {
+      if (m.r !== 't' && m.n && names.indexOf(m.n) === -1) names.push(m.n);
+    });
+    S.muted.forEach(function (n) { if (names.indexOf(n) === -1) names.push(n); });
+    if (names.length) {
+      bodyEl.appendChild(el('div', 'pvc-h3', '👥'));
+      var ul = el('div', 'pvc-list');
+      names.forEach(function (n) {
+        var row = el('div', 'pvc-row', '<span>' + esc(n) + '</span>');
+        var isM = S.muted.indexOf(n) !== -1;
+        var b = el('button', null, isM ? t().unmute : t().mute);
+        b.onclick = function () {
+          var m = S.muted.slice();
+          if (isM) m = m.filter(function (x) { return x !== n; }); else m.push(n);
+          setRoom({ muted: m });
+        };
+        row.appendChild(b); ul.appendChild(row);
+      });
+      bodyEl.appendChild(ul);
+    }
+
+    /* الكلمات الممنوعة */
+    bodyEl.appendChild(el('div', 'pvc-h3', t().filter));
+    var inp = el('input', 'pvc-in'); inp.placeholder = t().addWord;
+    var save = el('button', 'pvc-hand', t().save);
+    save.style.background = 'var(--gold,#e0b73c)'; save.style.color = '#20180a';
+    save.onclick = function () {
+      var v = inp.value.trim(); if (!v) return;
+      if (wordList.indexOf(v) === -1) wordList.push(v);
+      inp.value = ''; saveWords(); renderTeacher();
+    };
+    bodyEl.appendChild(inp); bodyEl.appendChild(save);
+
+    var wl = el('div', 'pvc-list'); wl.style.marginTop = '8px';
+    wordList.forEach(function (w) {
+      var row = el('div', 'pvc-row', '<span>' + esc(w) + '</span>');
+      var b = el('button', null, '✕');
+      b.onclick = function () {
+        wordList = wordList.filter(function (x) { return x !== w; });
+        saveWords(); renderTeacher();
+      };
+      row.appendChild(b); wl.appendChild(row);
+    });
+    bodyEl.appendChild(wl);
+  }
+
+  /* ============ الإيموجي الطائرة ============ */
+  function fly(i) {
+    var e = el('div', 'pvc-fly', EMOJI[i] || '✨');
+    e.style.insetInlineStart = (10 + Math.random() * 70) + '%';
+    e.style.bottom = '90px';
+    document.body.appendChild(e);
+    setTimeout(function () { e.remove(); }, 2200);
+  }
+
+  /* ============ فايربيس: قراءة/كتابة ============ */
+  function roomRef(f) { return f.doc(f.db, 'pv_rooms', S.room); }
+  function msgsRef(f) { return f.collection(f.db, 'pv_rooms', S.room, 'msgs'); }
+
+  async function send(payload) {
+    if (!S.room || !S.name) return;
+    if (!S.open && S.role !== 'teacher') { toast(t().isClosed); return; }
+    if (S.muted.indexOf(S.name) !== -1 && S.role !== 'teacher') { toast(t().isMuted); return; }
+    var now = Date.now();
+    if (now - S.lastSend < 1500) { toast(t().slow); return; }
+    S.lastSend = now;
+
+    if (typeof payload.e === 'number') fly(payload.e);   // عرض فوري عند المُرسِل
+
+    var f = await initFB(); if (!f) return;
+    var doc = {
+      n: String(S.name).slice(0, 24),
+      r: S.role === 'teacher' ? 't' : 's',
+      ts: now
+    };
+    if (typeof payload.x === 'string') doc.x = payload.x.slice(0, 120);
+    else if (typeof payload.e === 'number') doc.e = payload.e;
+    else doc.p = payload.p;
+    try { await f.addDoc(msgsRef(f), doc); } catch (e) { console.warn('[PVChat] send', e); }
+  }
+
+  async function setRoom(patch) {
+    var f = await initFB(); if (!f) return;
+    try {
+      await f.setDoc(roomRef(f), Object.assign({ open: S.open, free: S.free, muted: S.muted }, patch), { merge: true });
+    } catch (e) { console.warn('[PVChat] room', e); }
+  }
+
+  async function clearMsgs() {
+    var f = await initFB(); if (!f) return;
+    try {
+      var snap = await f.getDocs(msgsRef(f));
+      var jobs = []; snap.forEach(function (d) { jobs.push(f.deleteDoc(d.ref)); });
+      await Promise.all(jobs);
+      toast(t().cleared);
+    } catch (e) { console.warn('[PVChat] clear', e); }
+  }
+
+  async function loadWords() {
+    var f = await initFB(); if (!f) return;
+    try {
+      var d = await f.getDoc(f.doc(f.db, 'pv_config', 'filter'));
+      if (d.exists() && Array.isArray(d.data().list)) {
+        var extra = d.data().list;
+        wordList = BASE_WORDS.concat(extra.filter(function (w) {
+          return BASE_WORDS.indexOf(w) === -1;
+        }));
+      }
+    } catch (e) { }
+  }
+
+  async function saveWords() {
+    var f = await initFB(); if (!f) return;
+    try {
+      await f.setDoc(f.doc(f.db, 'pv_config', 'filter'), { list: wordList }, { merge: true });
+      toast(t().saved);
+    } catch (e) { console.warn('[PVChat] words', e); }
+  }
+
+  /* ============ التشغيل ============ */
+  async function start() {
+    if (S.started) return;
+    S.started = true;
+    var f = await initFB(); if (!f) return;
+
+    await loadWords();
+
+    /* حالة الغرفة */
+    S.unsubRoom = f.onSnapshot(roomRef(f), function (d) {
+      var v = d.exists() ? d.data() : {};
+      S.open = v.open !== false;
+      S.free = v.free === true;          /* الافتراضي: مغلقة */
+      S.muted = Array.isArray(v.muted) ? v.muted : [];
+      renderFoot();
+      if (tab === 'teacher') renderTeacher();
+    }, function () { });
+
+    /* المعلمة تنشئ مستند الغرفة أول مرة */
+    if (S.role === 'teacher') setRoom({ open: true, free: S.free === true });
+
+    /* الرسائل */
+    var q = f.query(msgsRef(f), f.orderBy('ts', 'desc'), f.limit(40));
+    var first = true;
+    S.unsubMsgs = f.onSnapshot(q, function (snap) {
+      var arr = []; snap.forEach(function (d) { arr.push(d.data()); });
+      arr.reverse();
+
+      if (!first) {
+        snap.docChanges().forEach(function (ch) {
+          if (ch.type !== 'added') return;
+          var m = ch.doc.data();
+          if (m.n === S.name) return;                       // لا نكرر رسائلنا
+          if (typeof m.e === 'number') fly(m.e);
+          else if (!S.panelOpen) { S.unread++; updateBadge(); }
+        });
+      }
+      first = false;
+      S.msgs = arr;
+      if (S.panelOpen) renderBody();
+      if (tab === 'teacher') renderTeacher();
+    }, function () { });
+
+    fab.style.display = 'flex';
+  }
+
+  function stop() {
+    if (S.unsubMsgs) { S.unsubMsgs(); S.unsubMsgs = null; }
+    if (S.unsubRoom) { S.unsubRoom(); S.unsubRoom = null; }
+    S.started = false; S.msgs = []; S.unread = 0;
+    if (fab) { fab.style.display = 'none'; updateBadge(); }
+    if (panel) { panel.classList.remove('on'); S.panelOpen = false; }
+  }
+
+
+  /* ============ طبقة الغرفة المستقلة (تعمل بأي لعبة) ============ */
+  var launchBtn = null, dlg = null;
+  var LS_ROOM = 'pv_room', LS_NAME = 'pv_name', LS_ROLE = 'pv_role';
+
+  function lsGet(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { } }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) { } }
+
+  /* يحاول التقاط اسم اللاعب من اللعبة نفسها إن وُجد */
+  function guessName() {
+    var c = ['playerName', 'elmName', 'pvName', 'userName'];
+    for (var i = 0; i < c.length; i++) {
+      try { if (typeof window[c[i]] === 'string' && window[c[i]].length > 1) return window[c[i]]; } catch (e) { }
+    }
+    try { if (window.G && typeof G.name === 'string' && G.name.length > 1) return G.name; } catch (e) { }
+    return lsGet(LS_NAME);
+  }
+
+  function buildLauncher() {
+    if (launchBtn) return;
+    if (!document.body) return;
+    launchBtn = el('button', 'pvc-launch', '🏫');
+    launchBtn.title = 'غرفة الصف';
+    launchBtn.onclick = openDialog;
+    document.body.appendChild(launchBtn);
+
+    dlg = el('div', 'pvc-dlg');
+    dlg.onclick = function (e) { if (e.target === dlg) closeDialog(); };
+    document.body.appendChild(dlg);
+  }
+
+  function closeDialog() { if (dlg) dlg.classList.remove('on'); }
+
+  function openDialog() {
+    if (!dlg) return;
+    dlg.dir = isRTL() ? 'rtl' : 'ltr';
+    var box = el('div', 'pvc-box');
+
+    /* لو الغرفة شغّالة: عرض الحالة + زر خروج */
+    if (S.room && S.name) {
+      box.appendChild(el('h4', null, '🏫 غرفة الصف'));
+      box.appendChild(el('div', 'pvc-code', esc(S.room)));
+      box.appendChild(el('p', null,
+        (S.role === 'teacher' ? '👩‍🏫 أنتِ المعلمة' : '👤 ' + esc(S.name)) +
+        ' — الطلاب بيدخلوا بهذا الكود'));
+      var bOut = el('button', 'pvc-b gh', 'خروج من الغرفة');
+      bOut.onclick = function () {
+        lsDel(LS_ROOM); lsDel(LS_ROLE);
+        stop(); S.room = ''; S.role = 'student';
+        closeDialog();
+      };
+      var bC = el('button', 'pvc-b', 'إغلاق');
+      bC.onclick = closeDialog;
+      box.appendChild(bOut); box.appendChild(bC);
+      dlg.innerHTML = ''; dlg.appendChild(box); dlg.classList.add('on');
+      return;
+    }
+
+    box.appendChild(el('h4', null, '🏫 غرفة الصف'));
+    box.appendChild(el('p', null, 'اكتبي اسمك، بعدها أنشئي غرفة (للمعلمة) أو انضمي بكود (للطالبة).'));
+
+    var nIn = el('input', 'pvc-in'); nIn.placeholder = 'الاسم'; nIn.maxLength = 24;
+    nIn.value = guessName();
+    box.appendChild(nIn);
+
+    function name() {
+      var v = nIn.value.trim();
+      if (v.length < 2) { toast('اكتبي اسمك'); return null; }
+      if (isBad(v)) { toast(t().badName); return null; }
+      return v;
+    }
+
+    var bHost = el('button', 'pvc-b', '👩‍🏫 إنشاء غرفة (للمعلمة)');
+    bHost.onclick = function () {
+      var v = name(); if (!v) return;
+      var code = String(Math.floor(100000 + Math.random() * 900000));
+      lsSet(LS_NAME, v); lsSet(LS_ROOM, code); lsSet(LS_ROLE, 'teacher');
+      begin(code, v, 'teacher'); closeDialog(); openDialog();
+    };
+
+    var cIn = el('input', 'pvc-in');
+    cIn.placeholder = 'كود الغرفة (٦ أرقام)'; cIn.inputMode = 'numeric'; cIn.maxLength = 6;
+
+    var bJoin = el('button', 'pvc-b alt', '👤 انضمام (للطالبة)');
+    bJoin.onclick = function () {
+      var v = name(); if (!v) return;
+      var c = cIn.value.trim();
+      if (!/^\d{6}$/.test(c)) { toast('اكتبي كود من ٦ أرقام'); return; }
+      lsSet(LS_NAME, v); lsSet(LS_ROOM, c); lsSet(LS_ROLE, 'student');
+      begin(c, v, 'student'); closeDialog();
+    };
+
+    var bX = el('button', 'pvc-b gh', 'إلغاء');
+    bX.onclick = closeDialog;
+
+    box.appendChild(bHost);
+    box.appendChild(cIn);
+    box.appendChild(bJoin);
+    box.appendChild(bX);
+
+    dlg.innerHTML = ''; dlg.appendChild(box); dlg.classList.add('on');
+    setTimeout(function () { if (!nIn.value) nIn.focus(); }, 60);
+  }
+
+  function begin(room, name, role) {
+    if (!fab) buildUI();
+    stop();
+    S.room = room; S.name = name; S.role = role || 'student';
+    renderTabs(); renderFoot();
+    start();
+  }
+
+  /* تشغيل تلقائي: زر الغرفة يظهر بأي لعبة، ولو في غرفة محفوظة بيكمل عليها */
+  function auto() {
+    if (!fab) buildUI();
+    buildLauncher();
+    var r = lsGet(LS_ROOM), n = lsGet(LS_NAME), ro = lsGet(LS_ROLE) || 'student';
+    if (r && n) begin(r, n, ro);
+  }
+
+  /* ============ الواجهة البرمجية ============ */
+  window.PVChat = {
+    /* PVChat.attach(G) — يراقب حالة اللعبة ويشغّل الشات تلقائيًا */
+    attach: function (G) {
+      if (!G || window.PVChat._attached) return;
+      window.PVChat._attached = true;
+      if (!fab) buildUI();
+      var lastKey = '';
+      setInterval(function () {
+        var room = G.room || '';
+        var role = (G.mode === 'host') ? 'teacher' : 'student';
+        // في وضع "host" المعلمة ما بتدخل اسم، فبنعطيها اسمًا داخليًا
+        var name = G.name || (role === 'teacher' ? 'teacher' : '');
+        var key = room + '|' + name + '|' + role;
+        if (key === lastKey) return;
+        lastKey = key;
+        stop();
+        if (room && name) {
+          S.room = room; S.name = name; S.role = role;
+          renderTabs(); renderFoot();
+          start();
+        }
+      }, 800);
+    },
+
+    /* PVChat.badName('...') — true إذا الاسم فيه كلمة ممنوعة */
+    badName: function (n) { return isBad(n); },
+
+    /* رسالة التنبيه الجاهزة عند رفض الاسم */
+    badNameMsg: function () { return t().badName; },
+
+    /* تشغيل يدوي بدون attach */
+    startWith: function (room, name, role) {
+      if (!fab) buildUI();
+      stop(); S.room = room; S.name = name; S.role = role || 'student';
+      renderTabs(); renderFoot(); start();
+    },
+
+    stop: stop,
+    words: function () { return wordList.slice(); },
+
+    /* PVChat.auto() — للألعاب اللي ما فيها وضع غرفة صف */
+    auto: auto,
+    openRoom: openDialog
+  };
+
+  /* حمّل قائمة الكلمات مبكرًا حتى يعمل badName قبل بدء اللعب */
+  initFB().then(function () { loadWords(); });
+
+  /* تشغيل تلقائي إذا اللعبة ما نادت attach() خلال ثانيتين */
+  function bootAuto() {
+    setTimeout(function () { if (!window.PVChat._attached) auto(); }, 1500);
+  }
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', bootAuto);
+  else bootAuto();
+})();
+
+</script>
+
 <body>
+<div class="flash" id="flash"></div>
 
 <div class="frame">
-  <!-- الشريط العلوي -->
-  <div class="topbar" id="topbar">
-    <button class="icon-btn" id="btnHome" title="الرئيسية">🏠</button>
-    <button class="icon-btn" id="btnRule" title="التعليمات">📖</button>
-    <button class="icon-btn" id="btnSound" title="الصوت">🔊</button>
-    <div class="timer" id="timer">30:00</div>
-    <div class="spacer"></div>
+  <div class="topbar" id="topbar" style="display:none">
+    <button class="icon-btn" id="btnHome" title="الرئيسية">⌂</button>
+    <button class="icon-btn" id="btnSound" title="الصوت">♪</button>
+    <button class="icon-btn" id="btnRule" title="القاعدة">📖</button>
     <div class="lives" id="lives"></div>
-    <div class="score" id="score">💎 0</div>
+    <div class="spacer"></div>
+    <div class="trophy" id="trophy">0 / 6</div>
   </div>
-
-  <!-- المشهد والمحتوى -->
   <div class="stage" id="stage"></div>
 </div>
 
-<!-- المودالات -->
-<div class="modal" id="pauseModal">
-  <div class="modal-content">
-    <div class="modal-title">إيقاف مؤقت</div>
-    <div class="modal-body" id="pauseBody"></div>
-    <div class="modal-actions">
-      <button class="btn-continue" onclick="resumeGame()">متابعة</button>
-      <button class="btn-cancel" onclick="returnToHome()">الرئيسية</button>
-    </div>
-  </div>
-</div>
+<audio id="bgm" loop preload="auto"><source src="elmora-bg.mp3" type="audio/mpeg"></audio>
 
-<!-- زر الإيقاف الطارئ -->
-<button class="emergency-pause" id="emergencyBtn" title="إيقاف طارئ" style="display:none">⏸</button>
-
-<audio id="bgm" loop>
-  <source src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==" type="audio/wav">
-</audio>
+<script>
+/* ===== لوحة النتائج المشتركة — إلمورا ===== */
+var ELM_PASS='amani2026', ELM_GAME='elmora', elmDB=null, elmName='', ELM_MODE='solo';
+(function(){
+  function boot(){
+    try{
+      if(!firebase.apps.length){
+        firebase.initializeApp({
+          apiKey:"AIzaSyADxQ7-3UDxYD3VTOoVrn7d6516_5bqd5Y",
+          authDomain:"cursed-castle-bb43b.firebaseapp.com",
+          projectId:"cursed-castle-bb43b",
+          storageBucket:"cursed-castle-bb43b.firebasestorage.app",
+          messagingSenderId:"458563878259",
+          appId:"1:458563878259:web:715ce9f960b2972ccd9906"
+        });
+      }
+      elmDB=firebase.firestore();
+    }catch(e){console.log('FB',e)}
+  }
+  function ld(u,cb){var x=document.createElement('script');x.src=u;x.onload=cb;x.onerror=function(){cb()};document.head.appendChild(x)}
+  ld('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js',function(){
+    if(typeof firebase==='undefined')return;
+    ld('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js',boot);
+  });
+})();
+</script>
 
 <script>
 (function(){
+"use strict";
 
-// ===== المتغيرات الأساسية =====
-var GAME_STATE={
-  mode:'solo',
-  level:'secondary',
-  lives:3,
-  points:0,
-  startTime:0,
-  timeRemaining:1800000,
-  pauseTime:0,
-  isPaused:false,
-  emergencyUsed:false,
-  sound:true,
-  currentStage:0,
-  completed:false
+/* ============================================================
+   لعبة: رَيّان وبوابات الشرط  —  If Clauses (Type 0 / 1 / 2)
+   الشخصيات أصلية: رَيّان، مَيّار، سَيف، سَراج، السيدة دَلْماء، ڤيلمار
+   ============================================================ */
+
+var IMG = {
+  cover:'rayyan-cover.jpg',        hall:'rayyan-hall.jpg',
+  lostwand:'rayyan-lostwand.jpg',  locks:'rayyan-locks.jpg',   locks2:'rayyan-locks.jpg',
+  dolores:'rayyan-dalma.jpg',      drawerGhost:'rayyan-wraith.jpg',
+  wand:'rayyan-wand.jpg',
+  lake:'rayyan-lake.jpg',          lakeWin:'rayyan-lakewin.jpg',   lakeBad:'rayyan-seabeasts.jpg',
+  hallScene:'rayyan-corridor.jpg', hallWin:'rayyan-green.jpg',     hallBad:'rayyan-snake.jpg',
+  dragon:'rayyan-dragon.jpg',      dragonWin:'rayyan-egg.jpg',     dragonBad:'rayyan-dragonfire.jpg',
+  prison:'rayyan-prison.jpg',      prisonWin:'rayyan-siraj.jpg',   prisonBad:'rayyan-wraiths.jpg',
+  maze:'rayyan-maze.jpg',          mazeWin:'rayyan-cupwin.jpg',    mazeBad:'rayyan-spiders.jpg',
+  forest:'rayyan-forest.jpg',      forestWin:'rayyan-stone.jpg',   forestBad:'rayyan-troll.jpg',
+  duel:'rayyan-duel.jpg',
+  potion:'rayyan-potion.jpg',   orb:'rayyan-orb.jpg',       plant:'rayyan-plant.jpg',
+  gate:'rayyan-gate.jpg',       balcony:'rayyan-balcony.jpg', crowd:'rayyan-crowd.jpg',
+  mirror:'rayyan-mirror.jpg',   wings:'rayyan-wings.jpg',   runes:'rayyan-runes.jpg',
+  bridgeBreak:'rayyan-bridgebreak.jpg', bridgeSave:'rayyan-bridgesave.jpg',
+  scroll:'rayyan-scroll.jpg',
+  cup:'rayyan-cupwin.jpg', genie:'rayyan-orb.jpg'
 };
 
-var STAGES=[
-  {
-    type:'type1',
-    intro:'اختبري حكمتك… <strong>الأسئلة تبدأ.</strong>',
-    img:'elmora-circle.jpg',
-    q:'If I _____ you earlier, I would have warned you.',
-    opts:['had seen','saw','would see'],
-    correct:0,
-    winTxt:'✓ ممتاز! أنتِ فاهمة القاعدة بشكل صحيح.',
-    badTxt:'✗ ليست هاي الإجابة الصحيحة.',
-    hint:'<b>القاعدة:</b> في الجملة الشرطية الثالثة (Mixed Conditional)، نستخدم Past Perfect بعد If عندما يكون الفعل الرئيسي في الماضي.'
-  },
-  {
-    type:'type1',
-    intro:'السؤال التاني ينتظرك…',
-    img:'elmora-circle.jpg',
-    q:'If I were you, I _____ this job immediately.',
-    opts:['would take','take','will take'],
-    correct:0,
-    winTxt:'✓ أحسنتِ! استمري بهاي الطريقة.',
-    badTxt:'✗ الإجابة المختارة غير صحيحة.',
-    hint:'<b>التفسير:</b> في الشرط الثاني (Second Conditional)، نستخدم would + verb base form في الجزء الرئيسي من الجملة.'
-  },
-  {
-    type:'type2',
-    intro:'تقتربين من النهاية…',
-    img:'elmora-circle.jpg',
-    q:'If you _____ me, would you forgive me?',
-    opts:['see','saw','had seen'],
-    correct:1,
-    winTxt:'✓ صحيح تماماً! أنتِ متقنة لـ Second Conditional.',
-    badTxt:'✗ حاولي مرة أخرى… استفكري بـ Second Conditional.',
-    hint:'<b>القاعدة:</b> Second Conditional = If + Past Simple, would + base verb. إنه شرط وهمي في الحاضر.'
-  }
+var TYPE_LABEL = {0:'TYPE 0 — الحقائق',1:'TYPE 1 — المستقبل الممكن',2:'TYPE 2 — الخيال'};
+
+/* ---------- المراحل الست ---------- */
+var STAGES = [
+  { id:'lake', type:0, img:IMG.lake, win:IMG.lakeWin, bad:IMG.lakeBad,
+    intro:'صديقه <strong>سَيف</strong> غارق تحت بحيرة القلعة وملفوف بأعشاب سحرية. ساعد <strong>رَيّان</strong> ينقذه.',
+    q:['If we freeze water, it ','',' into ice.'],
+    opts:['turn','turns','would turn'], correct:1,
+    hint:'حقيقة علمية ثابتة ← <b>Type 0</b>: if + present simple → present simple. والفاعل <b>it</b> بدّه فعل بـ s.',
+    winTxt:'أحسنت! ذاب السحر عن <strong>سَيف</strong>، وطلعوا الاثنين على وجه الماء.',
+    badTxt:'إجابتك خاطئة… هجمت المخلوقات البحرية على <strong>رَيّان</strong> وصديقه!' },
+
+  { id:'hall', type:0, img:IMG.hallScene, win:IMG.hallWin, bad:IMG.hallBad,
+    intro:'في ممرات <strong>أكاديمية إلمورا</strong> غرفة مخبّأة فيها <strong>الحجر الأخضر</strong>. ساعد رَيّان يلاقيها.',
+    q:['If you heat ice, it ','',' into water.'],
+    opts:['turn','turns','turning'], correct:1,
+    hint:'الجليد دايمًا بذوب — قانون ثابت ← <b>Type 0</b>. مع <b>it</b> منستعمل <b>turns</b>.',
+    winTxt:'انفتح الباب! الحجر الأخضر عم يلمع فوق قاعدته.',
+    badTxt:'إجابتك خاطئة… طلعت أفعى ضخمة من جدار الممر!' },
+
+  { id:'dragon', type:1, img:IMG.dragon, win:IMG.dragonWin, bad:IMG.dragonBad,
+    intro:'في ساحة البطولة، تنين ضخم بيحرس <strong>البيضة الذهبية</strong>. ساعد رَيّان يوصلها.',
+    q:['If he ','',' the exam, his father will buy a bike for him.'],
+    opts:['passed','passes','will pass'], correct:1,
+    hint:'بعد <b>if</b> ما منحط <b>will</b> أبدًا. الجواب فيه will ← يعني الشرط لازم يكون present simple ← <b>Type 1</b>.',
+    winTxt:'أحسنت! خطف رَيّان البيضة الذهبية والجمهور وقف يصفّق.',
+    badTxt:'إجابتك خاطئة… نفخ التنين نار على رَيّان!' },
+
+  { id:'prison', type:1, img:IMG.prison, win:IMG.prisonWin, bad:IMG.prisonBad,
+    intro:'عرّاب رَيّان، <strong>سَراج</strong>، مفقود بسجن الجليد. ساعده يلاقيه.',
+    q:['If Ali wakes up early, he ','',' to school early.'],
+    opts:['go','goes','will go'], correct:2,
+    hint:'موقف ممكن يصير بالمستقبل ← <b>Type 1</b>: if + present simple → <b>will + verb</b>.',
+    winTxt:'لقيه! <strong>سَراج</strong> حضن رَيّان بعد سنين فراق.',
+    badTxt:'إجابتك خاطئة… هجمت أشباح السجن الباردة على رَيّان!' },
+
+  { id:'maze', type:2, img:IMG.maze, win:IMG.mazeWin, bad:IMG.mazeBad,
+    intro:'متاهة الأشواك، وبقلبها <strong>الكأس المسحور</strong>. ساعد رَيّان يوصل قبل ما تسكّر الطرق.',
+    q:['If I moved to Boston, I ','',' on Main Street.'],
+    opts:['live','will live','would live'], correct:2,
+    hint:'الشرط بالـ past simple (<b>moved</b>) ← موقف خيالي ← <b>Type 2</b>: النتيجة <b>would + verb</b>.',
+    winTxt:'وصل! رفع رَيّان الكأس المسحور فوق راسه.',
+    badTxt:'إجابتك خاطئة… زحفت العناكب الضخمة على المتاهة!' },
+
+  { id:'forest', type:2, img:IMG.forest, win:IMG.forestWin, bad:IMG.forestBad,
+    intro:'آخر قطعة ناقصة: <strong>الحجر الأحمر</strong> المخبّى بغابة إلمورا.',
+    q:['If I ','',' a lot of money, I would buy a car.'],
+    opts:['have','had','has'], correct:1,
+    hint:'النتيجة فيها <b>would</b> ← <b>Type 2</b>: الشرط لازم يكون past simple ← <b>had</b>.',
+    winTxt:'لقيه! الحجر الأحمر ولّع بإيد رَيّان مثل شمس صغيرة.',
+    badTxt:'إجابتك خاطئة… طلع ترول ضخم من بين الشجر!' },
+
+  /* ===== المكتبة السرّية — Type 0 ===== */
+  { id:'potion', type:0, img:IMG.potion, win:IMG.potion, bad:IMG.potion,
+    intro:'في مختبر المكتبة السرّية، <strong>رَيّان</strong> بيمزج جرعتين. ساعده يعرف شو بيصير.',
+    q:['If you mix red and blue, you ','',' purple.'],
+    opts:['get','will get','would get'], correct:0,
+    hint:'خلط الألوان قانون ثابت ← <b>Type 0</b>: present simple بالطرفين.',
+    winTxt:'صارت الجرعة بنفسجية بالضبط زي ما توقّعتِ!',
+    badTxt:'انفجرت الجرعة بوجه رَيّان ودخّنت المكتبة!' },
+
+  { id:'orb', type:0, img:IMG.orb, win:IMG.orb, bad:IMG.orb,
+    intro:'كرة من الماء السحري عم تلمع بإيد <strong>رَيّان</strong>. شو بيصير لو بردها؟',
+    q:['Water ','',' if you cool it to zero.'],
+    opts:['freeze','freezes','froze'], correct:1,
+    hint:'حقيقة علمية ← <b>Type 0</b>. الفاعل <b>Water</b> مفرد ← بدّه <b>freezes</b>.',
+    winTxt:'تجمّدت الكرة وصارت بلورة تلج تلمع!',
+    badTxt:'انفجرت الكرة ورشّت مي على كل الكتب!' },
+
+  { id:'plant', type:0, img:IMG.plant, win:IMG.plant, bad:IMG.plant,
+    intro:'نبتة سحرية صغيرة عم تذبل. <strong>رَيّان</strong> بدّه يفهم السبب.',
+    q:["If plants don't get water, they ",'','.'],
+    opts:['die','will die','would die'], correct:0,
+    hint:'قانون طبيعي دايمًا صحيح ← <b>Type 0</b>: present simple.',
+    winTxt:'سقى رَيّان النبتة وكبرت أوراقها الذهبية!',
+    badTxt:'ذبلت النبتة وتحوّلت لرماد!' },
+
+  /* ===== بوابة الرونات — Type 1 ===== */
+  { id:'gate', type:1, img:IMG.gate, win:IMG.gate, bad:IMG.gate,
+    intro:'بوابة الرونات ما بتنفتح إلا بجملة صحيحة عن المستقبل.',
+    q:['If the sky is clear tonight, we ','',' the stars.'],
+    opts:['see','will see','saw'], correct:1,
+    hint:'احتمال ممكن الليلة ← <b>Type 1</b>: if + present simple → <b>will + verb</b>.',
+    winTxt:'انفتحت البوابة والنجوم لمعت فوق القلعة!',
+    badTxt:'انطفت الرونات وسكّرت البوابة بوجه رَيّان!' },
+
+  { id:'balcony', type:1, img:IMG.balcony, win:IMG.balcony, bad:IMG.balcony,
+    intro:'من شرفة القلعة، <strong>مَيّار</strong> عم تتدرّب للمسابقة. شو رأيك بحظها؟',
+    q:['If she ','',' hard, she will win the prize.'],
+    opts:['works','will work','worked'], correct:0,
+    hint:'بعد <b>if</b> ممنوع <b>will</b>. النتيجة فيها will ← الشرط present simple.',
+    winTxt:'فازت مَيّار بالجائزة الأولى!',
+    badTxt:'خسرت مَيّار المسابقة بسبب الجواب الغلط!' },
+
+  { id:'crowd', type:1, img:IMG.crowd, win:IMG.crowd, bad:IMG.scroll,
+    intro:'طلاب إلمورا مجتمعين لرحلة الغد، والجو غيم.',
+    q:['If it rains tomorrow, we ','',' the trip.'],
+    opts:['cancel','will cancel','would cancel'], correct:1,
+    hint:'احتمال حقيقي بكرا ← <b>Type 1</b>: <b>will + verb</b>.',
+    winTxt:'هتف الطلاب لرَيّان — الجواب صحيح!',
+    badTxt:'اختلط الطلاب وضاعت خطة الرحلة!' },
+
+  /* ===== كهف المرايا — Type 2 ===== */
+  { id:'mirror', type:2, img:IMG.mirror, win:IMG.mirror, bad:IMG.mirror,
+    intro:'في كهف المرايا، ظهر ساحر عجوز بالمرآة وسأل <strong>رَيّان</strong> سؤال.',
+    q:['If I ','',' you, I would tell the truth.'],
+    opts:['am','was','were'], correct:2,
+    hint:'تعبير خيالي ثابت ← <b>Type 2</b>: منستعمل <b>were</b> مع كل الضمائر.',
+    winTxt:'ابتسم الساحر ومدّ إيده لرَيّان من جوّا المرآة!',
+    badTxt:'تشقّقت المرآة وانطفى وجه الساحر!' },
+
+  { id:'wings', type:2, img:IMG.wings, win:IMG.wings, bad:IMG.wings,
+    intro:'حلم <strong>رَيّان</strong> إنه يطير فوق أبراج إلمورا.',
+    q:['If we had wings, we ','',' over the castle.'],
+    opts:['fly','will fly','would fly'], correct:2,
+    hint:'الشرط past simple (<b>had</b>) ← <b>Type 2</b>: النتيجة <b>would + verb</b>.',
+    winTxt:'نبتت أجنحة نور لرَيّان وطار فوق القلعة!',
+    badTxt:'وقع رَيّان عن السور وانكسر حلمه!' },
+
+  { id:'runes', type:2, img:IMG.runes, win:IMG.runes, bad:IMG.runes,
+    intro:'رونات قديمة محفورة على صخرة الكهف، وحدها بتحمل الجواب.',
+    q:['If he knew the answer, he ','',' us.'],
+    opts:['tells','will tell','would tell'], correct:2,
+    hint:'الشرط <b>knew</b> ماضي ← <b>Type 2</b>: <b>would + verb</b>.',
+    winTxt:'أضاءت الرونات وكشفت السر لرَيّان!',
+    badTxt:'انطفت الرونات وضاع السر للأبد!' },
+
+  /* ===== الجسر المكسور ===== */
+  { id:'bridgeBreak', type:1, img:IMG.bridgeBreak, win:IMG.bridgeBreak, bad:IMG.bridgeBreak,
+    intro:'حبل الجسر عم ينقطع فوق الوادي! انتبهي للتحذير.',
+    q:['If you ','',' the rope, the bridge will fall.'],
+    opts:['cut','cuts','will cut'], correct:0,
+    hint:'بعد <b>if</b> ما منحط will، ومع <b>you</b> الفعل بدون s ← <b>cut</b>.',
+    winTxt:'فهم رَيّان التحذير وترك الحبل بوقته!',
+    badTxt:'انقطع الحبل وطاح نص الجسر بالوادي!' },
+
+  { id:'bridgeSave', type:2, img:IMG.bridgeSave, win:IMG.bridgeSave, bad:IMG.bridgeSave,
+    intro:'الفجوة واسعة، و<strong>رَيّان</strong> بيتمنى لو معه مكنسة طائرة.',
+    q:['If I had a broom, I ','',' across.'],
+    opts:['flew','will fly','would fly'], correct:2,
+    hint:'أمنية غير واقعية ← <b>Type 2</b>: if + past simple → <b>would + verb</b>.',
+    winTxt:'طار رَيّان فوق الفجوة وأنقذ نفسه!',
+    badTxt:'زلّت رجل رَيّان وتعلّق بالحبل بإيد وحدة!' }
 ];
 
-var TYPE_LABEL={'type1':'الشرط الأول','type2':'الشرط الثاني'};
+/* ---------- الأقفال ---------- */
+var LOCK_META = {
+  gold:  {ar:'القفل الذهبي', cls:'lock-gold',   dot:'🟡'},
+  silver:{ar:'القفل الفضي',  cls:'lock-silver', dot:'⚪'},
+  pink:  {ar:'القفل الوردي', cls:'lock-pink',   dot:'🩷'}
+};
+var LOCK_TRAP = {
+  gold:{ img:IMG.dolores, type:1,
+    intro:'يا إلهي… طلعت <strong>السيدة دَلْماء</strong> من الدرج وهي غاضبة! جاوب سؤالها وإلا بتعطي رَيّان إنذار.',
+    q:['If you are careless, you ','',' yourself.'],
+    opts:['will hurt','would hurt','would have hurt'], correct:0,
+    hint:'الشرط بالـ present (<b>are</b>) ونتيجة ممكنة بالمستقبل ← <b>Type 1</b>: <b>will + verb</b>.',
+    winTxt:'هدأت السيدة دَلْماء ورجعت لبرواز صورتها.',
+    badTxt:'ما قدرت تنقذ رَيّان… أعطته السيدة دَلْماء إنذار!' },
+  pink:{ img:IMG.drawerGhost, type:0,
+    intro:'طلع <strong>شبح أسود</strong> من الدرج الوردي! جاوب السؤال لتنقذ رَيّان.',
+    q:['When she gets bored, she always ','',' her friend.'],
+    opts:['visits','will visit','visiting'], correct:0,
+    hint:'عادة بتتكرر دايمًا (<b>always</b>) ← <b>Type 0</b>: present simple، ومع <b>she</b> منزيد s.',
+    winTxt:'انطفى الشبح ورجع الدرج خشب عادي.',
+    badTxt:'ما قدرت تنقذ رَيّان… لفّه الشبح بضبابه البارد!' }
+};
 
-// ===== عناصر الـ DOM =====
+/* ---------- الحالة ---------- */
+var S = {lives:3, trophies:0, locks:['gold','silver','pink'], sound:true};
+
 var stage=document.getElementById('stage');
 var topbar=document.getElementById('topbar');
-var timerEl=document.getElementById('timer');
 var livesEl=document.getElementById('lives');
-var scoreEl=document.getElementById('score');
+var trophyEl=document.getElementById('trophy');
+var flash=document.getElementById('flash');
 var bgm=document.getElementById('bgm');
-var pauseModal=document.getElementById('pauseModal');
-var emergencyBtn=document.getElementById('emergencyBtn');
 
-// ===== وظائف اساسية =====
-function el(tag,cls,html){
-  var e=document.createElement(tag);
-  if(cls)e.className=cls;
-  if(html)e.innerHTML=html;
-  return e;
+/* ---------- أدوات ---------- */
+function el(tag,cls,html){var n=document.createElement(tag);if(cls)n.className=cls;if(html!=null)n.innerHTML=html;return n;}
+function fx(kind){flash.className='flash '+kind+' go';setTimeout(function(){flash.className='flash';},520);}
+function hud(){
+  var s='';for(var i=0;i<3;i++)s+='<span class="life'+(i<S.lives?'':' lost')+'">✦</span>';
+  livesEl.innerHTML=s;
+  trophyEl.textContent=S.trophies+' / '+STAGES.length;
+}
+function scene(img,label){
+  var wrap=el('div','scene-wrap');
+  wrap.appendChild(el('div','halo'));
+
+  var w=el('div','scene-img');
+  var bg=el('img','bg');bg.src=img;bg.alt='';bg.setAttribute('aria-hidden','true');
+  var im=el('img','fg');im.src=img;im.alt='';im.loading='eager';
+  im.onerror=function(){im.onerror=null;im.src=IMG.cover;bg.src=IMG.cover;};
+  w.appendChild(bg);w.appendChild(im);
+  w.appendChild(el('div','glow'));
+
+  var sp=el('div','sparks');
+  for(var i=0;i<18;i++){
+    var s=document.createElement('i');
+    var size=(Math.random()*3+1.6).toFixed(1);
+    s.style.width=size+'px';s.style.height=size+'px';
+    s.style.left=(Math.random()*100).toFixed(1)+'%';
+    s.style.animationDuration=(Math.random()*7+7).toFixed(1)+'s';
+    s.style.animationDelay=(-Math.random()*12).toFixed(1)+'s';
+    s.style.setProperty('--dx',((Math.random()*60)-30).toFixed(0)+'px');
+    s.style.opacity=(Math.random()*.5+.5).toFixed(2);
+    sp.appendChild(s);
+  }
+  w.appendChild(sp);
+  wrap.appendChild(w);
+
+  ['tl','tr','bl','br'].forEach(function(c){wrap.appendChild(el('span','cnr '+c));});
+  if(label)wrap.appendChild(el('div','eyebrow',label));
+  return wrap;
 }
 
 function paint(nodes){
   stage.innerHTML='';
-  nodes.forEach(function(n){stage.appendChild(n)});
+  nodes.forEach(function(n){stage.appendChild(n);});
+  window.scrollTo(0,0);
+}
+function questionHTML(parts){
+  return parts[0]+'<span class="blank">______</span>'+parts[2];
 }
 
-function updateHUD(){
-  // تحديث الأرواح
-  livesEl.innerHTML='';
-  for(var i=0;i<3;i++){
-    var heart=el('span','life',i<GAME_STATE.lives?'❤️':'❌');
-    livesEl.appendChild(heart);
-  }
-  // تحديث النقاط
-  scoreEl.textContent='💎 '+GAME_STATE.points;
-}
-
-// ===== نظام المؤقت =====
-var timerInterval=null;
-
-function startTimer(){
-  GAME_STATE.startTime=Date.now();
-  timerInterval=setInterval(function(){
-    if(GAME_STATE.isPaused)return;
-    
-    var elapsed=Date.now()-GAME_STATE.startTime;
-    var remaining=1800000-elapsed;
-    
-    if(remaining<=0){
-      endGameByTime();
-      return;
-    }
-    
-    var mins=Math.floor(remaining/60000);
-    var secs=Math.floor((remaining%60000)/1000);
-    var display=String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0');
-    
-    timerEl.textContent=display;
-    
-    if(remaining<=300000)timerEl.classList.add('warning');
-    if(remaining<=60000)timerEl.classList.add('critical');
-  },100);
-}
-
-function endGameByTime(){
-  clearInterval(timerInterval);
-  var p=el('div','panel');
-  p.appendChild(el('div','narr','انتهت المهلة الزمنية!'));
-  var b=el('button','cta','من البداية');
-  b.onclick=reset;
-  p.appendChild(b);
-  paint([p]);
-}
-
-// ===== نظام الإيقاف الطارئ =====
-var pauseCountdown=0;
-var pauseMax=20;
-
-function activateEmergency(){
-  if(GAME_STATE.emergencyUsed||GAME_STATE.isPaused)return;
-  
-  GAME_STATE.emergencyUsed=true;
-  GAME_STATE.isPaused=true;
-  pauseCountdown=pauseMax;
-  emergencyBtn.style.opacity='0.3';
-  
-  var body=document.getElementById('pauseBody');
-  body.innerHTML='<div class="pause-display active"><div class="countdown">'+pauseCountdown+'</div><p>ثانية للتفكير</p></div>';
-  pauseModal.classList.add('show');
-  
-  var countInterval=setInterval(function(){
-    pauseCountdown--;
-    document.querySelector('.countdown').textContent=pauseCountdown;
-    if(pauseCountdown<=0){
-      clearInterval(countInterval);
-      resumeGame();
-    }
-  },1000);
-}
-
-function resumeGame(){
-  GAME_STATE.isPaused=false;
-  pauseModal.classList.remove('show');
-  GAME_STATE.startTime=Date.now();
-}
-
-function returnToHome(){
-  if(confirm('تريدين العودة للرئيسية؟')){
-    reset();
-  }
-}
-
-// ===== اختيار نمط اللعب =====
-function screenModes(){
-  var p=el('div','panel');
-  p.appendChild(el('div','narr','اختاري نمط اللعب:'));
-  
-  var modes=['فردي 👤','مقابلة 🎮','فريق ضد فريق 👥','مشترك 🖥️','اختبار 📋'];
-  var modeVals=['solo','vs','team','group','exam'];
-  
-  var box=el('div','modes');
-  modes.forEach(function(txt,i){
-    var b=el('button','mode-btn',txt);
-    b.onclick=function(){
-      GAME_STATE.mode=modeVals[i];
-      screenLevel();
-    };
-    box.appendChild(b);
-  });
-  
-  p.appendChild(box);
-  var btn=el('button','cta','التالي');
-  btn.onclick=function(){screenLevel()};
-  p.appendChild(btn);
-  
-  paint([p]);
-}
-
-// ===== اختيار المستوى =====
-function screenLevel(){
-  var p=el('div','panel');
-  p.appendChild(el('div','narr','اختاري المستوى التعليمي:'));
-  
-  var levels=['ثانوي','أساسي'];
-  var levelVals=['secondary','primary'];
-  
-  var box=el('div','modes');
-  levels.forEach(function(txt,i){
-    var b=el('button','mode-btn',txt);
-    b.onclick=function(){
-      GAME_STATE.level=levelVals[i];
-      screenStageInfo();
-    };
-    box.appendChild(b);
-  });
-  
-  p.appendChild(box);
-  paint([p]);
-}
-
-// ===== معلومات المرحلة =====
-function screenStageInfo(){
-  var p=el('div','panel');
-  p.appendChild(el('div','narr','معلومات اللعبة:'));
-  
-  var info=el('div','stage-info');
-  info.appendChild(createInfoCard('المستوى',GAME_STATE.level==='secondary'?'ثانوي':'أساسي'));
-  info.appendChild(createInfoCard('النمط',GAME_STATE.mode));
-  info.appendChild(createInfoCard('الأسئلة',STAGES.length.toString()));
-  info.appendChild(createInfoCard('النقاط',STAGES.length+'×30'));
-  
-  p.appendChild(info);
-  
-  var b=el('button','cta','ابدئي اللعبة');
+/* ---------- الغلاف ---------- */
+function screenCover(){
+  topbar.style.display='none';
+  var c=el('div','cover');
+  var bg=el('div','cover-bg');
+  var vid=document.createElement('video');
+  vid.src='elmora-cover.mp4';vid.autoplay=true;vid.loop=true;vid.muted=true;
+  vid.playsInline=true;vid.setAttribute('playsinline','');vid.setAttribute('muted','');
+  var im=el('img');im.src=IMG.cover;im.alt='';
+  vid.onerror=function(){vid.remove();bg.appendChild(im);};
+  bg.appendChild(vid);
+  var pr=vid.play&&vid.play();if(pr&&pr.catch)pr.catch(function(){});
+  var inn=el('div','cover-in');
+  inn.appendChild(el('div','kicker','ELMORA ACADEMY'));
+  inn.appendChild(el('h1','title','أكاديمية إلمورا<span>IF CLAUSES</span>'));
+  inn.appendChild(el('p','sub','ساحر متدرّب فقد عصاه، وعدوّه <b style="color:#f0cd82">ڤيلمار</b> بينتظره في آخر القلعة. ست تحديات تفصلك عن المواجهة — وما بتنفتح إلا بجملة شرطية صحيحة.'));
+  var b=el('button','cta','ابدأ المغامرة');
   b.onclick=function(){
-    topbar.style.display='flex';
-    emergencyBtn.style.display='grid';
-    startTimer();
-    screenStage(0);
+    // التشغيل أولًا وبمفرده — أي أمر آخر قد يعطّله
+    var pp = bgm.play();
+    if(pp && pp.then){ pp.then(function(){ bgm.volume=.38; })
+                         .catch(function(err){ console.log('AUDIO ERROR:', err && err.name, err && err.message); }); }
+    else { bgm.volume=.38; }
+    try{ bgm.muted=false; }catch(e){}
+    screenModes();
+  };
+  inn.appendChild(b);
+  var b2=el('button','cta ghost','📖 اقرأ القاعدة أولاً');
+  b2.onclick=function(){screenRules('cover');};
+  inn.appendChild(b2);
+  c.appendChild(bg);c.appendChild(inn);
+  paint([c]);
+}
+
+/* ---------- أنماط اللعب ---------- */
+function esc(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function screenModes(){
+  topbar.style.display='none';
+  var p=el('div','panel');
+  p.appendChild(el('div','narr','<strong>كيف بدك تلعبي؟</strong><br>اختاري نمط اللعب المناسب.'));
+
+  function mk(icon,title,desc,fn){
+    var b=el('button','mode','<span class="mi">'+icon+'</span><span><span class="mt">'+title+'</span><span class="md">'+desc+'</span></span>');
+    b.onclick=fn;p.appendChild(b);
+  }
+  mk('\uD83C\uDFAF','لعب فردي','بتلعبي لحالك — نتيجتك ما بتظهر لحدا',
+     function(){ELM_MODE='solo';elmName='';screenIntroVideo();});
+  mk('\uD83D\uDCCB','اختبار','بتكتبي اسمك — نتيجتك بتوصل للمعلّمة بس',
+     function(){ELM_MODE='exam';screenName();});
+  mk('\uD83D\uDC65','تحدي الصف','بتكتبي اسمك — نتيجتك بتظهر للكل',
+     function(){ELM_MODE='team';screenName();});
+
+  var b1=el('button','cta ghost','\uD83C\uDFC6 لوحة النتائج');
+  b1.onclick=function(){screenBoard('team');};
+  p.appendChild(b1);
+
+  var b2=el('button','cta ghost','\uD83D\uDCCB سجل الاختبارات (للمعلّمة)');
+  b2.style.opacity='.6';b2.style.fontSize='13px';
+  b2.onclick=function(){
+    var pw=prompt('أدخلي كلمة السر لعرض سجل الاختبارات:');
+    if(pw===null)return;
+    if(pw!==ELM_PASS){alert('كلمة السر غير صحيحة');return;}
+    screenBoard('exam');
+  };
+  p.appendChild(b2);
+
+  paint([p]);
+}
+
+function screenName(){
+  var p=el('div','panel');
+  p.appendChild(el('div','narr','<strong>شو اسمك أيتها الساحرة؟</strong><br>'+
+    (ELM_MODE==='exam' ? 'اسمك ونتيجتك بيوصلوا للمعلّمة بس.' : 'اسمك رح يظهر بلوحة نتائج الصف.')));
+  var inp=document.createElement('input');
+  inp.className='field';inp.maxLength=24;inp.placeholder='اكتبي اسمك هون...';
+  inp.autocomplete='off';
+  try{inp.value=localStorage.getItem('elm_name')||'';}catch(e){}
+  p.appendChild(inp);
+  var b=el('button','cta','يلا نبلش');
+  b.onclick=function(){
+    var v=(inp.value||'').trim();
+    if(!v){inp.focus();return;}
+    elmName=v; try{localStorage.setItem('elm_name',v);}catch(e){}
+    screenIntroVideo();
   };
   p.appendChild(b);
-  
+  var b2=el('button','cta ghost','رجوع');
+  b2.onclick=screenModes;p.appendChild(b2);
+  paint([p]);
+  setTimeout(function(){inp.focus();},250);
+}
+
+/* ---------- حفظ النتيجة ---------- */
+function saveResult(){
+  if(ELM_MODE==='solo')return;
+  if(!elmDB)return;
+  try{
+    elmDB.collection('playverse_scores').add({
+      game:ELM_GAME, mode:ELM_MODE, name:elmName||'لاعب',
+      score:S.trophies, lives:S.lives, total:STAGES.length,
+      ts: Date.now(),
+      date: new Date().toLocaleString('ar-EG')
+    });
+  }catch(e){console.log('save',e)}
+}
+
+/* ---------- لوحة النتائج ---------- */
+function screenBoard(kind){
+  topbar.style.display='none';
+  var p=el('div','panel');
+  p.appendChild(el('div','narr','<strong>'+(kind==='exam'?'\uD83D\uDCCB سجل الاختبارات':'\uD83C\uDFC6 لوحة نتائج الصف')+'</strong><br>'+
+    (kind==='exam'?'للمعلّمة فقط — نتائج نمط الاختبار':'أعلى النتائج في تحدي الصف')));
+  var box=el('div','lbbox','<div class="lbempty">جارٍ التحميل… \u23F3</div>');
+  p.appendChild(box);
+  var b=el('button','cta','رجوع');
+  b.onclick=screenModes;p.appendChild(b);
+  paint([p]);
+
+  if(!elmDB){box.innerHTML='<div class="lbempty">ما في اتصال بالإنترنت \uD83C\uDF10<br>افتحي اللعبة من الرابط على النت</div>';return;}
+  elmDB.collection('playverse_scores').where('game','==',ELM_GAME).limit(400).get().then(function(snap){
+    var rows=[];
+    snap.forEach(function(d){var o=d.data();o._id=d.id;if(o.mode===kind)rows.push(o);});
+    if(!rows.length){box.innerHTML='<div class="lbempty">ما في نتائج بعد.</div>';return;}
+    rows.sort(function(a,b){return (b.score||0)-(a.score||0) || (b.lives||0)-(a.lives||0) || (b.ts||0)-(a.ts||0);});
+    var html='';
+    rows.slice(0,100).forEach(function(o,i){
+      var cls=i===0?' g1':i===1?' g2':i===2?' g3':'';
+      html+='<div class="lbrow"><span class="rk'+cls+'">'+(i+1)+'</span>'+
+            '<span class="nm">'+esc(o.name)+
+            (kind==='exam'?'<span class="dt"><br>'+esc(o.date||'')+'</span>':'')+
+            '</span><span class="sc">'+(o.score||0)+' / '+(o.total||STAGES.length)+'</span></div>';
+    });
+    box.innerHTML=html;
+  }).catch(function(){box.innerHTML='<div class="lbempty">تعذّر التحميل.</div>';});
+}
+
+/* ---------- الفيديو التعريفي ---------- */
+function screenIntroVideo(){
+  topbar.style.display='none';
+  // الموسيقى تستمر من بداية الفيديو
+  function resume(){ if(S.sound){var q=bgm.play();if(q&&q.catch)q.catch(function(){});} }
+  pauseBgm();
+  var s=el('div','vidscreen');
+  var v=document.createElement('video');
+  v.src='elmora-intro.mp4';v.controls=true;v.autoplay=true;v.muted=true;v.setAttribute('muted','');
+  v.playsInline=true;v.setAttribute('playsinline','');
+  v.onended=function(){bgm.volume=.28;screenStory();};
+  v.onerror=function(){bgm.volume=.28;screenStory();};
+  s.appendChild(v);
+
+  var bar=el('div','vidbar');
+  var skip=el('button','cta','تخطّي ← ابدأ اللعب');
+  skip.onclick=function(){try{v.pause();}catch(e){} bgm.volume=.28; screenStory();};
+  bar.appendChild(skip);
+  s.appendChild(bar);
+
+  paint([s]);
+  var pr=v.play&&v.play();if(pr&&pr.catch)pr.catch(function(){});
+}
+
+/* ---------- القصة ---------- */
+function screenStory(){
+  topbar.style.display='flex';hud();playBgm();
+  var p=el('div','panel');
+  p.appendChild(el('div','narr',
+    'ضاعت عصا <strong>رَيّان</strong> السحرية.<br>قاعد بغرفة النار حزين، وحواليه <strong>مَيّار</strong> و<strong>سَيف</strong> عم يفتّشوا معه.<br><br>وبدونها… ما بيقدر يواجه <strong>ڤيلمار</strong> أبدًا.<br><br>لازم تلاقيها. <strong>فورًا.</strong>'));
+  var b=el('button','cta','دوّر على العصا');
+  b.onclick=screenLocks;
+  p.appendChild(b);
+  paint([scene(IMG.lostwand,'المقدّمة'),p]);
+}
+
+/* ---------- الأدراج ---------- */
+function screenLocks(){
+  hud();
+  var first=(S.locks.length===3);
+  var p=el('div','panel');
+  p.appendChild(el('div','narr', first
+    ? 'بيتوقّع <strong>رَيّان</strong> إنه العصا بواحد من هالأدراج. إنتِ شو بتتوقعي؟'
+    : 'أحسنت! بس هلأ… وين العصا؟ اختاري درج تاني.'));
+  var box=el('div','opts');
+  S.locks.forEach(function(k){
+    var m=LOCK_META[k];
+    var b=el('button','opt ar '+m.cls,'<span class="tag">'+m.dot+'</span>'+m.ar);
+    b.onclick=function(){pickLock(k);};
+    box.appendChild(b);
+  });
+  p.appendChild(box);
+  paint([scene(first?IMG.locks:IMG.locks2,'ابحث عن العصا'),p]);
+}
+
+function pickLock(key){
+  S.locks=S.locks.filter(function(k){return k!==key;});
+  if(key==='silver'){fx('win');screenWandFound();}
+  else screenTrap(LOCK_TRAP[key]);
+}
+
+function screenTrap(T){
+  var p=el('div','panel');
+  p.appendChild(el('div','narr',T.intro));
+  p.appendChild(el('div','quest',questionHTML(T.q)));
+  var box=el('div','opts');
+  var tags=['A','B','C'];
+  T.opts.forEach(function(txt,i){
+    var b=el('button','opt','<span class="tag">'+tags[i]+'</span>'+txt);
+    b.onclick=function(){answerTrap(T,i,box,p);};
+    box.appendChild(b);
+  });
+  p.appendChild(box);
+  paint([scene(T.img,TYPE_LABEL[T.type]),p]);
+}
+
+function answerTrap(T,i,box,p){
+  var bs=box.querySelectorAll('.opt');
+  for(var j=0;j<bs.length;j++)bs[j].disabled=true;
+  if(i===T.correct){
+    bs[i].classList.add('good');fx('win');
+    p.appendChild(el('div','hint','✓ '+T.winTxt));
+    var b=el('button','cta','كمّل');
+    b.onclick=screenLocks;p.appendChild(b);
+  }else{
+    bs[i].classList.add('bad');bs[T.correct].classList.add('good');
+    fx('lose');S.lives--;hud();
+    stage.querySelector('.scene-wrap').classList.add('shake');
+    p.appendChild(el('div','hint','✗ '+T.badTxt+'<br><br>'+T.hint));
+    var b2=el('button','cta dark',S.lives>0?'حاول مرة ثانية':'…');
+    b2.onclick=function(){S.lives>0?screenLocks():screenGameOver();};
+    p.appendChild(b2);
+  }
+}
+
+function screenWandFound(){
+  var p=el('div','panel');
+  p.appendChild(el('div','narr','أحسنت! <strong>الدرج الفضي</strong> انفتح، وطارت العصا لإيد <strong>رَيّان</strong> لحالها.<br><br>بس ڤيلمار قفل كل بوابات القلعة بتعاويذ شرطية مكسورة. قبل ما تكمّلي… لازم تعرفي القاعدة.'));
+  var b=el('button','cta','افتحي لوح التعاويذ');
+  b.onclick=screenRules;
+  p.appendChild(b);
+  paint([scene(IMG.wand,'لقيتِ العصا'),p]);
+}
+
+/* ---------- بطاقة القاعدة ---------- */
+function screenRules(from){
+  var p=el('div','panel');
+  p.appendChild(el('div','narr','كل جملة شرطية جزئين: <strong>If-clause</strong> (الشرط) و<strong>Main clause</strong> (النتيجة).'));
+
+  function card(n,title,ar,form,ex){
+    var c=el('div','rule');
+    c.appendChild(el('h3','TYPE '+n+' <em>'+title+'</em>'));
+    c.appendChild(el('p',null,ar));
+    c.appendChild(el('div','form',form));
+    c.appendChild(el('div','ex',ex));
+    return c;
+  }
+  p.appendChild(card(0,'Facts','للحقائق العامة والأشياء اللي دايمًا صحيحة.',
+    'If + present simple → present simple','If you heat water, it boils.'));
+  p.appendChild(card(1,'Possible future','للأشياء الممكن تصير بالمستقبل.',
+    'If + present simple → will + verb','If I study, I will pass the exam.'));
+  p.appendChild(card(2,'Unreal','للأشياء الخيالية أو اللي احتمالها ضعيف.',
+    'If + past simple → would + verb','If I were rich, I would travel the world.'));
+
+  var b=el('button','cta', from==='cover' ? 'رجوع للغلاف' : 'ابدأ التحديات');
+  b.onclick=function(){ from==='cover' ? screenCover() : (from==='peek' ? screenStage(CURRENT) : screenStage(0)); };
+  p.appendChild(b);
+  if(from==='cover'){topbar.style.display='none';}
   paint([p]);
 }
 
-function createInfoCard(label,value){
-  var card=el('div','info-card');
-  card.appendChild(el('div','label',label));
-  card.appendChild(el('div','value',value));
-  return card;
-}
-
-// ===== المراحل الرئيسية =====
+/* ---------- المراحل ---------- */
+var CURRENT=0;
 function screenStage(i){
-  GAME_STATE.currentStage=i;
+  CURRENT=i;
   if(i>=STAGES.length)return screenDuelIntro();
-  
   var G=STAGES[i];
   var p=el('div','panel');
   p.appendChild(el('div','narr',G.intro));
   p.appendChild(el('div','quest',questionHTML(G.q)));
-  
   var box=el('div','opts');
   var tags=['A','B','C'];
   G.opts.forEach(function(txt,j){
     var b=el('button','opt','<span class="tag">'+tags[j]+'</span>'+txt);
-    b.onclick=function(){answerStage(i,j,box,p)};
+    b.onclick=function(){answerStage(i,j,box,p);};
     box.appendChild(b);
   });
-  
   p.appendChild(box);
-  paint([createScene(G.img,TYPE_LABEL[G.type]),p]);
-}
-
-function questionHTML(txt){
-  return '<span>'+txt+'</span>';
+  paint([scene(G.img,TYPE_LABEL[G.type]),p]);
 }
 
 function answerStage(i,j,box,p){
   var G=STAGES[i];
   var bs=box.querySelectorAll('.opt');
   for(var k=0;k<bs.length;k++)bs[k].disabled=true;
-  
+
   if(j===G.correct){
-    bs[j].classList.add('good');
-    GAME_STATE.points+=30;updateHUD();
+    bs[j].classList.add('good');fx('win');
+    S.trophies++;hud();
     setTimeout(function(){
       var p2=el('div','panel');
       p2.appendChild(el('div','narr','✓ '+G.winTxt));
       p2.appendChild(el('div','hint',G.hint));
-      var b=el('button','cta',i===STAGES.length-1?'المواجهة الأخيرة':'التحدي التالي');
-      b.onclick=function(){screenStage(i+1)};
+      var b=el('button','cta',i===STAGES.length-1?'إلى المواجهة الأخيرة':'التحدي التالي');
+      b.onclick=function(){screenStage(i+1);};
       p2.appendChild(b);
-      paint([createScene(G.img,'أحسنت'),p2]);
+      paint([scene(G.win,'أحسنت'),p2]);
     },520);
   }else{
     bs[j].classList.add('bad');bs[G.correct].classList.add('good');
-    GAME_STATE.lives--;updateHUD();
+    fx('lose');S.lives--;hud();
+    stage.querySelector('.scene-wrap').classList.add('shake');
     setTimeout(function(){
-      if(GAME_STATE.lives<=0)return screenGameOver();
+      if(S.lives<=0)return screenGameOver();
       var p2=el('div','panel');
       p2.appendChild(el('div','narr','✗ '+G.badTxt));
       p2.appendChild(el('div','hint',G.hint));
       var b=el('button','cta dark','حاول مرة ثانية');
-      b.onclick=function(){screenStage(i)};
+      b.onclick=function(){screenStage(i);};
       p2.appendChild(b);
-      paint([createScene(G.img,'خسرتِ نجمة'),p2]);
+      paint([scene(G.bad,'خسرتِ نجمة'),p2]);
     },520);
   }
 }
 
-// ===== المواجهة الأخيرة =====
+/* ---------- المواجهة ---------- */
 function screenDuelIntro(){
   var p=el('div','panel');
-  p.appendChild(el('div','narr','أحسنتِ… وصلتِ للنهاية.<br><br>الآن: ما هو الشرط الصحيح في هاي الجملة؟'));
+  p.appendChild(el('div','narr','أحسنتِ… وصلتِ للنهاية.<br><br><strong>ڤيلمار</strong> واقف قدّام <strong>رَيّان</strong>، والشعاع الأخضر عم يزحف.<br><br>والآن تذكّري جيدًا:<br>ما هي التعويذة اللي رح ينهي فيها رَيّان المعركة؟'));
   var box=el('div','opts');
-  var opts=['Second Conditional','First Conditional','Third Conditional'];
+  var spells=['Ignitus','Tenebrus','Disarmus'];
   var tags=['A','B','C'];
-  opts.forEach(function(txt,i){
-    var b=el('button','opt','<span class="tag">'+tags[i]+'</span>'+txt);
-    b.onclick=function(){castSpell(i,box,p)};
+  spells.forEach(function(sp,i){
+    var b=el('button','opt','<span class="tag">'+tags[i]+'</span>'+sp);
+    b.onclick=function(){castSpell(i,box,p);};
     box.appendChild(b);
   });
   p.appendChild(box);
-  paint([createScene('','المواجهة الأخيرة'),p]);
+  paint([scene(IMG.duel,'THE FINAL DUEL'),p]);
 }
 
 function castSpell(i,box,p){
   var bs=box.querySelectorAll('.opt');
   for(var k=0;k<bs.length;k++)bs[k].disabled=true;
-  if(i===0){
-    bs[0].classList.add('good');
-    GAME_STATE.points+=30;updateHUD();
+  if(i===2){
+    bs[2].classList.add('good');fx('win');
     setTimeout(screenCup,600);
   }else{
     bs[i].classList.add('bad');
-    GAME_STATE.lives--;updateHUD();
-    if(GAME_STATE.lives<=0)return setTimeout(screenGameOver,520);
-    p.appendChild(el('div','hint','✗ الجواب الصحيح هو Second Conditional.'));
+    fx('lose');S.lives--;hud();
+    stage.querySelector('.scene-wrap').classList.add('shake');
+    if(S.lives<=0)return setTimeout(screenGameOver,520);
+    p.appendChild(el('div','hint','✗ مش هاي التعويذة… ڤيلمار صدّها وضحك.<br>تذكّري: رَيّان ما بيقتل — بينزع سلاح خصمه.'));
     var b=el('button','cta dark','جرّبي مرة ثانية');
     b.onclick=screenDuelIntro;p.appendChild(b);
   }
 }
 
-// ===== الكنز/الانتصار =====
 function screenCup(){
-  clearInterval(timerInterval);
+  saveResult();
   var p=el('div','panel');
-  p.appendChild(el('div','narr','مبروك! هزمتِ التحدي!'));
-  var b=el('button','cta','انتقلي لأوراق العمل');
+  var e=el('div','end');
+  e.appendChild(el('div','score','النجوم المتبقية: '+S.lives+' / 3 · الكنوز: '+S.trophies+' / '+STAGES.length));
+  p.appendChild(e);
+  p.appendChild(el('div','narr','مبروك! هزمتِ <strong>ڤيلمار</strong> وأنقذتِ أكاديمية إلمورا.<br><br>بس الساحر الحقيقي بيتمرّن كمان… معك ورقتين تمرين.'));
+  var b=el('button','cta','انتقلي لورقة العمل ←');
   b.onclick=screenWorksheets;p.appendChild(b);
-  paint([createScene('','الكنز'),p]);
+  paint([scene(IMG.cup,'TROPHY'),p]);
 }
 
 function screenWorksheets(){
   var p=el('div','panel');
-  p.appendChild(el('div','narr','<strong>أوراق التمرين</strong><br>حلّيها لتعميق فهمك:'));
-  
+  p.appendChild(el('div','narr','<strong>أوراق التمرين</strong><br>افتحي الورقة، حلّيها، وفي آخرها مفتاح الإجابات.'));
   var box=el('div','wsheet');
-  var w1=el('button','wsbtn','<span class="n">I</span><span>ورقة العمل الأولى<small>مستوى عادي · 5 تمارين</small></span>');
-  w1.onclick=screenWorksheet1;
+
+  var w1=el('button','wsbtn','<span class="n">I</span><span>ورقة العمل الأولى<small>مستوى عادي · ٥ تمارين</small></span>');
+  w1.onclick=function(){screenWS(1);};
   box.appendChild(w1);
-  
-  var w2=el('button','wsbtn hard','<span class="n">II</span><span>ورقة العمل الثانية<small>مستوى متقدم · تصحيح أخطاء</small></span>');
-  w2.onclick=screenWorksheet2;
+
+  var w2=el('button','wsbtn hard','<span class="n">II</span><span>ورقة العمل الثانية<small>مستوى متقدّم · تصحيح أخطاء وإعادة صياغة</small></span>');
+  w2.onclick=function(){screenWS(2);};
   box.appendChild(w2);
-  
+
   p.appendChild(box);
-  var b=el('button','cta','النتائج النهائية');
-  b.onclick=screenResults;p.appendChild(b);
+  var b=el('button','cta','خلّصت ← الجائزة الأخيرة');
+  b.onclick=screenVictory;p.appendChild(b);
   paint([p]);
 }
 
-function screenWorksheet1(){
+/* ---------- أوراق العمل (داخل اللعبة) ---------- */
+var WS_DATA={
+ 1:{title:'ورقة العمل الأولى — مستوى عادي',
+  q:'<b class="ws-h">التمرين 1 — Type 0: صرّفي الفعل بين القوسين</b>'+
+    '1. If you heat water to 100°C, it ______ (boil).<br>'+
+    '2. Ice ______ (melt) if you leave it in the sun.<br>'+
+    '3. If plants don\'t get light, they ______ (die).'+
+    '<b class="ws-h">التمرين 2 — Type 1: أكملي الفراغ</b>'+
+    '4. If it ______ (rain) tomorrow, we will stay at home.<br>'+
+    '5. If you study hard, you ______ (pass) the exam.<br>'+
+    '6. She will be late if she ______ (miss) the bus.'+
+    '<b class="ws-h">التمرين 3 — Type 2: أكملي الفراغ</b>'+
+    '7. If I ______ (be) a bird, I would fly over the sea.<br>'+
+    '8. If we had more time, we ______ (visit) our grandparents.<br>'+
+    '9. If he ______ (know) her number, he would call her.'+
+    '<b class="ws-h">التمرين 4 — حدّدي نوع الجملة (0 / 1 / 2)</b>'+
+    '10. If you mix yellow and blue, you get green.<br>'+
+    '11. If I won a million dollars, I would build a school.<br>'+
+    '12. If she calls me, I will tell her the news.'+
+    '<b class="ws-h">التمرين 5 — صِلي بداية الجملة بنهايتها</b>'+
+    '13. If you press this button, … &nbsp; (a) we will catch the train.<br>'+
+    '14. If I were the teacher, … &nbsp; (b) the machine starts.<br>'+
+    '15. If we leave now, … &nbsp; (c) I would give less homework.',
+  a:'<b>1</b> boils · <b>2</b> melts · <b>3</b> die<br>'+
+    '<b>4</b> rains · <b>5</b> will pass · <b>6</b> misses<br>'+
+    '<b>7</b> were · <b>8</b> would visit · <b>9</b> knew<br>'+
+    '<b>10</b> Type 0 · <b>11</b> Type 2 · <b>12</b> Type 1<br>'+
+    '<b>13</b> → (b) · <b>14</b> → (c) · <b>15</b> → (a)'},
+ 2:{title:'ورقة العمل الثانية — مستوى متقدّم',
+  q:'<b class="ws-h">التمرين 1 — في كل جملة خطأ واحد: صحّحيه</b>'+
+    '1. If it will rain, we will cancel the match.<br>'+
+    '2. If I was you, I would apologize.<br>'+
+    '3. If you heat ice, it will turns into water.<br>'+
+    '4. If she studied more, she will get better marks.<br>'+
+    '5. If he have time, he will help us.'+
+    '<b class="ws-h">التمرين 2 — أعيدي الصياغة باستخدام if أو unless</b>'+
+    '6. Study hard, or you will fail.<br>'+
+    '7. I don\'t have a car, so I can\'t drive you home.<br>'+
+    '8. Water boils at 100°C.'+
+    '<b class="ws-h">التمرين 3 — أكملي بجملة من عندك</b>'+
+    '9. If I had a magic wand, …<br>'+
+    '10. If it is sunny on Friday, …',
+  a:'<b>1</b> If it <u>rains</u>, we will cancel the match.<br>'+
+    '<b>2</b> If I <u>were</u> you, I would apologize.<br>'+
+    '<b>3</b> If you heat ice, it <u>turns</u> into water.<br>'+
+    '<b>4</b> If she studied more, she <u>would get</u> better marks.<br>'+
+    '<b>5</b> If he <u>has</u> time, he will help us.<br>'+
+    '<b>6</b> If you don\'t study hard, you will fail. / Unless you study hard, you will fail.<br>'+
+    '<b>7</b> If I had a car, I would drive you home.<br>'+
+    '<b>8</b> If you heat water to 100°C, it boils.<br>'+
+    '<b>9</b> Type 2 ← would + فعل (مثال: I would fly to the moon).<br>'+
+    '<b>10</b> Type 1 ← will + فعل (مثال: we will go to the beach).'}
+};
+function screenWS(n){
+  var d=WS_DATA[n];
   var p=el('div','panel');
-  p.appendChild(el('div','narr','<strong>ورقة العمل الأولى</strong>'));
-  
-  var worksheet=el('div','hint');
-  worksheet.innerHTML=`
-    <b>تمارين If Clauses — مستوى متقدم (1)</b><br><br>
-    <b style="color:#ff9800">التمرين 1: ملء الفراغات بالصيغة الصحيحة</b><br>
-    1. If she _____ (not/pass) the exam, she _____ (retake) it next month.<br>
-    2. Unless you _____ (practice) regularly, you _____ (not/improve) your English.<br>
-    3. Had I known about the party, I _____ (attend) it with pleasure.<br>
-    4. If the weather _____ (be) nicer, we _____ (go) to the beach yesterday.<br>
-    5. Were it not for your help, I _____ (not/complete) the project.<br><br>
-    
-    <b style="color:#ff9800">التمرين 2: تحديد نوع الشرط</b><br>
-    اكتبي نوع الشرط (First, Second, Third, Mixed):<br>
-    6. If you had studied harder, you would get better grades now.<br>
-    7. If I win the lottery, I will travel around the world.<br>
-    8. If she were rich, she would have bought that house.<br>
-    9. If they had told me the truth, I would trust them today.<br>
-    10. If global warming continues, weather patterns will change drastically.<br><br>
-    
-    <b style="color:#57bd6a">الأجوبة:</b><br>
-    <b>التمرين 1:</b><br>
-    1. doesn't pass / will retake (First Conditional)<br>
-    2. don't practice / won't improve (First Conditional)<br>
-    3. would have attended (Third Conditional)<br>
-    4. had been / we could have gone (Mixed Conditional)<br>
-    5. would not have completed (Third Conditional)<br><br>
-    <b>التمرين 2:</b><br>
-    6. Mixed Conditional (Third + Second)<br>
-    7. First Conditional<br>
-    8. Mixed Conditional (Second + Third)<br>
-    9. Mixed Conditional (Third + Second)<br>
-    10. First Conditional
-  `;
-  p.appendChild(worksheet);
-  
-  var b=el('button','cta','رجوع');
+  p.appendChild(el('div','narr','<strong>'+d.title+'</strong>'));
+  p.appendChild(el('div','hint ws-body',d.q));
+  var ans=el('div','hint ws-body ws-ans','<b class="ws-h">🔑 مفتاح الإجابات</b>'+d.a);
+  ans.style.display='none';
+  var bA=el('button','cta ghost','🔑 أظهري الإجابات');
+  bA.onclick=function(){var on=ans.style.display==='none';ans.style.display=on?'block':'none';bA.textContent=on?'إخفاء الإجابات':'🔑 أظهري الإجابات';};
+  p.appendChild(bA);p.appendChild(ans);
+  var b=el('button','cta','رجوع لأوراق العمل');
   b.onclick=screenWorksheets;p.appendChild(b);
   paint([p]);
 }
 
-function screenWorksheet2(){
-  var p=el('div','panel');
-  p.appendChild(el('div','narr','<strong>ورقة العمل الثانية — صعب جداً!</strong>'));
-  
-  var worksheet=el('div','hint');
-  worksheet.innerHTML=`
-    <b style="color:#ff0000">تمارين متقدمة جداً — المستوى الخبير</b><br><br>
-    
-    <b style="color:#ff9800">التمرين 1: تصحيح الأخطاء المعقدة (6 أخطاء)</b><br>
-    1. If she would have known the consequences, she would not do it. <span style="color:#ff0000">❌❌</span><br>
-       الصحيح: If she had known the consequences, she would not have done it.<br>
-       <small>خطأ 1: "would have known" ❌ يجب "had known"</small><br>
-       <small>خطأ 2: "would not do" ❌ يجب "would not have done"</small><br><br>
-    
-    2. If I were you, I would have accepted the job offer yesterday. <span style="color:#ff0000">❌</span><br>
-       الصحيح: If I had been in your position, I would have accepted the job offer yesterday. (Mixed Conditional)<br>
-       <small>التصحيح: هذا Mixed Conditional (Third+Second) يحتاج "had been" وليس "were"</small><br><br>
-    
-    3. Unless you don't study hard, you will pass the exam. <span style="color:#ff0000">❌</span><br>
-       الصحيح: Unless you study hard, you will fail the exam. (أو: If you don't study hard...)<br>
-       <small>خطأ: النفي المزدوج "don't" مع "unless" غير صحيح</small><br><br>
-    
-    4. If he hadn't been late, the meeting would have been started on time. <span style="color:#ff0000">❌</span><br>
-       الصحيح: If he hadn't been late, the meeting would have started on time.<br>
-       <small>خطأ: "would have been started" (بناء مجهول خاطئ) يجب "would have started"</small><br><br>
-    
-    5. Had you told me earlier, I could have helped you with your project. <span style="color:#ff0000">❌❌</span><br>
-       الصحيح: الجملة صحيحة تماماً! ✓ (Inversion of Third Conditional)<br>
-       <small>هذه صيغة معكوسة صحيحة (Inverted Conditional)</small><br><br>
-    
-    6. If I was rich, I will donate money to charity. <span style="color:#ff0000">❌❌</span><br>
-       الصحيح: If I were rich, I would donate money to charity.<br>
-       <small>خطأ 1: "was" ❌ يجب "were" (Subjunctive)</small><br>
-       <small>خطأ 2: "will donate" ❌ يجب "would donate" (Second Conditional)</small><br><br>
-    
-    <b style="color:#ff9800">التمرين 2: ترجمة من العربية مع If Clauses</b><br>
-    7. لو كان لديّ المال، كنت سأشتري بيتاً. (عبّري بـ If Clause)<br>
-       الإجابة: If I had the money, I would buy a house.<br><br>
-    
-    8. لو كانوا قد أخبروا الشرطة، لكانت اللصوص قد تم اعتقالهم.<br>
-       الإجابة: If they had told the police, the thieves would have been arrested.<br><br>
-    
-    <b style="color:#ff9800">التمرين 3: إعادة صياغة بدون تغيير المعنى</b><br>
-    9. في حالة عدم وصول المساعدة، ستفشل المهمة.<br>
-       أعيدي الصياغة: If the assistance doesn't arrive, the mission will fail. / Unless the assistance arrives, the mission will fail.<br><br>
-    
-    10. يمكنك النجاح إذا وإذا فقط إذا كنت ستركزين. (Mixed + Emphasis)<br>
-        الإجابة: You can only succeed if you focus. / If you don't focus, you cannot succeed. / Should you fail to focus, you will not succeed.
-  `;
-  p.appendChild(worksheet);
-  
-  var b=el('button','cta','رجوع');
-  b.onclick=screenWorksheets;p.appendChild(b);
-  paint([p]);
-}
-
-// ===== النتائج النهائية =====
-function screenResults(){
-  clearInterval(timerInterval);
-  var elapsed=Math.floor((Date.now()-GAME_STATE.startTime)/1000);
-  var mins=Math.floor(elapsed/60);
-  var secs=elapsed%60;
-  
-  var medal='🥉';
-  if(GAME_STATE.points>=80)medal='🥇';
-  else if(GAME_STATE.points>=60)medal='🥈';
-  
-  var p=el('div','results-screen');
-  p.appendChild(el('div','medal',medal));
-  p.appendChild(el('div','results-title','النتائج النهائية'));
-  
-  var data=el('div','results-data');
-  data.appendChild(createResultItem('النقاط',GAME_STATE.points+'/'+STAGES.length*30));
-  data.appendChild(createResultItem('الوقت',mins+'د '+secs+'ث'));
-  data.appendChild(createResultItem('الأرواح المتبقية',GAME_STATE.lives+'/3'));
-  data.appendChild(createResultItem('التقييم',GAME_STATE.points>=80?'ممتاز':'جيد'));
-  
-  p.appendChild(data);
-  
-  var btn=el('button','cta','الهدية المميزة');
-  btn.onclick=screenVictory;p.appendChild(btn);
-  
-  paint([p]);
-}
-
-function createResultItem(label,value){
-  var item=el('div','result-item');
-  item.appendChild(el('div','result-label',label));
-  item.appendChild(el('div','result-value',value));
-  return item;
-}
-
-// ===== الهدايا =====
-var GIFTS=['🏅 ربحتِ علامتين إضافيتين!','🤝 تقدري تساعدي صديقتك!','🎁 هدية مميزة من معلمتك!','⭐ رح تكوني من نجوم الأسبوع!'];
+var GIFTS=[
+  '\uD83C\uDFC5 ربحتِ علامتين إضافيتين!',
+  '\uD83E\uDD1D بتقدري تنقذي صديقتك بأي عدد من النقاط',
+  '\uD83C\uDF81 إلك هدية مميزة… اطلبيها من معلمتك',
+  '\uD83C\uDF1F رح تكوني من نجوم PlayVerse هالأسبوع!'
+];
 
 function screenVictory(){
   var p=el('div','panel');
-  p.appendChild(el('div','narr','🧙‍♂️ المارد يمنحك جائزة… اختاري صندوق واحد!'));
-  
+  p.appendChild(el('div','narr','طارت عصا <strong>ڤيلمار</strong> من إيده وانطفى الشعاع الأخضر.<br><br>\uD83E\uDDDE\u200D\u2642\uFE0F المارد بيمنحك جائزة… اختاري صندوق واحد لتكشفيه!'));
+
   var box=el('div','gifts');
   var order=GIFTS.slice();
   for(var k=order.length-1;k>0;k--){var r=Math.floor(Math.random()*(k+1));var t=order[k];order[k]=order[r];order[r]=t;}
-  
   var picked=false;
   order.forEach(function(txt){
-    var g=el('button','gift','🎁');
+    var g=el('button','gift','\uD83C\uDF81');
     g.onclick=function(){
-      if(picked)return;picked=true;
+      if(picked)return; picked=true;
       var all=box.querySelectorAll('.gift');
       for(var m=0;m<all.length;m++)all[m].disabled=true;
-      g.textContent='✨';
-      p.insertBefore(el('div','giftout',txt),box.nextSibling);
-      var b2=el('button','cta','من جديد');
-      b2.onclick=reset;p.appendChild(b2);
+      g.textContent='\u2728'; fx('win');
+      p.insertBefore(el('div','giftout',txt), box.nextSibling);
+      var b2=el('button','cta','العبي من جديد');
+      b2.onclick=reset; p.appendChild(b2);
     };
     box.appendChild(g);
   });
-  
   p.appendChild(box);
-  paint([p]);
+  paint([scene(IMG.genie,'THE GENIE'),p]);
 }
 
-// ===== نهاية اللعبة =====
 function screenGameOver(){
-  clearInterval(timerInterval);
+  saveResult();
   var p=el('div','panel');
-  p.appendChild(el('div','narr','انتهت الأرواح! حسناً، هذه فرصة للتعلم.'));
-  p.appendChild(el('div','hint','وصلتِ إلى '+GAME_STATE.points+' نقطة من '+STAGES.length*30+' نقطة.'));
+  var e=el('div','end');
+  e.appendChild(el('div','big','خلصت النجوم'));
+  e.appendChild(el('div','score','وصلتِ لـ '+S.trophies+' من '+STAGES.length+' كنوز'));
+  p.appendChild(e);
+  p.appendChild(el('div','narr','ما تزعلي — كل خطأ بيعلّمك القاعدة أحسن.<br><br>راجعي لوح التعاويذ وارجعي أقوى.'));
   var b=el('button','cta','من البداية');
   b.onclick=reset;p.appendChild(b);
-  paint([p]);
+  var b2=el('button','cta dark','راجعي القاعدة');
+  b2.onclick=screenRules;p.appendChild(b2);
+  paint([scene(IMG.duel,'GAME OVER'),p]);
 }
 
-// ===== شاشة القواعد =====
-function screenRules(from){
-  var p=el('div','panel');
-  p.appendChild(el('div','narr','<strong>قواعد If Clauses</strong>'));
-  
-  var rules=el('div','hint');
-  rules.innerHTML=`
-    <b>أنواع الشروط الثلاثة:</b><br><br>
-    1️⃣ <b>First Conditional:</b><br>
-    If + Present Simple → will + base verb<br>
-    "If you come, I will be happy."<br><br>
-    2️⃣ <b>Second Conditional:</b><br>
-    If + Past Simple → would + base verb<br>
-    "If you came, I would be happy."<br><br>
-    3️⃣ <b>Third Conditional:</b><br>
-    If + Past Perfect → would have + past participle<br>
-    "If you had come, I would have been happy."
-  `;
-  p.appendChild(rules);
-  
-  var b=el('button','cta',from==='cover'?'ابدئي اللعبة':'رجوع');
-  b.onclick=function(){from==='cover'?screenModes():window.history.back()};
-  p.appendChild(b);
-  
-  if(from!=='cover')topbar.style.display='none';
-  paint([p]);
-}
-
-// ===== المشهد =====
-function createScene(img,label){
-  var wrap=el('div','scene-wrap');
-  wrap.appendChild(el('div','halo'));
-  
-  var scene=el('div','scene-img');
-  scene.appendChild(el('div','bg'));
-  var fg=el('img','fg');fg.src=img||'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300"%3E%3Crect fill="%23333" width="200" height="300"/%3E%3Ctext x="100" y="150" fill="%23999" text-anchor="middle" font-size="20"%3E'+label+'%3C/text%3E%3C/svg%3E';
-  scene.appendChild(fg);
-  
-  wrap.appendChild(scene);
-  return wrap;
-}
-
-// ===== التحكم =====
-document.getElementById('btnHome').onclick=function(){
-  if(confirm('تريدين العودة للرئيسية؟')){
-    topbar.style.display='none';
-    emergencyBtn.style.display='none';
-    clearInterval(timerInterval);
-    reset();
-  }
-};
-
-document.getElementById('btnRule').onclick=function(){
-  screenRules('peek');
-};
-
-document.getElementById('btnSound').onclick=function(){
-  GAME_STATE.sound=!GAME_STATE.sound;
-  this.style.color=GAME_STATE.sound?'#8fd8ff':'';
-  if(GAME_STATE.sound)bgm.play();else bgm.pause();
-};
-
-emergencyBtn.onclick=activateEmergency;
-
-// ===== بدء اللعبة =====
 function reset(){
-  GAME_STATE={
-    mode:'solo',level:'secondary',lives:3,points:0,startTime:0,
-    timeRemaining:1800000,pauseTime:0,isPaused:false,
-    emergencyUsed:false,sound:true,currentStage:0,completed:false
-  };
-  timerEl.textContent='30:00';
-  timerEl.className='timer';
-  updateHUD();
-  topbar.style.display='none';
-  emergencyBtn.style.display='none';
-  screenRules('cover');
+  S.lives=3;S.trophies=0;S.locks=['gold','silver','pink'];
+  screenCover();
 }
+window.elmBoard=screenBoard;
 
-updateHUD();
-reset();
+/* ---------- الصوت ---------- */
+function playBgm(){
+  if(!S.sound)return;
+  bgm.volume=.30;
+  var pr=bgm.play();if(pr&&pr.catch)pr.catch(function(){});
+  document.getElementById('btnSound').style.color='#8fd8ff';
+}
+function pauseBgm(){try{bgm.pause();}catch(e){}}
+function startAudio(){playBgm();}
+document.getElementById('btnSound').onclick=function(){
+  S.sound=!S.sound;
+  this.style.color=S.sound?'#8fd8ff':'';
+  if(S.sound)playBgm(); else pauseBgm();
+};
+document.getElementById('btnSound').style.color='#8fd8ff';
+document.getElementById('btnRule').onclick=function(){screenRules('peek');};
+document.getElementById('btnHome').onclick=function(){
+  if(confirm('ترجعي للصفحة الرئيسية؟'))location.href='index.html';
+};
+
+/* ---------- شبكة أمان للصوت ---------- */
+function kickAudio(){
+  if(!S.sound) return;
+  if(bgm.paused){ var q=bgm.play();
+    if(q&&q.catch)q.catch(function(err){console.log('AUDIO ERROR:',err&&err.name);});
+    try{bgm.muted=false;}catch(e){} }
+}
+document.addEventListener('click', kickAudio, true);
+document.addEventListener('touchstart', kickAudio, true);
+
+/* ---------- تشغيل ---------- */
+// تحميل مسبق خفيف للصور الأولى فقط
+['lostwand','locks','wand','hall'].forEach(function(k){var i=new Image();i.src=IMG[k];});
+screenCover();
 
 })();
 </script>
-
 </body>
 </html>
