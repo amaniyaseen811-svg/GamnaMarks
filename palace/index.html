@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity Web Player | GamnaMarks</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+  
+<script id="palace-join">
+function palaceJoin(config) {
+  var files = {dataUrl:['palace.data.part1','palace.data.part2','palace.data.part3','palace.data.part4','palace.data.part5','palace.data.part6','palace.data.part7','palace.data.part8','palace.data.part9','palace.data.part10','palace.data.part11','palace.data.part12','palace.data.part13','palace.data.part14','palace.data.part15','palace.data.part16','palace.data.part17','palace.data.part18','palace.data.part19'],codeUrl:['palace.wasm.part1','palace.wasm.part2']};
+  var types = { codeUrl: 'application/wasm', frameworkUrl: 'application/javascript' };
+  var keys = Object.keys(files), total = 0, done = 0;
+  keys.forEach(function (k) { total += files[k].length; });
+  var fill = document.querySelector('#unity-progress-bar-full');
+  var bar = document.querySelector('#unity-loading-bar');
+  if (bar) bar.style.display = 'block';
+  var chain = Promise.resolve();
+  keys.forEach(function (k) {
+    var bufs = [];
+    files[k].forEach(function (p) {
+      chain = chain.then(function () {
+        return fetch('Build/' + p).then(function (r) {
+          if (!r.ok) throw new Error('missing ' + p);
+          return r.arrayBuffer();
+        }).then(function (b) {
+          bufs.push(b); done++;
+          if (fill) fill.style.width = Math.round(50 * done / total) + '%';
+        });
+      });
+    });
+    chain = chain.then(function () {
+      var opt = types[k] ? { type: types[k] } : undefined;
+      config[k] = URL.createObjectURL(new Blob(bufs, opt));
+      bufs = null;
+    });
+  });
+  return chain.then(function () {
+    config.cacheControl = function (url) { return url.indexOf('blob:') === 0 ? 'no-store' : 'must-revalidate'; };
+  }).catch(function (e) {
+    alert('تعذّر تحميل اللعبة، حدّثي الصفحة وجرّبي مرة ثانية');
+    throw e;
+  });
+}
+</script>
+</head>
+  <body>
+    <div id="unity-container" class="unity-desktop">
+      <div id="unity-fullscreen-container">
+        <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
+        <div id="unity-loading-container">
+          <div id="unity-loading-bar">
+            <div id="unity-logo"></div>
+            <div id="unity-progress-bar-empty">
+              <div id="unity-progress-bar-full"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="unity-warning"> </div>
+      <div id="unity-footer">
+        <div id="unity-logo-title-footer"></div>
+        <div id="unity-fullscreen-button"></div>
+        <div id="unity-build-title">GamnaMarks</div>
+      </div>
+    </div>
+    <script>
+      let canvas = document.querySelector("#unity-canvas");
+      let fullscreenContainer = document.querySelector("#unity-fullscreen-container");
+
+      // Shows a temporary message banner/ribbon for a few seconds, or
+      // a permanent error message on top of the canvas if type=='error'.
+      // If type=='warning', a yellow highlight color is used.
+      // Modify or remove this function to customize the visually presented
+      // way that non-critical warnings and error messages are presented to the
+      // user.
+      function unityShowBanner(msg, type) {
+        var warningBanner = document.querySelector("#unity-warning");
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        }
+        var div = document.createElement('div');
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function() {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
+
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/palace.loader.js";
+      var config = {
+        arguments: [],
+        dataUrl: buildUrl + "/palace.data",
+        frameworkUrl: buildUrl + "/palace.framework.js",
+        codeUrl: buildUrl + "/palace.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+
+        // If you have a custom web site structure, or want to place multiple Unity build instances on the same page,
+        // you can pass fullscreenElementID: "my-unity-fullscreen-container-id", in this configuration field to
+        // explicitly point to the element tree root that is displayed in fullscreen mode.
+        fullscreenElementID: "unity-fullscreen-container",
+
+        companyName: "DefaultCompany",
+        productName: "GamnaMarks",
+        productVersion: "0.1.0",
+        showBanner: unityShowBanner,
+        // errorHandler: function(err, url, line) {
+        //    alert("error " + err + " occurred at line " + line);
+        //    // Return 'true' if you handled this error and don't want Unity
+        //    // to process it further, 'false' otherwise.
+        //    return true;
+        // },
+      };
+
+      // By default, Unity keeps WebGL canvas render target size matched with
+      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
+      // Set this to false if you want to decouple this synchronization from
+      // happening inside the engine, and you would instead like to size up
+      // the canvas DOM size and WebGL render target sizes yourself.
+      // config.matchWebGLToCanvasSize = false;
+
+      // If you would like all file writes inside Unity Application.persistentDataPath
+      // directory to automatically persist so that the contents are remembered when
+      // the user revisits the site the next time, uncomment the following line:
+      // config.autoSyncPersistentDataPath = true;
+      // This autosyncing is currently not the default behavior to avoid regressing
+      // existing user projects that might rely on the earlier manual
+      // JS_FileSystem_Sync() behavior, but in future Unity version, this will be
+      // expected to change.
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        // Mobile device style: fill the whole browser client area with the game canvas:
+
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
+        document.querySelector("#unity-container").className = "unity-mobile";
+        canvas.className = "unity-mobile";
+
+        // To lower canvas resolution on mobile devices to gain some
+        // performance, uncomment the following line:
+        // config.devicePixelRatio = 1;
+
+
+      } else {
+        // Desktop style: Render the game canvas container in a window that can be maximized to fullscreen:
+        fullscreenContainer.style.width = "960px";
+        fullscreenContainer.style.height = "600px";
+      }
+
+
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        const loadingContainer = document.querySelector("#unity-loading-container");
+        const progressBarFull = document.querySelector("#unity-progress-bar-full");
+
+        createUnityInstance(canvas, config, (progress) => {
+          if (progress < 1) {
+            loadingContainer.style.display = "block";
+            progressBarFull.style.width = 100 * progress + "%";
+          } else {
+            loadingContainer.style.display = "none";
+          }
+        }).then((unityInstance) => {
+                document.querySelector("#unity-fullscreen-button").onclick = () => {
+                  unityInstance.SetFullscreen(1);
+                };
+
+              }).catch((message) => {
+                alert(message);
+              });
+            };
+
+      palaceJoin(config).then(function () { document.body.appendChild(script); });
+
+    </script>
+  </body>
+</html>
