@@ -22,6 +22,10 @@ html,body{margin:0;background:#120a24}
 #palace-rotate div{font-size:22px;line-height:1.8;color:#ffd76a}
 @keyframes palace-turn{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
 @media (pointer:coarse) and (orientation:portrait){#palace-rotate{display:flex}}
+#palace-video{position:fixed;left:0;top:0;right:0;bottom:0;z-index:9990;background:#000;display:flex;align-items:center;justify-content:center}
+#palace-video video{width:100%;height:100%;object-fit:contain;background:#000}
+#pv-start{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:bold 26px Tahoma,Arial,sans-serif;color:#fff;background:#3d3360;border:3px solid #ffd76a;border-radius:16px;padding:18px 40px;direction:rtl}
+#pv-skip{display:none;position:absolute;top:16px;right:max(16px,env(safe-area-inset-right));font:bold 18px Tahoma,Arial,sans-serif;color:#fff;background:rgba(61,51,96,.85);border:2px solid #ffd76a;border-radius:12px;padding:10px 22px}
 </style>
 <script id="palace-join">
 var palaceFiles = {dataUrl:['palace.data.unityweb.part1','palace.data.unityweb.part2','palace.data.unityweb.part3','palace.data.unityweb.part4','palace.data.unityweb.part5','palace.data.unityweb.part6','palace.data.unityweb.part7']};
@@ -59,6 +63,42 @@ function palaceRotateMsg() {
   r.innerHTML = '<b>📱</b><div>لفّي الموبايل بالعرض<br>عشان تلعبي</div>';
   document.body.appendChild(r);
 }
+try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+function palaceAudio() {
+  try { var w = window.WEBAudio; if (w && w.audioContext && w.audioContext.state !== 'running') w.audioContext.resume(); } catch (e) {}
+}
+['touchstart', 'touchend', 'mousedown', 'keydown', 'click'].forEach(function (ev) { document.addEventListener(ev, palaceAudio, true); });
+function palaceTell(m) {
+  var n = 0;
+  (function go() {
+    if (window.palaceUnity) { try { window.palaceUnity.SendMessage('PalaceBridge', m, ''); } catch (e) {} }
+    else if (n++ < 150) setTimeout(go, 200);
+  })();
+}
+window.palaceVideo = function (url) {
+  if (document.getElementById('palace-video')) return true;
+  var o = document.createElement('div'); o.id = 'palace-video';
+  o.innerHTML = '<video playsinline webkit-playsinline preload="auto"></video><button id="pv-start">▶ ابدأ القصة</button><button id="pv-skip">تخطي</button>';
+  document.body.appendChild(o);
+  var v = o.querySelector('video'), st = o.querySelector('#pv-start'), sk = o.querySelector('#pv-skip'), done = false;
+  function finish(ok) {
+    if (done) return; done = true;
+    try { v.pause(); } catch (e) {}
+    if (o.parentNode) o.parentNode.removeChild(o);
+    palaceAudio(); palaceTell(ok ? 'VideoDone' : 'VideoFailed');
+  }
+  v.onended = function () { finish(true); };
+  v.onerror = function () { finish(false); };
+  sk.onclick = function () { finish(true); };
+  st.onclick = function () {
+    palaceAudio();
+    var p = v.play();
+    var shown = function () { st.style.display = 'none'; sk.style.display = 'block'; };
+    if (p && p.then) p.then(shown, function () { finish(false); }); else shown();
+  };
+  v.src = url;
+  return true;
+};
 function palaceStart(script, config) {
   palaceRotateMsg(); palaceFit();
   if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && location.hash.indexOf('mobile') < 0) { try { history.replaceState(null, '', location.pathname + location.search + '#mobile'); } catch (e) { location.hash = 'mobile'; } }
@@ -93,7 +133,7 @@ function palaceStart(script, config) {
       var orig = window.createUnityInstance;
       if (orig) window.createUnityInstance = function (c, cf, prog) {
         return orig(c, cf, function (p) { if (prog) prog(p); palaceSet(base + (100 - base) * p); })
-          .then(function (u) { var d = document.getElementById('palace-load'); if (d) d.parentNode.removeChild(d); return u; },
+          .then(function (u) { window.palaceUnity = u; var d = document.getElementById('palace-load'); if (d) d.parentNode.removeChild(d); return u; },
                 function (e) { palaceFail(e); throw e; });
       };
       if (ol) return ol.apply(this, arguments);
