@@ -6,15 +6,19 @@
     <title>Unity Web Player | GamnaMarks</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
-  <style id="palace-style">
+  
+
+<meta id="palace-vp" name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<style id="palace-style">
 html,body{margin:0;background:#120a24}
 @media (pointer:coarse){html,body{height:100%;overflow:hidden}#unity-container{position:fixed!important;left:0!important;top:0!important;width:100%!important;height:100%!important;transform:none!important}#unity-canvas{width:100%!important;height:100%!important}#unity-footer,#unity-loading-bar{display:none!important}}
 #palace-load{position:fixed;left:0;top:0;right:0;bottom:0;z-index:9999;background:radial-gradient(circle,#2e1858,#0b0618);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-family:Tahoma,Arial,sans-serif;direction:rtl;text-align:center;padding:20px;box-sizing:border-box}
-#palace-load h1{font-size:28px;margin:0 0 8px;color:#ffd76a}
-#palace-msg{margin:0 0 20px;opacity:.9;font-size:15px;line-height:1.7}
-#palace-bar{width:80%;max-width:420px;height:14px;border-radius:8px;background:rgba(255,255,255,.15);overflow:hidden;direction:ltr}
+#palace-load h1{font-size:clamp(30px,9vw,48px);margin:0 0 14px;color:#ffd76a}
+#palace-msg{margin:0 0 26px;opacity:.95;font-size:clamp(17px,4.8vw,24px);line-height:1.8}
+#palace-bar{width:85%;max-width:480px;height:20px;border-radius:8px;background:rgba(255,255,255,.15);overflow:hidden;direction:ltr}
 #palace-fill{height:100%;width:0;background:linear-gradient(90deg,#ffd76a,#ff8ad8);transition:width .3s}
-#palace-pct{margin-top:12px;font-size:22px;font-weight:bold}
+#palace-pct{margin-top:14px;font-size:clamp(24px,7vw,34px);font-weight:bold}
+#palace-err{margin-top:18px;font-size:12px;opacity:.6;direction:ltr;word-break:break-all}
 </style>
 <script id="palace-join">
 var palaceFiles = {dataUrl:['palace.data.unityweb.part1','palace.data.unityweb.part2','palace.data.unityweb.part3','palace.data.unityweb.part4','palace.data.unityweb.part5','palace.data.unityweb.part6','palace.data.unityweb.part7']};
@@ -31,11 +35,14 @@ function palaceSet(p, msg) {
   document.getElementById('palace-pct').textContent = p + '%';
   if (msg) document.getElementById('palace-msg').innerHTML = msg;
 }
-function palaceFail() {
+function palaceFail(e) {
   palaceSet(0, 'تعذّر تحميل اللعبة 😔<br>تأكدي من الإنترنت، وحدّثي الصفحة وجرّبي مرة ثانية');
+  var x = document.createElement('div'); x.id = 'palace-err'; x.textContent = String(e && (e.message || e) || '');
+  document.getElementById('palace-load').appendChild(x);
 }
 function palaceStart(script, config) {
   palaceSet(0);
+  if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) config.devicePixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
   var keys = Object.keys(palaceFiles), total = 0, done = 0;
   keys.forEach(function (k) { total += palaceFiles[k].length; });
   var base = total > 0 ? 90 : 0;
@@ -66,12 +73,12 @@ function palaceStart(script, config) {
       if (orig) window.createUnityInstance = function (c, cf, prog) {
         return orig(c, cf, function (p) { if (prog) prog(p); palaceSet(base + (100 - base) * p); })
           .then(function (u) { var d = document.getElementById('palace-load'); if (d) d.parentNode.removeChild(d); return u; },
-                function (e) { palaceFail(); throw e; });
+                function (e) { palaceFail(e); throw e; });
       };
       if (ol) return ol.apply(this, arguments);
     };
-    palaceStart(script, config);
-  }).catch(function (e) { palaceFail(); console.error(e); });
+    document.body.insertBefore(script, null);
+  }).catch(function (e) { palaceFail(e); console.error(e); });
 }
 </script>
 </head>
