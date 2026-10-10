@@ -6,27 +6,49 @@
     <title>Unity Web Player | GamnaMarks</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
-  <script id="palace-join">
-function palaceJoin(config) {
-  var files = {dataUrl:['palace.data.part1','palace.data.part2','palace.data.part3','palace.data.part4','palace.data.part5','palace.data.part6','palace.data.part7','palace.data.part8','palace.data.part9','palace.data.part10','palace.data.part11','palace.data.part12','palace.data.part13','palace.data.part14','palace.data.part15','palace.data.part16','palace.data.part17','palace.data.part18','palace.data.part19','palace.data.part20','palace.data.part21','palace.data.part22','palace.data.part23','palace.data.part24','palace.data.part25','palace.data.part26','palace.data.part27','palace.data.part28','palace.data.part29','palace.data.part30','palace.data.part31','palace.data.part32','palace.data.part33','palace.data.part34','palace.data.part35','palace.data.part36','palace.data.part37','palace.data.part38'],codeUrl:['palace.wasm.part1','palace.wasm.part2','palace.wasm.part3','palace.wasm.part4']};
+  <style id="palace-style">
+html,body{margin:0;background:#120a24}
+@media (pointer:coarse){html,body{height:100%;overflow:hidden}#unity-container{position:fixed!important;left:0!important;top:0!important;width:100%!important;height:100%!important;transform:none!important}#unity-canvas{width:100%!important;height:100%!important}#unity-footer,#unity-loading-bar{display:none!important}}
+#palace-load{position:fixed;left:0;top:0;right:0;bottom:0;z-index:9999;background:radial-gradient(circle,#2e1858,#0b0618);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-family:Tahoma,Arial,sans-serif;direction:rtl;text-align:center;padding:20px;box-sizing:border-box}
+#palace-load h1{font-size:28px;margin:0 0 8px;color:#ffd76a}
+#palace-msg{margin:0 0 20px;opacity:.9;font-size:15px;line-height:1.7}
+#palace-bar{width:80%;max-width:420px;height:14px;border-radius:8px;background:rgba(255,255,255,.15);overflow:hidden;direction:ltr}
+#palace-fill{height:100%;width:0;background:linear-gradient(90deg,#ffd76a,#ff8ad8);transition:width .3s}
+#palace-pct{margin-top:12px;font-size:22px;font-weight:bold}
+</style>
+<script id="palace-join">
+var palaceFiles = {dataUrl:['palace.data.unityweb.part1','palace.data.unityweb.part2','palace.data.unityweb.part3','palace.data.unityweb.part4','palace.data.unityweb.part5','palace.data.unityweb.part6','palace.data.unityweb.part7']};
+function palaceShow() {
+  if (document.getElementById('palace-load')) return;
+  var d = document.createElement('div'); d.id = 'palace-load';
+  d.innerHTML = '<h1>قصر المغذيات</h1><div id="palace-msg">جاري تحميل اللعبة...<br>أول مرة بتاخد شوية وقت، استنّي وما تسكّري الصفحة</div>' +
+    '<div id="palace-bar"><div id="palace-fill"></div></div><div id="palace-pct">0%</div>';
+  document.body.appendChild(d);
+}
+function palaceSet(p, msg) {
+  palaceShow(); p = Math.max(0, Math.min(100, Math.round(p)));
+  document.getElementById('palace-fill').style.width = p + '%';
+  document.getElementById('palace-pct').textContent = p + '%';
+  if (msg) document.getElementById('palace-msg').innerHTML = msg;
+}
+function palaceFail() {
+  palaceSet(0, 'تعذّر تحميل اللعبة 😔<br>تأكدي من الإنترنت، وحدّثي الصفحة وجرّبي مرة ثانية');
+}
+function palaceStart(script, config) {
+  palaceSet(0);
+  var keys = Object.keys(palaceFiles), total = 0, done = 0;
+  keys.forEach(function (k) { total += palaceFiles[k].length; });
+  var base = total > 0 ? 90 : 0;
   var types = { codeUrl: 'application/wasm', frameworkUrl: 'application/javascript' };
-  var keys = Object.keys(files), total = 0, done = 0;
-  keys.forEach(function (k) { total += files[k].length; });
-  var fill = document.querySelector('#unity-progress-bar-full');
-  var bar = document.querySelector('#unity-loading-bar');
-  if (bar) bar.style.display = 'block';
   var chain = Promise.resolve();
   keys.forEach(function (k) {
     var bufs = [];
-    files[k].forEach(function (p) {
+    palaceFiles[k].forEach(function (p) {
       chain = chain.then(function () {
         return fetch('Build/' + p).then(function (r) {
           if (!r.ok) throw new Error('missing ' + p);
           return r.arrayBuffer();
-        }).then(function (b) {
-          bufs.push(b); done++;
-          if (fill) fill.style.width = Math.round(50 * done / total) + '%';
-        });
+        }).then(function (b) { bufs.push(b); done++; palaceSet(base * done / total); });
       });
     });
     chain = chain.then(function () {
@@ -35,12 +57,21 @@ function palaceJoin(config) {
       bufs = null;
     });
   });
-  return chain.then(function () {
-    config.cacheControl = function (url) { return url.indexOf('blob:') === 0 ? 'no-store' : 'must-revalidate'; };
-  }).catch(function (e) {
-    alert('تعذّر تحميل اللعبة، حدّثي الصفحة وجرّبي مرة ثانية');
-    throw e;
-  });
+  chain.then(function () {
+    if (total > 0) config.cacheControl = function (url) { return url.indexOf('blob:') === 0 ? 'no-store' : 'must-revalidate'; };
+    palaceSet(base, 'خلص التحميل تقريبًا... عم نجهّز القصر ✨');
+    var ol = script.onload;
+    script.onload = function () {
+      var orig = window.createUnityInstance;
+      if (orig) window.createUnityInstance = function (c, cf, prog) {
+        return orig(c, cf, function (p) { if (prog) prog(p); palaceSet(base + (100 - base) * p); })
+          .then(function (u) { var d = document.getElementById('palace-load'); if (d) d.parentNode.removeChild(d); return u; },
+                function (e) { palaceFail(); throw e; });
+      };
+      if (ol) return ol.apply(this, arguments);
+    };
+    palaceStart(script, config);
+  }).catch(function (e) { palaceFail(); console.error(e); });
 }
 </script>
 </head>
@@ -97,9 +128,9 @@ function palaceJoin(config) {
       var loaderUrl = buildUrl + "/palace.loader.js";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/palace.data",
-        frameworkUrl: buildUrl + "/palace.framework.js",
-        codeUrl: buildUrl + "/palace.wasm",
+        dataUrl: buildUrl + "/palace.data.unityweb",
+        frameworkUrl: buildUrl + "/palace.framework.js.unityweb",
+        codeUrl: buildUrl + "/palace.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
 
         // If you have a custom web site structure, or want to place multiple Unity build instances on the same page,
@@ -180,7 +211,7 @@ function palaceJoin(config) {
               });
             };
 
-      palaceJoin(config).then(function () { document.body.appendChild(script); });
+      palaceStart(script, config);
 
     </script>
   </body>
