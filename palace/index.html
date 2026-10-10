@@ -6,19 +6,22 @@
     <title>Unity Web Player | GamnaMarks</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
-  
-
-<meta id="palace-vp" name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta id="palace-vp" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <style id="palace-style">
 html,body{margin:0;background:#120a24}
 @media (pointer:coarse){html,body{height:100%;overflow:hidden}#unity-container{position:fixed!important;left:0!important;top:0!important;width:100%!important;height:100%!important;transform:none!important}#unity-canvas{width:100%!important;height:100%!important}#unity-footer,#unity-loading-bar{display:none!important}}
 #palace-load{position:fixed;left:0;top:0;right:0;bottom:0;z-index:9999;background:radial-gradient(circle,#2e1858,#0b0618);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-family:Tahoma,Arial,sans-serif;direction:rtl;text-align:center;padding:20px;box-sizing:border-box}
-#palace-load h1{font-size:clamp(30px,9vw,48px);margin:0 0 14px;color:#ffd76a}
-#palace-msg{margin:0 0 26px;opacity:.95;font-size:clamp(17px,4.8vw,24px);line-height:1.8}
-#palace-bar{width:85%;max-width:480px;height:20px;border-radius:8px;background:rgba(255,255,255,.15);overflow:hidden;direction:ltr}
+#palace-load h1{font-size:28px;margin:0 0 8px;color:#ffd76a}
+#palace-msg{margin:0 0 20px;opacity:.9;font-size:15px;line-height:1.7}
+#palace-bar{width:80%;max-width:420px;height:14px;border-radius:8px;background:rgba(255,255,255,.15);overflow:hidden;direction:ltr}
 #palace-fill{height:100%;width:0;background:linear-gradient(90deg,#ffd76a,#ff8ad8);transition:width .3s}
-#palace-pct{margin-top:14px;font-size:clamp(24px,7vw,34px);font-weight:bold}
-#palace-err{margin-top:18px;font-size:12px;opacity:.6;direction:ltr;word-break:break-all}
+#palace-pct{margin-top:12px;font-size:22px;font-weight:bold}
+#palace-err{margin-top:10px;font-size:12px;opacity:.6;direction:ltr}
+#palace-rotate{display:none;position:fixed;left:0;top:0;right:0;bottom:0;z-index:9998;background:#120a24;color:#fff;font-family:Tahoma,Arial,sans-serif;direction:rtl;text-align:center;flex-direction:column;align-items:center;justify-content:center;padding:30px;box-sizing:border-box}
+#palace-rotate b{font-size:70px;display:block;margin-bottom:16px;animation:palace-turn 2s infinite}
+#palace-rotate div{font-size:22px;line-height:1.8;color:#ffd76a}
+@keyframes palace-turn{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
+@media (pointer:coarse) and (orientation:portrait){#palace-rotate{display:flex}}
 </style>
 <script id="palace-join">
 var palaceFiles = {dataUrl:['palace.data.unityweb.part1','palace.data.unityweb.part2','palace.data.unityweb.part3','palace.data.unityweb.part4','palace.data.unityweb.part5','palace.data.unityweb.part6','palace.data.unityweb.part7']};
@@ -36,11 +39,28 @@ function palaceSet(p, msg) {
   if (msg) document.getElementById('palace-msg').innerHTML = msg;
 }
 function palaceFail(e) {
-  palaceSet(0, 'تعذّر تحميل اللعبة 😔<br>تأكدي من الإنترنت، وحدّثي الصفحة وجرّبي مرة ثانية');
-  var x = document.createElement('div'); x.id = 'palace-err'; x.textContent = String(e && (e.message || e) || '');
-  document.getElementById('palace-load').appendChild(x);
+  palaceSet(0, 'تعذّر تحميل اللعبة 😔<br>تأكدي من الإنترنت، وحدّثي الصفحة وجرّبي مرة ثانية<div id="palace-err"></div>');
+  var x = document.getElementById('palace-err'); if (x && e) x.textContent = String(e && e.message ? e.message : e);
+}
+function palaceFit() {
+  if (!window.matchMedia || !matchMedia('(pointer:coarse)').matches) return;
+  var w = window.innerWidth + 'px', h = window.innerHeight + 'px';
+  ['unity-container', 'unity-canvas'].forEach(function (id) {
+    var el = document.getElementById(id); if (!el) return;
+    el.style.setProperty('width', w, 'important'); el.style.setProperty('height', h, 'important');
+  });
+  window.scrollTo(0, 0);
+}
+window.addEventListener('resize', function () { palaceFit(); setTimeout(palaceFit, 300); });
+window.addEventListener('orientationchange', function () { setTimeout(palaceFit, 300); });
+function palaceRotateMsg() {
+  if (document.getElementById('palace-rotate')) return;
+  var r = document.createElement('div'); r.id = 'palace-rotate';
+  r.innerHTML = '<b>📱</b><div>لفّي الموبايل بالعرض<br>عشان تلعبي</div>';
+  document.body.appendChild(r);
 }
 function palaceStart(script, config) {
+  palaceRotateMsg(); palaceFit();
   palaceSet(0);
   if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) config.devicePixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
   var keys = Object.keys(palaceFiles), total = 0, done = 0;
