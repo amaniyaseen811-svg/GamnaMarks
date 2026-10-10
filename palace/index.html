@@ -61,6 +61,7 @@ function palaceRotateMsg() {
 }
 function palaceStart(script, config) {
   palaceRotateMsg(); palaceFit();
+  if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && location.hash.indexOf('mobile') < 0) { try { history.replaceState(null, '', location.pathname + location.search + '#mobile'); } catch (e) { location.hash = 'mobile'; } }
   palaceSet(0);
   if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) config.devicePixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
   var keys = Object.keys(palaceFiles), total = 0, done = 0;
