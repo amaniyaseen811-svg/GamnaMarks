@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<script src="gm-controls.js" data-gm="pause"></script>
+<script src="gm-controls.js" data-gm="none"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>علاء الدين والكنز المفقود</title>
@@ -1294,7 +1294,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:white;direction
       <p>⚓ <span class="hl">علاء الدين</span> بحّار شجاع يعشقها، لكن الملك اشترط: <span class="rd">"احضر الكنز المسروق من القصر!"</span></p>
       <p>🧞 يملك علاء الدين <span class="hl">مصباحاً سحرياً</span> ويحتاج <span class="hl">10 أحجار كريمة</span> من 10 جزر محمية بعمالقة!</p>
       <p>🌊 عند اجتماع الأحجار يظهر <span class="hl">المارد الأزرق</span> ويخبره بمكان الكنز!</p>
-      <p>⚠️ <span class="rd">محاولتان</span> لكل جزيرة | <span class="rd">4 محاولات</span> لترتيب المدينة والخريطة!</p>
+      <p>⚠️ <span class="rd">3 محاولات</span> لكل جزيرة | <span class="rd">4 محاولات</span> لترتيب المدينة والخريطة!</p>
     </div>
 
     <button class="btn-adv" id="btnStart" onclick="startIntro()">⚓ ابدأ المغامرة!</button>
@@ -1819,7 +1819,8 @@ function restartAll(){
       +'<div class="al-score" id="alScore"></div></div>';
     document.body.appendChild(ovl);
   }
-  function open(){ build(); W={sheet:1,i:0,score:0,total:0,locked:false};
+  function mixWS(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=a[i];a[i]=a[j];a[j]=x;}return a.map(function(it){var o=it.o.map(function(t,k){return{t:t,k:k};});for(var i=o.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=o[i];o[i]=o[j];o[j]=x;}var na=0;o.forEach(function(e,j){if(e.k===it.a)na=j;});return{q:it.q,o:o.map(function(e){return e.t;}),a:na,n:it.n};});}
+  function open(){ build(); WS1=mixWS(WS1); WS2=mixWS(WS2); W={sheet:1,i:0,score:0,total:0,locked:false};
     ovl.classList.add('on'); ovl.scrollTop=0; render(); }
   function close(){ if(ovl) ovl.classList.remove('on'); }
 
@@ -1861,7 +1862,7 @@ function restartAll(){
   function next(){
     var L=list(); W.i++;
     if(W.i<L.length){ ovl.scrollTop=0; render(); return; }
-    if(W.sheet===1){ W.sheet=2; W.i=0; ovl.scrollTop=0; render(); return; }
+    if(W.sheet===1){ window.GMX_WS1={s:W.score,t:W.total}; W.sheet=2; W.i=0; ovl.scrollTop=0; render(); return; }
     finish();
   }
   function finish(){
@@ -1873,8 +1874,8 @@ function restartAll(){
       +'<p>نتيجتك: <b>'+W.score+' من '+W.total+'</b> ('+pct+'٪)</p>'
       +'<p>ثلاثون سؤالاً في تركيب الخلية ووظائف عضياتها.</p></div>'
       +'<div class="al-nav"><button class="al-next" id="alAgain">إعادة الورقتين 🔄</button>'
-      +'<button class="al-close" id="alCls2">إغلاق</button></div>';
-    document.getElementById('alAgain').onclick=open;
+      +'<button class="al-next" id="alRes">📊 نتيجتك</button><button class="al-close" id="alCls2">إغلاق</button></div>'; window.GMX_WSF={s:W.score,t:W.total};
+    document.getElementById('alAgain').onclick=open; document.getElementById('alRes').onclick=function(){close(); if(window.gmxResults) gmxResults();};
     document.getElementById('alCls2').onclick=close;
   }
   function wire(){ var b=document.getElementById('alWs'); if(b) b.addEventListener('click',open); }
@@ -1884,9 +1885,8 @@ function restartAll(){
 </script>
 
 <!-- ===== PVKit ===== -->
-<script>window.PVKIT_CONFIG={homeUrl:'index.html',breakSec:20,breakMax:1,gameMinutes:30,homeBtn:false,breakBtn:true};</script>
+<script>window.PVKIT_CONFIG={homeUrl:'index.html',breakSec:30,breakMax:2,gameMinutes:30,homeBtn:false,breakBtn:true};</script>
 <script src="pvkit.js"></script>
-<script src="gm-report.js"></script>
 </body>
 </html>
 <style>
@@ -1906,7 +1906,7 @@ function restartAll(){
 <div id="vbar">
 <button class="vbtn" id="btnPlay" onclick="vToggle()">&#9208; ايقاف</button>
 <button class="vbtn" onclick="endIntro(true)">&#9197; تخطي للعبة</button>
-<button class="vbtn" onclick="endIntro(false)">&#8617; رجوع</button>
+<button class="vbtn" onclick="location.href='index.html'">&#8617; رجوع</button>
 </div>
 </div>
 <script>
@@ -1977,4 +1977,1091 @@ window.addEventListener('load',function(){
   });
   document.addEventListener('visibilitychange',function(){if(!document.hidden)kickCover();});
 });
+</script>
+<!-- ===== PlayVerse Mic (PVMic) — إضافة المايك، تعمل فوق PVChat ===== -->
+<script>
+/* =========================================================
+   PlayVerse Mic  —  playverse-mic  (PVMic)
+   مايك صوتي مباشر لمنصة PlayVerse — يعمل فوق PVChat لا بدلها
+   ---------------------------------------------------------
+   • المعلمة تفتح/تغلق مايك أي طالبة (افتراضي مايك واحد، حتى 8)
+   • الطالبات الباقيات يستمعن فقط
+   • رفع اليد للمايك، وإغلاق كل المايكات بضغطة
+   • WebRTC مباشر (نظير-لنظير) + Firestore للإشارة فقط
+   • بدون تسجيل صوت، بدون خدمات مدفوعة، بدون حساب جديد
+   • تصميم موفّر: لا نبضات دورية للطالبات المستمعات، حتى لا
+     تستهلك حصة الفايربيس المجانية. الكتابة تحدث فقط عند
+     رفع اليد أو فتح مايك فعليًا.
+   • عربي RTL، يعمل على iPhone Safari وويندوز
+   ========================================================= */
+(function () {
+  'use strict';
+  if (window.PVMic) return;
+
+  var FB_CONFIG = {
+    apiKey: "AIzaSyADxQ7-3UDxYD3VTOoVrn7d6516_5bqd5Y",
+    authDomain: "cursed-castle-bb43b.firebaseapp.com",
+    projectId: "cursed-castle-bb43b",
+    storageBucket: "cursed-castle-bb43b.firebasestorage.app",
+    messagingSenderId: "458563878259",
+    appId: "1:458563878259:web:715ce9f960b2972ccd9906"
+  };
+  var SDK = 'https://www.gstatic.com/firebasejs/10.12.0/';
+
+  /* خوادم الشبكة: STUN مجانية + محاولة TURN احتياطية (أفضل جهد) */
+  var ICE = {
+    iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+      { urls: 'stun:stun.cloudflare.com:3478' },
+      { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+      { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+      { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+    ]
+  };
+
+  var LIVE_TTL = 40000;    /* اعتبار مايك متحدث معطّلًا لو انقطع تحديثه */
+  var LIVE_HB = 18000;     /* تحديث نبضة المتحدث فقط (عددهم قليل) */
+
+  /* ============ الحالة ============ */
+  var MY = { id: '', name: '', role: 'student', room: '' };
+  var ctrl = { on: true, micMax: 1, speakers: [], names: {} };
+  var liveMap = {};        /* id -> {name, role, ts} : المتحدثون فعليًا الآن */
+  var handMap = {};        /* id -> {name} : رافعات اليد (تراها المعلمة فقط) */
+  var lisConns = {};       /* speakerId -> conn (أنا مستمعة له) */
+  var spkConns = {};       /* listenerId -> conn (أنا متحدثة وهو يستمع لي) */
+  var localStream = null;
+  var live = false;        /* أبثّ صوتي الآن */
+  var audioOK = false;     /* سمح المتصفح بتشغيل الصوت */
+  var raised = false;
+  var started = false;
+  var fbConnected = false;  /* صار وصول فعلي لفايربيس */
+  var musicMuted = false;   /* كتم يدوي لموسيقى اللعبة */
+
+  var unsubCtrl = null, unsubLive = null, unsubHands = null, unsubSpkQ = null;
+  var liveHbTimer = null, pruneTimer = null;
+
+  var FB = null, fbP = null;
+  function initFB() {
+    if (FB) return Promise.resolve(FB);
+    if (fbP) return fbP;
+    fbP = (async function () {
+      try {
+        var a = await import(SDK + 'firebase-app.js');
+        var f = await import(SDK + 'firebase-firestore.js');
+        var app;
+        try { app = a.getApp('pvmic'); }
+        catch (e) { app = a.initializeApp(FB_CONFIG, 'pvmic'); }
+        FB = Object.assign({ db: f.getFirestore(app) }, f);
+        return FB;
+      } catch (e) { console.warn('[PVMic] Firebase off', e); return null; }
+    })();
+    return fbP;
+  }
+
+  /* ============ أدوات ============ */
+  function lsGet(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { } }
+  function lang() { try { return localStorage.getItem('pv_lang') || 'ar'; } catch (e) { return 'ar'; } }
+  function isRTL() { var c = lang(); return c === 'ar' || c === 'he' || c === 'fa'; }
+  var AR = lang() !== 'en';
+  function TX(ar, en) { return AR ? ar : en; }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
+  function el(tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html != null) e.innerHTML = html;
+    return e;
+  }
+  function myMicId() {
+    var v = lsGet('pv_mic_id');
+    if (!v) {
+      v = 'm' + Math.floor(Math.random() * 1e9).toString(36) + Date.now().toString(36).slice(-4);
+      lsSet('pv_mic_id', v);
+    }
+    return v;
+  }
+
+  /* ============ مراجع Firestore ============ */
+  /* معرّف اللعبة من اسم الملف → كل لعبة غرفتها المستقلة */
+  function gid() {
+    try {
+      var p = (location.pathname || '').split('/').pop() || '';
+      p = p.replace(/\.html?$/i, '').toLowerCase().replace(/[^a-z0-9_-]/g, '');
+      return p || 'game';
+    } catch (e) { return 'game'; }
+  }
+  function RK() { return MY.room + '__' + gid(); }   /* مفتاح الغرفة الخاص بهذه اللعبة */
+
+  function ctrlRef(f) { return f.doc(f.db, 'pv_mic', RK()); }
+  function liveCol(f) { return f.collection(f.db, 'pv_mic', RK(), 'live'); }
+  function liveRef(f, id) { return f.doc(f.db, 'pv_mic', RK(), 'live', id); }
+  function handsCol(f) { return f.collection(f.db, 'pv_mic', RK(), 'hands'); }
+  function handRef(f, id) { return f.doc(f.db, 'pv_mic', RK(), 'hands', id); }
+  function pairsCol(f) { return f.collection(f.db, 'pv_mic', RK(), 'pairs'); }
+  function pairRef(f, spk, lis) { return f.doc(f.db, 'pv_mic', RK(), 'pairs', spk + '__' + lis); }
+
+  /* ============ الواجهة ============ */
+  var CSS = `
+.pvm-fab{position:fixed;bottom:148px;inset-inline-start:16px;z-index:99990;
+  width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;font-size:24px;
+  background:var(--navy2,#0f2350);color:#fff;border:1.5px solid rgba(120,200,255,.5);
+  box-shadow:0 8px 22px rgba(0,0,0,.35);display:none;align-items:center;justify-content:center}
+.pvm-fab.live{background:linear-gradient(180deg,#ff6b6b,#e2504a);border-color:#ffb3b3;animation:pvmPulse 1.4s infinite}
+.pvm-fab:active{transform:scale(.93)}
+@keyframes pvmPulse{0%{box-shadow:0 0 0 0 rgba(226,80,74,.55)}100%{box-shadow:0 0 0 15px rgba(226,80,74,0)}}
+.pvm-dot{position:absolute;top:-3px;inset-inline-end:-3px;min-width:18px;height:18px;border-radius:9px;
+  background:#2ec6b6;color:#04231f;font-size:11px;font-weight:900;display:none;align-items:center;justify-content:center;padding:0 4px}
+.pvm-pill{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:99993;
+  background:rgba(6,12,34,.9);color:#eaf6ff;border:1px solid rgba(120,200,255,.45);border-radius:20px;
+  padding:7px 14px;font-family:inherit;font-size:13px;font-weight:700;display:none;max-width:92vw;
+  box-shadow:0 6px 18px rgba(0,0,0,.4)}
+.pvm-panel{position:fixed;bottom:0;inset-inline-end:0;z-index:99991;width:min(380px,100%);
+  max-height:min(76vh,580px);display:none;flex-direction:column;background:var(--navy2,#0f2350);
+  color:var(--ink,#eaf0ff);border:1.5px solid rgba(120,200,255,.35);border-bottom:0;
+  border-radius:18px 18px 0 0;box-shadow:0 -10px 34px rgba(0,0,0,.45);font-family:inherit;overflow:hidden}
+.pvm-panel.on{display:flex}
+.pvm-head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.12);flex:0 0 auto}
+.pvm-head b{flex:1;font-size:16px;color:#7fd0ff}
+.pvm-x{background:transparent;border:0;color:inherit;font-size:22px;cursor:pointer;line-height:1;padding:2px 6px}
+.pvm-body{flex:1 1 auto;overflow-y:auto;padding:12px}
+.pvm-h3{font-size:13px;font-weight:800;color:#7fd0ff;margin:12px 0 6px}
+.pvm-note{font-size:12.5px;opacity:.85;text-align:center;padding:9px 0;line-height:1.6}
+.pvm-big{width:100%;padding:16px;border-radius:14px;border:0;cursor:pointer;font:inherit;font-weight:900;font-size:17px;margin:6px 0}
+.pvm-talk{background:linear-gradient(180deg,#69e0a0,#2ec6b6);color:#04231f}
+.pvm-stop{background:linear-gradient(180deg,#ff6b6b,#e2504a);color:#fff}
+.pvm-raise{background:linear-gradient(180deg,#f6d976,#e0b73c);color:#20180a}
+.pvm-b{width:100%;padding:11px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);
+  color:inherit;font:inherit;font-weight:800;font-size:14px;cursor:pointer;margin-top:8px}
+.pvm-closeall{background:#e2504a;color:#fff;border:0}
+.pvm-step{display:flex;align-items:center;gap:10px;justify-content:center;margin:6px 0 4px}
+.pvm-step button{width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);
+  color:inherit;font-size:22px;font-weight:900;cursor:pointer}
+.pvm-step b{font-size:22px;min-width:34px;text-align:center;color:#7fd0ff}
+.pvm-list{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.pvm-row{display:flex;align-items:center;gap:8px;font-size:13.5px;background:rgba(255,255,255,.05);padding:8px 10px;border-radius:10px}
+.pvm-row .nm{flex:1;font-weight:700}
+.pvm-row.spk{background:rgba(46,198,182,.16);border:1px solid rgba(46,198,182,.5)}
+.pvm-row.rz{background:rgba(224,183,60,.14);border:1px solid rgba(224,183,60,.45)}
+.pvm-row button{padding:7px 11px;border-radius:9px;border:0;cursor:pointer;font:inherit;font-size:12.5px;font-weight:800;background:#2ec6b6;color:#04231f}
+.pvm-row button.off{background:#e2504a;color:#fff}
+.pvm-row button[disabled]{opacity:.4;cursor:default}
+`;
+
+  var fab, dot, pill, panel, bodyEl, audioBox;
+  var panelOpen = false;
+
+  function buildUI() {
+    if (fab) return;
+    if (!document.body) { setTimeout(buildUI, 200); return; }
+    var st = el('style'); st.textContent = CSS; document.head.appendChild(st);
+
+    fab = el('button', 'pvm-fab', '🎤');
+    dot = el('span', 'pvm-dot', '');
+    fab.appendChild(dot);
+    fab.onclick = togglePanel;
+    document.body.appendChild(fab);
+
+    pill = el('div', 'pvm-pill', '');
+    document.body.appendChild(pill);
+
+    panel = el('div', 'pvm-panel');
+    panel.dir = isRTL() ? 'rtl' : 'ltr';
+    var head = el('div', 'pvm-head');
+    head.appendChild(el('b', null, '🎤 ' + TX('المايك', 'Microphone')));
+    var x = el('button', 'pvm-x', '✕'); x.onclick = togglePanel;
+    head.appendChild(x);
+    bodyEl = el('div', 'pvm-body');
+    panel.appendChild(head); panel.appendChild(bodyEl);
+    document.body.appendChild(panel);
+
+    audioBox = el('div');
+    audioBox.style.cssText = 'position:fixed;width:0;height:0;overflow:hidden';
+    document.body.appendChild(audioBox);
+  }
+
+  function togglePanel() {
+    panelOpen = !panelOpen;
+    panel.classList.toggle('on', panelOpen);
+    if (panelOpen) { enableAudio(); render(); }
+  }
+
+  function speakerNames() {
+    var out = [];
+    if (live) out.push(MY.name + TX(' (أنتِ)', ' (you)'));
+    Object.keys(liveMap).forEach(function (id) {
+      if (id === MY.id) return;
+      out.push(liveMap[id].name || '؟');
+    });
+    return out;
+  }
+
+  function updateFab() {
+    if (!fab) return;
+    fab.style.display = (MY.room && MY.name) ? 'flex' : 'none';
+    fab.classList.toggle('live', live);
+    var n = speakerNames();
+    dot.style.display = n.length ? 'flex' : 'none';
+    dot.textContent = String(n.length);
+    if (n.length) { pill.style.display = 'block'; pill.textContent = '🎤 ' + TX('يتحدث الآن: ', 'Speaking: ') + n.join('، '); }
+    else { pill.style.display = 'none'; }
+    applyMusic();
+  }
+
+  /* ============ الأدوار ============ */
+  function iAmGranted() {
+    if (MY.role === 'teacher') return true;
+    return ctrl.speakers.indexOf(MY.id) !== -1;
+  }
+
+  /* ============ العرض ============ */
+  function render() {
+    if (!panelOpen || !bodyEl) return;
+    bodyEl.innerHTML = '';
+    diagLine();
+    if (MY.role === 'teacher') renderTeacher();
+    else renderStudent();
+  }
+
+  /* سطر فحص: رقم الغرفة + الدور + حالة الاتصال + العدّادات */
+  function diagLine() {
+    var conn = fbConnected ? '🟢 متصل' : '⚪ ينتظر…';
+    var role = MY.role === 'teacher' ? 'معلمة' : 'طالبة';
+    var extra = MY.role === 'teacher' ? (' · طلبات: ' + Object.keys(handMap).length) : '';
+    var d = el('div', 'pvm-note',
+      'الغرفة: <b style="color:#7fd0ff;font-size:15px">' + esc(MY.room || '—') + '</b> · ' + role + ' · ' + conn +
+      ' · أصوات: ' + Object.keys(liveMap).length + extra);
+    d.style.cssText += ';font-size:11.5px;border:1px dashed rgba(120,200,255,.45);border-radius:8px;margin-bottom:8px;padding:6px';
+    bodyEl.appendChild(d);
+  }
+
+  function renderStudent() {
+    if (iAmGranted()) {
+      if (!live) {
+        var bt = el('button', 'pvm-big pvm-talk', '🎤 ' + TX('اضغطي لبدء التحدث', 'Tap to talk'));
+        bt.onclick = startTalking; bodyEl.appendChild(bt);
+        bodyEl.appendChild(el('div', 'pvm-note', TX('سمحت لكِ المعلمة بالتحدث. اضغطي الزر ثم تكلمي.', 'The teacher allowed you to talk. Tap, then speak.')));
+      } else {
+        var bs = el('button', 'pvm-big pvm-stop', '🔴 ' + TX('أنتِ تتحدثين — اضغطي للإيقاف', 'You are live — tap to stop'));
+        bs.onclick = stopTalking; bodyEl.appendChild(bs);
+      }
+    } else {
+      if (!raised) {
+        var br = el('button', 'pvm-big pvm-raise', '✋ ' + TX('اطلبي المايك', 'Raise hand'));
+        br.onclick = raiseHand; bodyEl.appendChild(br);
+      } else {
+        var bcn = el('button', 'pvm-big pvm-raise', '✅ ' + TX('طلبكِ وصل — اضغطي للسحب', 'Request sent — tap to cancel'));
+        bcn.onclick = lowerHand; bodyEl.appendChild(bcn);
+      }
+      bodyEl.appendChild(el('div', 'pvm-note', TX('أنتِ في وضع الاستماع 👂', 'You are listening 👂')));
+    }
+    var names = speakerNames();
+    bodyEl.appendChild(el('div', 'pvm-h3', '🎤 ' + TX('يتحدث الآن', 'Speaking now')));
+    bodyEl.appendChild(el('div', 'pvm-note', names.length ? names.join('، ') : TX('لا أحد', 'Nobody')));
+    bodyEl.appendChild(musicBtn());
+    if (!audioOK) {
+      var ba = el('button', 'pvm-b', '🔊 ' + TX('تشغيل الصوت', 'Enable sound'));
+      ba.onclick = enableAudio; bodyEl.appendChild(ba);
+    }
+  }
+
+  function renderTeacher() {
+    if (!live) {
+      var bt = el('button', 'pvm-big pvm-talk', '🎤 ' + TX('اضغطي لتشغيل مايكك', 'Tap to enable your mic'));
+      bt.onclick = startTalking; bodyEl.appendChild(bt);
+    } else {
+      var bs = el('button', 'pvm-big pvm-stop', '🔴 ' + TX('مايكك مفتوح — اضغطي للإغلاق', 'Your mic is on — tap to close'));
+      bs.onclick = stopTalking; bodyEl.appendChild(bs);
+    }
+
+    bodyEl.appendChild(el('div', 'pvm-h3', TX('كم مايك مفتوح معًا؟', 'Mics open at once')));
+    var stp = el('div', 'pvm-step');
+    var minus = el('button', null, '−');
+    var val = el('b', null, String(ctrl.micMax));
+    var plus = el('button', null, '+');
+    minus.onclick = function () { setMicMax(ctrl.micMax - 1); };
+    plus.onclick = function () { setMicMax(ctrl.micMax + 1); };
+    stp.appendChild(minus); stp.appendChild(val); stp.appendChild(plus);
+    bodyEl.appendChild(stp);
+    bodyEl.appendChild(el('div', 'pvm-note', TX('الافتراضي 1. تقدري تفتحي حتى 8 وقت النقاش.', 'Default 1. Up to 8 for group talk.')));
+
+    /* رافعات اليد + الطالبات المسموح لهن */
+    bodyEl.appendChild(el('div', 'pvm-h3', '✋ ' + TX('الطلبات والمايكات', 'Requests & mics')));
+    var ids = [], seen = {};
+    Object.keys(handMap).forEach(function (id) { if (!seen[id]) { seen[id] = 1; ids.push(id); } });
+    ctrl.speakers.forEach(function (id) { if (!seen[id]) { seen[id] = 1; ids.push(id); } });
+    if (!ids.length) {
+      bodyEl.appendChild(el('div', 'pvm-note', TX('لا توجد طلبات بعد. الطالبة تضغط «اطلبي المايك» فيظهر اسمها هنا.', 'No requests yet. When a student taps “Raise hand”, her name shows here.')));
+    } else {
+      var openCount = ctrl.speakers.length;
+      var list = el('div', 'pvm-list');
+      /* المسموح لهن أولًا، ثم رافعات اليد */
+      ids.sort(function (a, b) {
+        var oa = ctrl.speakers.indexOf(a) !== -1 ? 0 : 1;
+        var ob = ctrl.speakers.indexOf(b) !== -1 ? 0 : 1;
+        return oa - ob;
+      });
+      ids.forEach(function (id) {
+        var on = ctrl.speakers.indexOf(id) !== -1;
+        var nm = (ctrl.names && ctrl.names[id]) || (handMap[id] && handMap[id].name) || (liveMap[id] && liveMap[id].name) || '؟';
+        var talking = !!liveMap[id];
+        var cls = 'pvm-row' + (on ? ' spk' : ' rz');
+        var row = el('div', cls);
+        row.appendChild(el('span', 'nm', (on ? (talking ? '🎤 ' : '🔈 ') : '✋ ') + esc(nm)));
+        var b = el('button', on ? 'off' : '', on ? TX('إغلاق', 'Close') : TX('افتحي', 'Open'));
+        if (!on && openCount >= ctrl.micMax) b.disabled = true;
+        b.onclick = on ? function () { revoke(id); } : function () { grant(id, nm); };
+        row.appendChild(b);
+        list.appendChild(row);
+      });
+      bodyEl.appendChild(list);
+    }
+
+    var ca = el('button', 'pvm-b pvm-closeall', '🔇 ' + TX('إغلاق كل المايكات', 'Close all mics'));
+    ca.onclick = closeAll; bodyEl.appendChild(ca);
+
+    bodyEl.appendChild(musicBtn());
+    if (!audioOK) {
+      var ba = el('button', 'pvm-b', '🔊 ' + TX('تشغيل الصوت', 'Enable sound'));
+      ba.onclick = enableAudio; bodyEl.appendChild(ba);
+    }
+  }
+
+  /* ============ تحكم المعلمة ============ */
+  async function writeCtrl(patch) {
+    var f = await initFB(); if (!f) return;
+    try {
+      await f.setDoc(ctrlRef(f), Object.assign({ on: true, micMax: ctrl.micMax, speakers: ctrl.speakers, names: ctrl.names, hostId: MY.id }, patch), { merge: true });
+    } catch (e) { console.warn('[PVMic] ctrl', e); }
+  }
+  function setMicMax(n) {
+    n = Math.max(1, Math.min(8, n | 0));
+    var sp = ctrl.speakers.slice(0, n);
+    writeCtrl({ micMax: n, speakers: sp });
+  }
+  async function grant(id, nm) {
+    if (ctrl.speakers.indexOf(id) !== -1) return;
+    if (ctrl.speakers.length >= ctrl.micMax) return;
+    var sp = ctrl.speakers.concat([id]);
+    var names = Object.assign({}, ctrl.names); names[id] = nm || id;
+    await writeCtrl({ speakers: sp, names: names });
+    /* أزل طلب رفع اليد بعد المنح */
+    var f = await initFB(); if (f) { try { await f.deleteDoc(handRef(f, id)); } catch (e) { } }
+  }
+  async function revoke(id) {
+    var sp = ctrl.speakers.filter(function (x) { return x !== id; });
+    await writeCtrl({ speakers: sp });
+    /* المعلمة تُطفئ مايك الطالبة فعليًا: تحذف مستند بثّها */
+    var f = await initFB(); if (f) { try { await f.deleteDoc(liveRef(f, id)); } catch (e) { } }
+  }
+  async function closeAll() {
+    await writeCtrl({ speakers: [] });
+    var f = await initFB(); if (!f) return;
+    var ids = Object.keys(liveMap);
+    ids.forEach(function (id) { if (id !== MY.id) { f.deleteDoc(liveRef(f, id)).catch(function () { }); } });
+  }
+
+  /* ============ رفع اليد ============ */
+  async function raiseHand() {
+    raised = true; render();
+    var f = await initFB(); if (!f) return;
+    try { await f.setDoc(handRef(f, MY.id), { name: MY.name, ts: Date.now() }, { merge: true }); } catch (e) { }
+  }
+  async function lowerHand() {
+    raised = false; render();
+    var f = await initFB(); if (!f) return;
+    try { await f.deleteDoc(handRef(f, MY.id)); } catch (e) { }
+  }
+
+  /* ============ موسيقى اللعبة: كتم يدوي + هدوء تلقائي عند الكلام ============ */
+  function anySpeaking() { return live || Object.keys(liveMap).length > 0; }
+  function applyMusic() {
+    try {
+      if (window.bgMusic) window.bgMusic.muted = (musicMuted || anySpeaking());
+    } catch (e) { }
+  }
+  function musicBtn() {
+    var b = el('button', 'pvm-b', musicMuted
+      ? ('🔇 ' + TX('الموسيقى مكتومة — اضغطي للتشغيل', 'Music muted — tap to play'))
+      : ('🎵 ' + TX('كتم موسيقى اللعبة', 'Mute game music')));
+    if (musicMuted) { b.style.background = '#e2504a'; b.style.color = '#fff'; b.style.border = '0'; }
+    b.onclick = function () { musicMuted = !musicMuted; applyMusic(); render(); };
+    return b;
+  }
+
+  /* ============ الصوت ============ */
+  function enableAudio() {
+    audioOK = true;
+    Object.keys(lisConns).forEach(function (id) {
+      var c = lisConns[id]; if (c && c.audio) { try { c.audio.play(); } catch (e) { } }
+    });
+    render();
+  }
+
+  /* ============ بدء/إيقاف التحدث ============ */
+  async function startTalking() {
+    if (!iAmGranted()) return;
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    } catch (e) {
+      msgLine(TX('لم يُسمح باستخدام المايك. من إعدادات المتصفح اسمحي للميكروفون ثم أعيدي المحاولة.',
+        'Microphone permission denied. Allow the mic in your browser settings and try again.'));
+      return;
+    }
+    live = true; audioOK = true;
+    var f = await initFB();
+    if (f) { try { await f.setDoc(liveRef(f, MY.id), { name: MY.name, role: MY.role, ts: Date.now() }, { merge: true }); } catch (e) { } }
+    startSpeakerListener();
+    startLiveHeartbeat();
+    updateFab(); render();
+  }
+  async function stopTalking() {
+    hardStopMic();
+    var f = await initFB();
+    if (f) { try { await f.deleteDoc(liveRef(f, MY.id)); } catch (e) { } }
+    updateFab(); render();
+  }
+  function hardStopMic() {
+    live = false;
+    stopLiveHeartbeat();
+    if (unsubSpkQ) { try { unsubSpkQ(); } catch (e) { } unsubSpkQ = null; }
+    Object.keys(spkConns).forEach(function (id) { closeSpk(id); });
+    if (localStream) {
+      localStream.getTracks().forEach(function (tr) { try { tr.stop(); } catch (e) { } });
+      localStream = null;
+    }
+  }
+  function startLiveHeartbeat() {
+    stopLiveHeartbeat();
+    liveHbTimer = setInterval(function () {
+      if (!live) return;
+      initFB().then(function (f) { if (f) f.setDoc(liveRef(f, MY.id), { ts: Date.now() }, { merge: true }).catch(function () { }); });
+    }, LIVE_HB);
+  }
+  function stopLiveHeartbeat() { if (liveHbTimer) { clearInterval(liveHbTimer); liveHbTimer = null; } }
+
+  function msgLine(msg) {
+    if (!bodyEl) return;
+    var n = el('div', 'pvm-note', esc(msg)); n.style.color = '#ffb3b3';
+    bodyEl.insertBefore(n, bodyEl.firstChild);
+    setTimeout(function () { try { n.remove(); } catch (e) { } }, 6000);
+  }
+
+  /* =========================================================
+     WebRTC — أنا مستمعة: أتصل بكل متحدث فعليًا
+     ========================================================= */
+  function reconcileListen() {
+    var f = FB;
+    var want = {};
+    Object.keys(liveMap).forEach(function (id) {
+      if (id === MY.id) return;
+      var l = liveMap[id];
+      if (Date.now() - (l.ts || 0) > LIVE_TTL) return;
+      want[id] = true;
+      if (!lisConns[id]) ensureListen(id);
+    });
+    Object.keys(lisConns).forEach(function (id) { if (!want[id]) closeListen(id); });
+    updateFab();
+    if (panelOpen) render();
+  }
+
+  async function ensureListen(spkId) {
+    if (lisConns[spkId]) return;
+    var f = await initFB(); if (!f) return;
+    var pc = new RTCPeerConnection(ICE);
+    var conn = { pc: pc, spk: spkId, audio: null, cands: {}, remoteSet: false };
+    lisConns[spkId] = conn;
+
+    try { pc.addTransceiver('audio', { direction: 'recvonly' }); } catch (e) { }
+
+    pc.ontrack = function (ev) {
+      var a = conn.audio;
+      if (!a) {
+        a = document.createElement('audio');
+        a.autoplay = true; a.playsInline = true; a.setAttribute('playsinline', '');
+        conn.audio = a; audioBox.appendChild(a);
+      }
+      a.srcObject = ev.streams[0];
+      if (audioOK) { try { a.play(); } catch (e) { } }
+    };
+    pc.onicecandidate = function (ev) {
+      if (!ev.candidate) return;
+      var patch = { cl: f.arrayUnion(ev.candidate.toJSON()) };
+      f.setDoc(pairRef(f, spkId, MY.id), Object.assign({ spk: spkId, lis: MY.id }, patch), { merge: true }).catch(function () { });
+    };
+    pc.oniceconnectionstatechange = function () {
+      var s = pc.iceConnectionState;
+      if (s === 'failed') { closeListen(spkId); setTimeout(reconcileListen, 1200); }
+    };
+
+    conn.unsub = f.onSnapshot(pairRef(f, spkId, MY.id), async function (snap) {
+      if (!snap.exists()) return;
+      var d = snap.data() || {};
+      try {
+        if (d.answer && !conn.remoteSet) {
+          conn.remoteSet = true;
+          await pc.setRemoteDescription(new RTCSessionDescription(d.answer));
+        }
+        if (Array.isArray(d.cs) && pc.remoteDescription) {
+          d.cs.forEach(function (c) {
+            var k = JSON.stringify(c); if (conn.cands[k]) return; conn.cands[k] = 1;
+            pc.addIceCandidate(new RTCIceCandidate(c)).catch(function () { });
+          });
+        }
+      } catch (e) { console.warn('[PVMic] listen', e); }
+    }, function () { });
+
+    try {
+      var offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      await f.setDoc(pairRef(f, spkId, MY.id), { spk: spkId, lis: MY.id, offer: { type: offer.type, sdp: offer.sdp }, answer: null, cs: [], cl: [] }, { merge: false });
+    } catch (e) { console.warn('[PVMic] offer', e); }
+  }
+
+  function closeListen(spkId) {
+    var c = lisConns[spkId]; if (!c) return;
+    delete lisConns[spkId];
+    if (c.unsub) { try { c.unsub(); } catch (e) { } }
+    if (c.pc) { try { c.pc.close(); } catch (e) { } }
+    if (c.audio) { try { c.audio.srcObject = null; c.audio.remove(); } catch (e) { } }
+    initFB().then(function (f) { if (f) f.deleteDoc(pairRef(f, spkId, MY.id)).catch(function () { }); });
+  }
+
+  /* =========================================================
+     WebRTC — أنا متحدثة: أردّ على كل مستمعة تطلبني
+     ========================================================= */
+  function startSpeakerListener() {
+    if (unsubSpkQ) return;
+    initFB().then(function (f) {
+      if (!f || !live) return;
+      var q = f.query(pairsCol(f), f.where('spk', '==', MY.id));
+      unsubSpkQ = f.onSnapshot(q, function (snap) {
+        snap.forEach(function (docu) { handleListenerPair(docu.id, docu.data()); });
+      }, function () { });
+    });
+  }
+
+  async function handleListenerPair(pairId, d) {
+    if (!live || !d) return;
+    var lisId = d.lis; if (!lisId || lisId === MY.id) return;
+    var f = await initFB(); if (!f) return;
+    var conn = spkConns[lisId];
+
+    if (!conn) {
+      if (!d.offer) return;
+      var pc = new RTCPeerConnection(ICE);
+      conn = { pc: pc, lis: lisId, cands: {}, answered: false };
+      spkConns[lisId] = conn;
+      if (localStream) localStream.getTracks().forEach(function (tr) { pc.addTrack(tr, localStream); });
+      pc.onicecandidate = function (ev) {
+        if (!ev.candidate) return;
+        f.setDoc(pairRef(f, MY.id, lisId), { cs: f.arrayUnion(ev.candidate.toJSON()) }, { merge: true }).catch(function () { });
+      };
+      pc.oniceconnectionstatechange = function () {
+        var s = pc.iceConnectionState;
+        if (s === 'failed' || s === 'disconnected' || s === 'closed') {
+          setTimeout(function () {
+            var cc = spkConns[lisId];
+            if (cc && (cc.pc.iceConnectionState === 'failed' || cc.pc.iceConnectionState === 'closed')) {
+              closeSpk(lisId);
+              f.deleteDoc(pairRef(f, MY.id, lisId)).catch(function () { });
+            }
+          }, 2500);
+        }
+      };
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(d.offer));
+        var ans = await pc.createAnswer();
+        await pc.setLocalDescription(ans);
+        conn.answered = true;
+        await f.setDoc(pairRef(f, MY.id, lisId), { answer: { type: ans.type, sdp: ans.sdp } }, { merge: true });
+      } catch (e) { console.warn('[PVMic] answer', e); }
+    }
+
+    if (Array.isArray(d.cl) && conn.pc.remoteDescription) {
+      d.cl.forEach(function (c) {
+        var k = JSON.stringify(c); if (conn.cands[k]) return; conn.cands[k] = 1;
+        conn.pc.addIceCandidate(new RTCIceCandidate(c)).catch(function () { });
+      });
+    }
+  }
+
+  function closeSpk(lisId) {
+    var c = spkConns[lisId]; if (!c) return;
+    delete spkConns[lisId];
+    if (c.pc) { try { c.pc.close(); } catch (e) { } }
+  }
+
+  /* ============ التشغيل ============ */
+  async function start() {
+    if (started) return;
+    started = true;
+    buildUI();
+    updateFab();                 /* أظهري زر المايك فورًا عند الدخول للغرفة */
+    var f = await initFB();
+    if (!f) {                    /* الشبكة لم تجهز بعد → أعيدي المحاولة */
+      started = false;
+      setTimeout(function () { if (MY.room && MY.name) start(); }, 4000);
+      return;
+    }
+
+    if (MY.role === 'teacher') {
+      f.getDoc(ctrlRef(f)).then(function (d) {
+        if (!d.exists()) writeCtrl({ on: true, micMax: 1, speakers: [], names: {} });
+      }).catch(function () { });
+    }
+
+    unsubCtrl = f.onSnapshot(ctrlRef(f), function (d) {
+      fbConnected = true;
+      var v = d.exists() ? d.data() : {};
+      ctrl.on = v.on !== false;
+      ctrl.micMax = Math.max(1, Math.min(8, v.micMax || 1));
+      ctrl.speakers = Array.isArray(v.speakers) ? v.speakers : [];
+      ctrl.names = v.names || {};
+      /* سُحب إذني وأنا أتحدث → أغلق مايكي فورًا */
+      if (!iAmGranted() && live) stopTalking();
+      updateFab();
+      if (panelOpen) render();
+    }, function () { });
+
+    unsubLive = f.onSnapshot(liveCol(f), function (snap) {
+      fbConnected = true;
+      var m = {};
+      snap.forEach(function (docu) { m[docu.id] = docu.data() || {}; });
+      liveMap = m;
+      reconcileListen();
+    }, function () { });
+
+    /* المعلمة فقط تراقب رفع الأيادي وتنظّف القديم */
+    if (MY.role === 'teacher') {
+      unsubHands = f.onSnapshot(handsCol(f), function (snap) {
+        var h = {};
+        snap.forEach(function (docu) { h[docu.id] = docu.data() || {}; });
+        handMap = h;
+        if (panelOpen) render();
+      }, function () { });
+
+      pruneTimer = setInterval(function () {
+        var now = Date.now();
+        Object.keys(liveMap).forEach(function (id) {
+          if (id !== MY.id && now - (liveMap[id].ts || 0) > LIVE_TTL + 10000) {
+            f.deleteDoc(liveRef(f, id)).catch(function () { });
+          }
+        });
+      }, 15000);
+    }
+
+    updateFab();
+  }
+
+  function stop() {
+    if (!started) return;
+    started = false;
+    [unsubCtrl, unsubLive, unsubHands, unsubSpkQ].forEach(function (u) { if (u) { try { u(); } catch (e) { } } });
+    unsubCtrl = unsubLive = unsubHands = unsubSpkQ = null;
+    if (pruneTimer) { clearInterval(pruneTimer); pruneTimer = null; }
+    hardStopMic();
+    Object.keys(lisConns).forEach(function (id) { closeListen(id); });
+    Object.keys(spkConns).forEach(function (id) { closeSpk(id); });
+    liveMap = {}; handMap = {}; raised = false;
+    var f = FB;
+    if (f && MY.room && MY.id) {
+      f.deleteDoc(handRef(f, MY.id)).catch(function () { });
+      f.deleteDoc(liveRef(f, MY.id)).catch(function () { });
+    }
+    updateFab();
+    if (panel) { panel.classList.remove('on'); panelOpen = false; }
+  }
+
+  function begin(room, name, role) {
+    stop();
+    MY.id = myMicId(); MY.room = room; MY.name = name; MY.role = role || 'student';
+    buildUI(); updateFab();
+    start();
+  }
+
+  /* ============ الربط مع حالة الغرفة (نفس مفاتيح PVChat) ============ */
+  var lastKey = '';
+  function poll() {
+    var name = lsGet('pv_name');
+    var role = lsGet('pv_role') || 'student';
+    var troom = lsGet('pv_teacher_room');
+    var room = (role === 'teacher' && troom) ? troom : lsGet('pv_room');
+    var key = room + '|' + name + '|' + role;
+    if (key === lastKey) return;
+    lastKey = key;
+    if (room && name) begin(room, name, role);
+    else stop();
+  }
+
+  window.addEventListener('pagehide', function () { hardStopMic(); });
+  window.addEventListener('beforeunload', function () { hardStopMic(); });
+
+  window.PVMic = { _v: 2, refresh: poll, stop: stop };
+
+  function boot() {
+    buildUI();
+    poll();
+    setInterval(poll, 1200);
+    setInterval(function () { applyMusic(); if (panelOpen) render(); }, 2000);  /* تحديث + كتم الموسيقى */
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else setTimeout(boot, 300);
+})();
+
+</script>
+
+<!-- ===== GamnaMarks 16-feature add-on (aladdin) ===== -->
+<style>
+.gmx-ov{position:fixed;inset:0;z-index:2147482500;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(10,6,0,.93);font-family:inherit;direction:rtl}
+.gmx-ov.on{display:flex}
+.gmx-box{width:100%;max-width:560px;max-height:92vh;overflow:auto;background:linear-gradient(160deg,#2a1a05,#100800);border:2px solid #ffd700;border-radius:20px;padding:20px 18px;color:#fff;box-shadow:0 0 40px rgba(255,215,0,.25);text-align:center}
+.gmx-h{font-size:clamp(1.3rem,5vw,1.8rem);color:#ffd700;margin-bottom:6px;font-weight:900;text-shadow:0 0 18px rgba(255,215,0,.45)}
+.gmx-sub{font-size:.95rem;color:rgba(255,235,190,.85);margin-bottom:12px;line-height:1.7}
+.gmx-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.gmx-card{background:rgba(255,255,255,.06);border:2px solid rgba(255,215,0,.35);border-radius:14px;padding:11px 7px;cursor:pointer;color:#fff;font-family:inherit}
+.gmx-card b{display:block;font-size:1.05rem;color:#ffd700;margin:4px 0}
+.gmx-card span{font-size:.79rem;color:rgba(255,255,255,.72);line-height:1.5}
+.gmx-card .e{font-size:1.7rem}
+.gmx-card.sel{background:rgba(255,215,0,.18);border-color:#ffd700}
+.gmx-in{width:100%;padding:11px 14px;margin:5px 0;border-radius:12px;border:2px solid rgba(255,215,0,.4);background:rgba(0,0,0,.35);color:#fff;font-family:inherit;font-size:1rem;text-align:center}
+.gmx-btn{display:block;width:100%;max-width:340px;margin:10px auto 0;padding:13px;border:none;border-radius:40px;background:linear-gradient(135deg,#ff8f00,#ffd700);color:#1a1000;font-family:inherit;font-weight:900;font-size:1.05rem;cursor:pointer}
+.gmx-btn.alt{background:rgba(255,255,255,.08);color:#ffd700;border:2px solid rgba(255,215,0,.5)}
+.gmx-list{text-align:right;font-size:.93rem;line-height:1.9;color:rgba(255,255,255,.92);margin:6px 0;padding:0}
+.gmx-list li{list-style:none;margin-bottom:4px}
+.gmx-stage{font-size:.85rem;font-weight:900;color:#1a1000;background:#ffd700;display:inline-block;border-radius:30px;padding:4px 14px;margin-bottom:10px}
+#gmxTurn{display:none;margin:0 auto 8px;max-width:520px;text-align:center;font-weight:900;color:#1a1000;background:linear-gradient(135deg,#ff8f00,#ffd700);border-radius:30px;padding:7px 12px}
+.gmx-badge{display:inline-block;margin:8px 0;padding:6px 16px;border-radius:30px;background:rgba(255,215,0,.18);border:2px solid #ffd700;color:#ffd700;font-weight:900}
+.gmx-rgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:10px 0}
+.gmx-rc{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,215,0,.3);border-radius:14px;padding:10px 6px}
+.gmx-rc .v{font-size:1.3rem;font-weight:900;color:#ffd700}
+.gmx-rc .k{font-size:.78rem;color:rgba(255,255,255,.7)}
+.gmx-lb{text-align:right;font-size:.87rem;margin-top:8px}
+.gmx-lb div{display:flex;justify-content:space-between;padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.05);margin-bottom:4px}
+.gmx-lb div.me{background:rgba(255,215,0,.2);color:#ffd700;font-weight:900}
+#s-res,#s-prize{padding:70px 14px 40px;overflow:auto}
+#s-res.active,#s-prize.active{display:block}
+.gmx-boxes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.gmx-gb{background:rgba(255,215,0,.08);border:2px solid rgba(255,215,0,.45);border-radius:16px;padding:18px 8px;cursor:pointer;color:#fff;font-family:inherit;font-size:1rem}
+.gmx-gb .i{font-size:2.2rem;display:block;margin-bottom:6px}
+.gmx-gb.open{background:rgba(255,215,0,.22);border-color:#ffd700;transform:scale(1.04)}
+.gmx-gb.dim{opacity:.35}
+#gmxHelp{position:fixed;bottom:16px;left:12px;z-index:99980;width:46px;height:46px;border-radius:50%;border:2px solid #ffd700;background:rgba(26,16,0,.92);color:#ffd700;font-size:1.2rem;cursor:pointer;box-shadow:0 3px 14px rgba(0,0,0,.6)}
+.gmx-covervid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.4;z-index:0;pointer-events:none}
+#s-splash{position:relative}
+#s-splash .spl-c{position:relative;z-index:1}
+</style>
+
+<!-- mode + level -->
+<div id="gmxMode" class="gmx-ov"><div class="gmx-box">
+  <div class="gmx-h">🎮 اختاري طريقة اللعب</div>
+  <div class="gmx-grid">
+    <button class="gmx-card" data-m="solo"><div class="e">🧍‍♀️</div><b>فردي</b><span>العبي لحالك وساعدي علاء الدين</span></button>
+    <button class="gmx-card" data-m="duel"><div class="e">⚔️</div><b>تحدّي</b><span>لاعبتين بالدور على نفس الجهاز</span></button>
+    <button class="gmx-card" data-m="team"><div class="e">👥</div><b>فرق</b><span>فريقين بالدور، والأعلى نقاط بيفوز</span></button>
+    <button class="gmx-card" data-m="exam"><div class="e">📝</div><b>امتحان</b><span>محاولة وحدة لكل جزيرة، بدون شرح وبدون استراحة</span></button>
+  </div>
+  <div class="gmx-sub" style="margin:2px 0 6px">⭐ اختاري المستوى:</div>
+  <div class="gmx-grid" id="gmxLvl">
+    <button class="gmx-card sel" data-l="normal"><div class="e">🙂</div><b>عادي</b><span>أسئلة أساسية عن عضيات الخلية، +20 لكل جزيرة</span></button>
+    <button class="gmx-card" data-l="hard"><div class="e">🔥</div><b>صعب</b><span>سيناريوهات وتفكير عميق، +30 لكل جزيرة</span></button>
+  </div>
+  <div id="gmxNames"></div>
+  <button class="gmx-btn" id="gmxGo" style="display:none">يلا نبدأ ←</button>
+</div></div>
+
+<!-- instructions -->
+<div id="gmxIns" class="gmx-ov"><div class="gmx-box">
+  <div class="gmx-h">📖 طريقة اللعب</div>
+  <ul class="gmx-list">
+    <li>🎯 <b>الهدف:</b> ساعدي علاء الدين يجمع 10 أحجار كريمة من 10 جزر، ويلاقي الكنز.</li>
+    <li>🗺️ <b>3 مراحل:</b> الجزر العشر ← شيفرة المدينة ← خريطة الكنز.</li>
+    <li>🏝️ اضغطي على رقم أي جزيرة وجاوبي سؤال العملاق. كل جواب صح = حجر كريم ونقاط.</li>
+    <li>❤️ إلك <b>3 محاولات</b> بكل جزيرة. ثلاث غلطات = علاء الدين بينحبس وبترجعي من البداية.</li>
+    <li>⭐ <b>عادي:</b> أسئلة أساسية و+20. <b>صعب:</b> سيناريوهات تفكير و+30.</li>
+    <li>🔐 بعد الأحجار: رتّبي الأحرف لتعرفي اسم المدينة، وبعدها لاقي شارع المصباح (4 محاولات).</li>
+    <li>⏱️ الوقت الكلي <b>30 دقيقة</b>، و⏸️ استراحة طارئة 30 ثانية مرتين بس.</li>
+    <li>🏆 لما تلاقي الكنز بتاخدي الكأس و<b>+30 نقطة</b>، بعدها ورقتين عمل، ونتيجتك، وجائزة المارد 🧞.</li>
+    <li>🔄 كل مرة بتلعبي بتطلعلك أسئلة مختلفة!</li>
+  </ul>
+  <button class="gmx-btn" id="gmxInsOk">فهمت، يلا! ←</button>
+</div></div>
+
+<!-- stage info -->
+<div id="gmxStage" class="gmx-ov"><div class="gmx-box">
+  <div class="gmx-stage" id="gmxStN"></div>
+  <div class="gmx-h" id="gmxStT"></div>
+  <ul class="gmx-list" id="gmxStL"></ul>
+  <button class="gmx-btn" id="gmxStOk">ابدأ المرحلة ←</button>
+</div></div>
+
+<!-- results -->
+<div id="s-res" class="screen"><div class="gmx-box" style="max-height:none;margin:0 auto">
+  <div class="gmx-h">📊 نتيجتك النهائية</div>
+  <div class="gmx-sub" id="gmxRName"></div>
+  <div style="font-size:3rem" id="gmxREm">🌟</div>
+  <div class="gmx-h" style="font-size:1.35rem" id="gmxRGrade"></div>
+  <div class="gmx-rgrid">
+    <div class="gmx-rc"><div class="v" id="gmxRPts">0</div><div class="k">💎 النقاط</div></div>
+    <div class="gmx-rc"><div class="v" id="gmxRTime">00:00</div><div class="k">⏱️ الوقت</div></div>
+    <div class="gmx-rc"><div class="v" id="gmxRRank">-</div><div class="k">🏅 ترتيبك</div></div>
+    <div class="gmx-rc"><div class="v" id="gmxRMis">0</div><div class="k">❌ الأخطاء</div></div>
+    <div class="gmx-rc"><div class="v" id="gmxRW1">-</div><div class="k">📝 ورقة عمل 1</div></div>
+    <div class="gmx-rc"><div class="v" id="gmxRW2">-</div><div class="k">🔥 ورقة عمل 2</div></div>
+  </div>
+  <div id="gmxRPl"></div>
+  <div class="gmx-lb" id="gmxRLb"></div>
+  <button class="gmx-btn" onclick="gmxPrize()">🧞 جائزة المارد المخفية!</button>
+  <button class="gmx-btn alt" onclick="if(window.openWorksheets)openWorksheets()">📝 أوراق العمل</button>
+  <button class="gmx-btn alt" onclick="location.href='index.html'">🏠 الرئيسية</button>
+</div></div>
+
+<!-- genie hidden prizes -->
+<div id="s-prize" class="screen"><div class="gmx-box" style="max-height:none;margin:0 auto">
+  <div class="gmx-h">🧞 شبيك لبيك! اختاري صندوق</div>
+  <div class="gmx-sub">الجوائز مخفية… جائزة وحدة بس!</div>
+  <div class="gmx-boxes" id="gmxBoxes"></div>
+  <div id="gmxPz" class="gmx-badge" style="display:none"></div>
+  <button class="gmx-btn alt" onclick="restartAll()">🔄 مغامرة جديدة</button>
+  <button class="gmx-btn alt" onclick="location.href='index.html'">🏠 الرئيسية</button>
+</div></div>
+
+<button id="gmxHelp" title="طريقة اللعب">❓</button>
+
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  function shuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function fmt(s){s=Math.max(0,Math.round(s));var m=Math.floor(s/60),r=s%60;return(m<10?'0':'')+m+':'+(r<10?'0':'')+r;}
+  function e2(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function B(q,o,e){return{q:q,opts:o,ans:0,exp:e};}
+
+  /* ---------- banks ---------- */
+  var NORMAL=[
+    B("ما العضية التي تُشبه «محطة الكهرباء» في الخلية؟",["الميتوكوندريا","الفجوة","الجدار الخلوي","النوية"],"الميتوكوندريا بتحرر الطاقة اللي بتشغّل الخلية."),
+    B("ما التركيب الذي يحيط بالخلية ويشبه «بوّاب القلعة»؟",["الغشاء البلازمي","الريبوسوم","الليسوسوم","النوية"],"الغشاء البلازمي بيقرر شو بيدخل وشو بيطلع."),
+    B("أي عضية تشبه «عامل التنظيف» الذي يتخلص من الفضلات؟",["الليسوسوم","النواة","الميتوكوندريا","الريبوسوم"],"الليسوسوم فيه إنزيمات بتهضم الفضلات."),
+    B("أي عضية تشبه «غرفة القيادة» في سفينة الخلية؟",["النواة","الفجوة","السيتوبلازم","جهاز غولجي"],"النواة بتتحكم بكل أنشطة الخلية."),
+    B("أي عضية صغيرة تعمل مثل «مصنع» يصنع البروتين؟",["الريبوسوم","الليسوسوم","الفجوة","الجدار الخلوي"],"الريبوسومات هي مصانع البروتين."),
+    B("شبكة من القنوات تنقل المواد داخل الخلية تُسمّى:",["الشبكة الإندوبلازمية","الفجوة","النوية","الجدار الخلوي"],"الشبكة الإندوبلازمية متل الطرق جوّا الخلية."),
+    B("ما الذي يميّز الشبكة الإندوبلازمية الخشنة عن الملساء؟",["وجود ريبوسومات على سطحها","وجود كلوروفيل فيها","وجود نواة داخلها","لونها الأخضر"],"الريبوسومات على سطحها بتخليها تبيّن خشنة."),
+    B("أين يوجد الـ DNA في الخلية الحيوانية بشكل رئيسي؟",["داخل النواة","داخل الليسوسوم","في الغشاء البلازمي","في الفجوة"],"المادة الوراثية محفوظة جوّا النواة."),
+    B("أي عضية تخزّن الماء والغذاء والفضلات؟",["الفجوة","الريبوسوم","النوية","جهاز غولجي"],"الفجوة متل المخزن."),
+    B("ما العضية الخضراء التي تصنع الغذاء في النبات؟",["البلاستيدة الخضراء","الليسوسوم","الميتوكوندريا","النوية"],"البلاستيدة الخضراء بتصنع الغذاء بالبناء الضوئي."),
+    B("أي مما يلي ليس عضية داخل الخلية؟",["الدم","الريبوسوم","النواة","جهاز غولجي"],"الدم نسيج فيه خلايا كثيرة، مش عضية."),
+    B("ما الغلاف الذي يحيط بالنواة وفيه ثقوب صغيرة؟",["الغلاف النووي","الجدار الخلوي","الفجوة","الغشاء الخارجي للخلية"],"الغلاف النووي فيه ثقوب بتمرّ منها مواد بين النواة والسيتوبلازم."),
+    B("كم غشاء يحيط بالميتوكوندريا؟",["غشاءان","غشاء واحد","لا يحيط بها غشاء","أربعة أغشية"],"الميتوكوندريا إلها غشاء خارجي وغشاء داخلي متعرج."),
+    B("أي من العضيات التالية لا يحيط بها غشاء؟",["الريبوسوم","النواة","الميتوكوندريا","الليسوسوم"],"الريبوسوم ما إله غشاء."),
+    B("ماذا يحدث داخل الميتوكوندريا؟",["تحرير الطاقة من الغذاء","صنع الغذاء من الضوء","هضم الفضلات","تخزين الماء"],"الميتوكوندريا بتحرر طاقة الغذاء بالتنفس الخلوي."),
+    B("ماذا تفعل الخلية بالعضيات القديمة التالفة؟",["تهضمها الليسوسومات وتعيد استخدام موادها","تبقيها كما هي","تحولها إلى نواة","تخرجها مع الدم"],"الليسوسومات بتعيد تدوير المواد."),
+    B("أي العضيات التالية موجودة في الخلية الحيوانية والنباتية معاً؟",["النواة والريبوسومات","البلاستيدة والجدار الخلوي","الجدار والفجوة الكبيرة","البلاستيدة فقط"],"النواة والريبوسومات بكل الخليتين."),
+    B("ما وظيفة الحويصلات الصغيرة التي تخرج من جهاز غولجي؟",["تحمل البروتينات إلى أماكنها","تصنع الطاقة","تصنع الكلوروفيل","تحمي النواة"],"الحويصلات متل طرود البريد."),
+    B("ما الذي يتحكم في جميع أنشطة الخلية؟",["النواة","الفجوة","السيتوبلازم","الليسوسوم"],"النواة مركز التحكم."),
+    B("أين تتكوّن أجزاء الريبوسومات؟",["في النوية داخل النواة","في الفجوة","في الجدار الخلوي","في الليسوسوم"],"النوية بتصنع أجزاء الريبوسومات.")
+  ];
+  var HARD=QS.map(function(q){return{q:q.q,opts:q.opts.slice(),ans:q.ans,exp:q.exp};}).concat([
+    B("خلية نشيطة أظهرت تحت المجهر مئات الميتوكوندريا. ماذا نستنتج؟",["أنها تستهلك طاقة كبيرة","أنها لا تنقسم أبداً","أنها خلية نباتية حتماً","أنها خلية ميتة"],"عدد الميتوكوندريا بيدل على حاجة الخلية للطاقة."),
+    B("دواء يمنع عمل الريبوسومات في البكتيريا. لماذا يقتلها؟",["لأنها لن تصنع البروتينات اللازمة لحياتها","لأنه يذيب جدارها","لأنه يزيد طاقتها","لأنه يكبّر نواتها"],"بدون بروتينات البكتيريا ما بتعيش."),
+    B("خلية أُزيلت نواتها بقيت تعمل ساعات ثم ماتت. لماذا لم تمت فوراً؟",["لأن البروتينات وRNA المصنوعة سابقاً بقيت تعمل مؤقتاً","لأن النواة غير مهمة","لأن الميتوكوندريا صنعت نواة جديدة","لأن الغشاء حلّ محل النواة"],"اللي انصنع قبل بيضل شغال لفترة قصيرة."),
+    B("لماذا تحتاج خلايا الغدد اللعابية جهاز غولجي متطوراً؟",["لأنها تفرز إنزيمات بكميات كبيرة","لأنها تخزن الماء","لأنها تقوم بالبناء الضوئي","لأنها لا تحتاج طاقة"],"الإفراز الكثير بيحتاج تغليف كثير."),
+    B("كيف يحمي الليسوسوم الخلية من الميكروبات؟",["يهضم الميكروبات التي تبتلعها الخلية","يصنع لها جداراً","يحوّلها لريبوسومات","يرسلها للنواة"],"الليسوسوم بيفكك الميكروبات بإنزيماته."),
+    B("لو كانت الخلية مدينة، أي ربط صحيح؟",["النواة = البلدية، الميتوكوندريا = محطة الكهرباء، الريبوسوم = المصنع","النواة = المصنع، الريبوسوم = البلدية","الليسوسوم = محطة الكهرباء","الغشاء = المصنع، النواة = الطريق"],"كل عضية إلها دور متل مرافق المدينة."),
+    B("لماذا لا تمر البروتينات الكبيرة بحرية عبر الغشاء البلازمي؟",["لأن الغشاء يسمح بمرور مواد معينة فقط حسب حجمها وطبيعتها","لأن الغشاء صلب كالجدار","لأن البروتين يذوب فيه","لأنها تُهضم فوراً"],"الغشاء اختياري النفاذية."),
+    B("ما العلاقة بين الشبكة الإندوبلازمية الخشنة وجهاز غولجي؟",["الشبكة تصنع البروتين وتنقله في حويصلات إلى غولجي ليعدّله ويغلفه","غولجي يصنع الريبوسومات للشبكة","لا علاقة بينهما","الشبكة تهضم ما يصنعه غولجي"],"الاثنين بيشتغلوا متل خط إنتاج."),
+    B("خلية تصنع الكثير من الهرمونات الدهنية. أي عضية تكثر فيها؟",["الشبكة الإندوبلازمية الملساء","الليسوسوم","البلاستيدة","النوية"],"الشبكة الملساء بتصنع الدهون."),
+    B("لماذا توجد الريبوسومات في كل الخلايا حتى البكتيريا؟",["لأن كل خلية تحتاج صنع البروتين لتعيش","لأنها تصنع الطاقة","لأنها تحمي الجدار","لأنها تخزن الماء"],"صنع البروتين ضروري لكل حياة.")
+  ]);
+
+  /* ---------- state ---------- */
+  var G={mode:'solo',lvl:'normal',pl:[{n:'',pts:0,ok:0,bad:0}],cur:0,mis:0,t0:0,t1:0,st:{},clock:false,saved:false,ready:false};
+  window.GMX=G;
+  function multi(){return G.mode==='duel'||G.mode==='team';}
+  function maxA(){return G.mode==='exam'?1:3;}
+
+  /* hearts row: 3 hearts */
+  (function(){var h2=$('qh2');if(h2&&!$('qh3')){var s=document.createElement('span');s.className='ah';s.id='qh3';s.textContent='❤️';h2.parentNode.insertBefore(s,h2.nextSibling);var l=h2.parentNode.querySelector('.att-lbl');if(l)l.textContent='3 محاولات';}})();
+  /* turn banner */
+  (function(){var mid=document.querySelector('#s-question .cb-mid');if(!mid)return;var t=document.createElement('div');t.id='gmxTurn';mid.insertBefore(t,mid.firstChild);})();
+  function turnUI(){var t=$('gmxTurn');if(!t)return;if(!multi()){t.style.display='none';return;}t.style.display='block';t.textContent='🎯 الدور: '+G.pl[G.cur].n+'  ·  '+G.pl.map(function(p){return p.n+' '+p.pts;}).join(' | ');}
+
+  /* ---------- mode + level screen ---------- */
+  var selMode=null,selLvl='normal';
+  function namesHtml(m){
+    if(m==='solo'||m==='exam')return '<input class="gmx-in" id="gmxN0" placeholder="اكتبي اسمك" maxlength="20">';
+    var a=m==='team'?'اسم الفريق الأول':'اسم اللاعبة الأولى',b=m==='team'?'اسم الفريق الثاني':'اسم اللاعبة الثانية';
+    return '<input class="gmx-in" id="gmxN0" placeholder="'+a+'" maxlength="20"><input class="gmx-in" id="gmxN1" placeholder="'+b+'" maxlength="20">';
+  }
+  document.querySelectorAll('#gmxMode .gmx-card[data-m]').forEach(function(c){c.onclick=function(){selMode=c.getAttribute('data-m');document.querySelectorAll('#gmxMode .gmx-card[data-m]').forEach(function(x){x.classList.toggle('sel',x===c);});$('gmxNames').innerHTML=namesHtml(selMode);$('gmxGo').style.display='block';};});
+  document.querySelectorAll('#gmxLvl .gmx-card').forEach(function(c){c.onclick=function(){selLvl=c.getAttribute('data-l');document.querySelectorAll('#gmxLvl .gmx-card').forEach(function(x){x.classList.toggle('sel',x===c);});};});
+  function showModes(){selMode=null;document.querySelectorAll('#gmxMode .gmx-card[data-m]').forEach(function(c){c.classList.remove('sel');});$('gmxNames').innerHTML='';$('gmxGo').style.display='none';$('gmxMode').classList.add('on');}
+  $('gmxGo').onclick=function(){
+    if(!selMode)return;
+    var n0=($('gmxN0')&&$('gmxN0').value.trim())||(selMode==='team'?'الفريق الأول':(selMode==='duel'?'اللاعبة 1':'بطلة المغامرة'));
+    G.mode=selMode;G.lvl=selLvl;G.pl=[{n:n0,pts:0,ok:0,bad:0}];
+    if(multi())G.pl.push({n:($('gmxN1')&&$('gmxN1').value.trim())||(selMode==='team'?'الفريق الثاني':'اللاعبة 2'),pts:0,ok:0,bad:0});
+    G.cur=0;G.mis=0;G.t0=Date.now();G.t1=0;G.st={};G.saved=false;G.ready=true;G.final=null;window.GMX_WS1=null;window.GMX_WSF=null;
+    var bar=$('pvkBar');if(bar)bar.style.display=(G.mode==='exam')?'none':'';
+    if(!G.clock){G.clock=true;try{PVKit.resumeTimer();}catch(e){}}
+    $('gmxMode').classList.remove('on');
+    showIns(function(){startAdventure();});
+  };
+
+  /* ---------- instructions ---------- */
+  var insCb=null;
+  function showIns(cb){insCb=cb||null;$('gmxIns').classList.add('on');}
+  $('gmxInsOk').onclick=function(){$('gmxIns').classList.remove('on');var c=insCb;insCb=null;if(c)c();};
+  $('gmxHelp').onclick=function(){showIns(null);};
+
+  /* ---------- stage info ---------- */
+  function showStage(n,title,lines){$('gmxStN').textContent='المرحلة '+n+' من 3';$('gmxStT').textContent=title;$('gmxStL').innerHTML=lines.map(function(l){return '<li>'+l+'</li>';}).join('');$('gmxStage').classList.add('on');}
+  $('gmxStOk').onclick=function(){$('gmxStage').classList.remove('on');};
+
+  /* ---------- flow hooks ---------- */
+  var _begin=beginAdventure;
+  window.beginAdventure=function(){
+    if(doneI.length>0||collGems.length>0){_begin();return;}
+    if(!G.ready){showModes();return;}
+    _begin();
+  };
+  function fillQS(){
+    var src=shuf(G.lvl==='hard'?HARD:NORMAL).slice(0,10);
+    for(var i=0;i<10;i++){
+      var it=src[i],ord=shuf(it.opts.map(function(t,k){return{t:t,k:k};})),a=0;
+      ord.forEach(function(o,j){if(o.k===it.ans)a=j;});
+      QS[i].q=it.q;QS[i].opts=ord.map(function(o){return o.t;});QS[i].ans=a;QS[i].exp=it.exp;
+    }
+  }
+  var _start=startAdventure;
+  window.startAdventure=function(){
+    fillQS();G.pl.forEach(function(p){p.pts=0;p.ok=0;p.bad=0;});G.cur=0;G.mis=0;
+    _start();turnUI();
+    if(G.ready&&!G.st[1]){G.st[1]=1;showStage(1,'🏝️ الجزر العشر',['اضغطي على رقم أي جزيرة وجاوبي سؤال العملاق.','كل جواب صح = حجر كريم و'+(G.lvl==='hard'?'+30':'+20')+' نقطة.',
+      G.mode==='exam'?'📝 وضع الامتحان: محاولة وحدة لكل جزيرة.':(multi()?'👥 اللعب بالدور: كل جزيرة لوحدة.':'❤️ 3 محاولات بكل جزيرة، وثلاث غلطات = ترجعي من البداية.')]);}
+  };
+  var _restartAll=restartAll;
+  window.restartAll=function(){G.ready=false;G.st={};_restartAll();showModes();};
+
+  var _goIsland=goIsland;
+  window.goIsland=function(idx){
+    _goIsland(idx);
+    if(doneI.includes(idx))return;
+    isAtts=(islAtts[idx]===undefined?maxA():islAtts[idx]);
+    var m=maxA();$('qh1').className='ah';$('qh2').className=(m<2||isAtts<=1)?'ah lost':'ah';$('qh3').className=(m<3||isAtts<=2)?'ah lost':'ah';
+    turnUI();
+  };
+
+  window.checkIsland=function(sel,btn,q){
+    if(isAns)return;
+    var all=document.querySelectorAll('#optsGrid .opt'),fb=$('qFb'),me=G.pl[G.cur];
+    if(sel===q.ans){
+      var pts=G.lvl==='hard'?30:20;
+      isAns=true;all.forEach(function(b){b.disabled=true;});btn.classList.add('correct');score+=pts;me.pts+=pts;me.ok++;
+      delete islAtts[curI];collGems.push(q.icon);collLetters.push(q.letter);
+      var gs=$('gs'+(collGems.length-1));if(gs){gs.textContent=q.icon;gs.classList.add('lit');}
+      $('gemCount').textContent=collGems.length;
+      fb.textContent=G.mode==='exam'?'✅ إجابة صحيحة!':'✅ '+q.exp;fb.className='fb ok show';
+      pendGem=q;$('btnNQ').className='btn-nq show';turnUI();return;
+    }
+    btn.classList.add('wrong');btn.disabled=true;isAtts--;islAtts[curI]=isAtts;G.mis++;
+    if(isAtts>0){
+      $(isAtts===2?'qh3':'qh2').className='ah lost';
+      fb.textContent=isAtts===2?'❌ خطأ! باقيلك محاولتين.':'❌ خطأ! محاولة أخيرة...';fb.className='fb bad show';
+      setTimeout(function(){btn.classList.remove('wrong');btn.disabled=false;fb.className='fb';fb.textContent='';},1300);
+      return;
+    }
+    $('qh1').className='ah lost';$('qh2').className='ah lost';$('qh3').className='ah lost';
+    all.forEach(function(b){b.disabled=true;});isAns=true;all[q.ans].classList.add('correct');me.bad++;
+    if(G.mode==='solo'){
+      fb.textContent='❌ الإجابة: '+q.opts[q.ans];fb.className='fb bad show';
+      setTimeout(function(){
+        $('cageTitle').textContent='😱 3 أخطاء! ستعود للبداية!';$('cageBtn').textContent='🔄 أعد المغامرة من البداية';
+        $('cageMsg').innerHTML='❌ الإجابة: <strong>'+e2(q.opts[q.ans])+'</strong><br><strong>أخطأت 3 مرات! ستعود من بداية المغامرة!</strong>';
+        $('cageOv').className='cage-ov show';
+      },1500);
+    }else{
+      /* exam / duel / team: no restart — the gem is given without points so the story can continue */
+      fb.textContent='❌ الإجابة الصحيحة: '+q.opts[q.ans];fb.className='fb bad show';
+      delete islAtts[curI];collGems.push(q.icon);collLetters.push(q.letter);
+      var gs2=$('gs'+(collGems.length-1));if(gs2){gs2.textContent=q.icon;gs2.classList.add('lit');}
+      $('gemCount').textContent=collGems.length;pendGem=q;$('btnNQ').className='btn-nq show';
+    }
+    turnUI();
+  };
+  var _closeGem=closeGemPop;
+  window.closeGemPop=function(){if(multi())G.cur=(G.cur+1)%G.pl.length;_closeGem();turnUI();};
+
+  var _goArrange=goArrange;
+  window.goArrange=function(){_goArrange();if(!G.st[2]){G.st[2]=1;showStage(2,'🔐 شيفرة المدينة',['استعملي شيفرة الأحجار لترتيب الأحرف.','اختاري اسم المدينة الصحيح. إلك 4 محاولات.','الجواب الصح = +30 نقطة.']);}};
+  var _goPath=goPath;
+  window.goPath=function(){_goPath();if(!G.st[3]){G.st[3]=1;showStage(3,'🗺️ خريطة الكنز',['دوّري على رمز المصباح المضيء بالخريطة.','اختاري رقم الشارع الصحيح. إلك 4 محاولات.','بعدها سؤال تفكير: ليش هاد الشارع؟']);}};
+
+  /* ---------- trophy +30 ---------- */
+  var _showWin=showWin;
+  window.showWin=function(){
+    G.t1=Date.now();score+=30;G.pl[G.cur].pts+=30;G.final=score;
+    _showWin();
+    var cup=document.querySelector('#s-win .pv-cup');
+    if(cup&&!document.querySelector('#s-win .gmx-badge')){var b=document.createElement('div');b.className='gmx-badge';b.textContent='🏆 مكافأة الكأس: +30 نقطة!';cup.parentNode.insertBefore(b,cup.nextSibling);}
+    if(!$('gmxResBtn')){var r=document.createElement('button');r.className='btn-again';r.id='gmxResBtn';r.textContent='📊 نتيجتك';r.onclick=function(){gmxResults();};var ws=$('alWs');ws.parentNode.insertBefore(r,ws.nextSibling);}
+  };
+
+  /* ---------- results ---------- */
+  function lbGet(){try{return JSON.parse(localStorage.getItem('aladdin_lb_'+G.lvl)||'[]');}catch(e){return [];}}
+  function lbSet(a){try{localStorage.setItem('aladdin_lb_'+G.lvl,JSON.stringify(a.slice(0,50)));}catch(e){}}
+  window.gmxResults=function(){
+    var secs=((G.t1||Date.now())-(G.t0||Date.now()))/1000,fin=G.final!=null?G.final:score;
+    var w1=window.GMX_WS1,wf=window.GMX_WSF,w1s=null,w2s=null;
+    if(w1){w1s=w1.s+'/'+w1.t;} if(wf&&w1){w2s=(wf.s-w1.s)+'/'+(wf.t-w1.t);}
+    var pct=wf&&wf.t?Math.round(wf.s/wf.t*100):Math.round(G.pl.reduce(function(s,p){return s+p.ok;},0)/10*100);
+    var gr=pct>=90?['🏆','ممتاز']:pct>=80?['🌟','جيد جداً']:pct>=65?['👍','جيد']:pct>=50?['🙂','مقبول']:['📚','تحتاج مراجعة'];
+    $('gmxREm').textContent=gr[0];$('gmxRGrade').textContent=gr[1]+' · '+pct+'%';
+    var mn={solo:'فردي',duel:'تحدّي',team:'فرق',exam:'امتحان'}[G.mode];
+    $('gmxRName').textContent=(multi()?G.pl.map(function(p){return p.n;}).join(' ضد '):G.pl[0].n)+' · وضع '+mn+' · '+(G.lvl==='hard'?'🔥 صعب':'🙂 عادي');
+    $('gmxRPts').textContent=fin;$('gmxRTime').textContent=fmt(secs);$('gmxRMis').textContent=G.mis;
+    $('gmxRW1').textContent=w1s||'-';$('gmxRW2').textContent=w2s||'-';
+    var pl=$('gmxRPl');pl.innerHTML='';
+    if(multi()){var s=G.pl.slice().sort(function(a,b){return b.pts-a.pts;});
+      pl.innerHTML='<div class="gmx-badge">'+(s[0].pts===s[1].pts?'🤝 تعادل!':'👑 الفائز: '+e2(s[0].n))+'</div><div class="gmx-lb">'+G.pl.map(function(p){return '<div><span>'+e2(p.n)+'</span><span>'+p.pts+' نقطة · ✅'+p.ok+' · ❌'+p.bad+'</span></div>';}).join('')+'</div>';}
+    var lb=lbGet();
+    if(!G.saved){G.saved=true;G.rec={n:G.pl.map(function(p){return p.n;}).join(' / '),p:fin,t:Math.round(secs),d:Date.now()};lb.push(G.rec);lb.sort(function(a,b){return b.p-a.p||a.t-b.t;});lbSet(lb);}
+    var rank=1;for(var i=0;i<lb.length;i++){if(lb[i].d===G.rec.d){rank=i+1;break;}}
+    $('gmxRRank').textContent=rank+' / '+lb.length;
+    $('gmxRLb').innerHTML='<div style="background:none;color:#ffd700;font-weight:900;justify-content:center">🏅 لوحة الشرف · '+(G.lvl==='hard'?'المستوى الصعب':'المستوى العادي')+'</div>'+
+      lb.slice(0,5).map(function(r,i){return '<div class="'+(r.d===G.rec.d?'me':'')+'"><span>'+(i+1)+'. '+e2(r.n)+'</span><span>'+r.p+' · '+fmt(r.t)+'</span></div>';}).join('');
+    showS('s-res');
+  };
+
+  /* ---------- genie hidden prizes (random every time) ---------- */
+  var PRZ=[['🏆','فزتِ بـ20 نقطة إضافية!'],['🎁','هدية من المعلمة!'],['🎓','نجمة التميّز على لوحة الصف!'],['🎲','فرصة لاختيار سؤال للصف!'],['🪄','إعفاء من واجب واحد!'],['💎','لقب «حارسة المصباح» لهذا الأسبوع!']];
+  window.gmxPrize=function(){
+    var pz=shuf(PRZ).slice(0,4),box=$('gmxBoxes'),done=false;box.innerHTML='';$('gmxPz').style.display='none';
+    pz.forEach(function(p,i){var b=document.createElement('button');b.className='gmx-gb';b.innerHTML='<span class="i">🎁</span>صندوق '+(i+1);
+      b.onclick=function(){if(done)return;done=true;b.classList.add('open');b.innerHTML='<span class="i">'+p[0]+'</span>'+p[1];
+        box.querySelectorAll('.gmx-gb').forEach(function(x){if(x!==b)x.classList.add('dim');});
+        var z=$('gmxPz');z.textContent='🧞 '+p[1];z.style.display='inline-block';};
+      box.appendChild(b);});
+    showS('s-prize');
+  };
+
+  /* ---------- pause hooks + clock starts with play ---------- */
+  window.PVKIT_PAUSE=function(){window.__gmxP=true;};
+  window.PVKIT_RESUME=function(){window.__gmxP=false;};
+  function hold(){try{if(!G.clock)PVKit.pauseTimer();}catch(e){}}
+  hold();window.addEventListener('load',hold);setTimeout(hold,300);
+
+  /* ---------- animated cover ---------- */
+  (function(){
+    var sp=$('s-splash');if(!sp)return;
+    var v=document.createElement('video');v.className='gmx-covervid';v.muted=true;v.loop=true;v.autoplay=true;v.setAttribute('playsinline','');v.setAttribute('muted','');
+    v.src='aladdin_cover.mp4';v.onerror=function(){v.remove();};sp.insertBefore(v,sp.firstChild);
+    var pl=function(){var p=v.play();if(p&&p.catch)p.catch(function(){});};pl();
+    ['touchstart','click'].forEach(function(ev){document.addEventListener(ev,pl,{once:true,passive:true});});
+  })();
+
+  try{window.bgMusic=document.getElementById('bgm');}catch(e){}
+})();
 </script>
