@@ -930,14 +930,15 @@ function studyLabels(){$('#slabels').innerHTML=PARTS.map((p,i)=>{const DY={7:-2,
 function fitLabels(){const box=$('#slabels').getBoundingClientRect();if(!box.width)return;$('#slabels').querySelectorAll('.slb.r').forEach(el=>{el.classList.remove('w');el.style.right='';const i=+el.dataset.i;el.style.left=(23+PARTS[i][1]/848*54+0.8).toFixed(1)+'%';
   if(el.getBoundingClientRect().right>box.right-3){el.style.left='auto';el.style.right='1%';if(el.getBoundingClientRect().width>box.width*.36)el.classList.add('w');}});}
 window.addEventListener('resize',()=>{if($('#lab').classList.contains('study'))fitLabels();});
-function labStudy(){labStep(0);requestAnimationFrame(fitLabels);let n=STUDY;
-  $('#labPanel').innerHTML=`<div class="qhead"><span>ادرسوا أجزاء المجهر</span><span class="qt">دراسة</span></div>
-  <div class="stime"><span>بعد انتهاء الوقت ستسمّون الأجزاء بأنفسكم على صورة بلا أسماء.</span><b id="sClock">2:40</b></div><div class="sbar"><i id="sBar" style="width:100%"></i></div>
+function labStudy(review){labStep(0);requestAnimationFrame(fitLabels);const TOT=review?60:STUDY;let n=TOT;
+  const next=()=>{clearInterval(labT);sfx.reveal();if(review){labStep(1);labNQ();}else labName();window.scrollTo({top:0,behavior:'smooth'});};
+  $('#labPanel').innerHTML=`<div class="qhead"><span>${review?'شوفوا صورة المجهر مرة ثانية':'ادرسوا أجزاء المجهر'}</span><span class="qt">${review?'مراجعة':'دراسة'}</span></div>
+  <div class="stime"><span>${review?'ركّزوا على مكان كل جزء، وبعدها بتكمّلوا من نفس السؤال.':'بعد انتهاء الوقت ستسمّون الأجزاء بأنفسكم على صورة بلا أسماء.'}</span><b id="sClock"></b></div><div class="sbar"><i id="sBar" style="width:100%"></i></div>
   <div class="pinfo" id="sInfo"><p class="qnote" style="margin:0 0 12px">انقروا أي اسم على الصورة لمعرفة وظيفة الجزء.</p></div>
-  <button class="btn" id="sSkipL">تخطّوا وابدأوا التحدي ←</button>`;
-  const draw=()=>{$('#sClock').textContent=Math.floor(n/60)+':'+String(n%60).padStart(2,'0');$('#sClock').className=n<=20?'warn':'';$('#sBar').style.width=(n/STUDY*100)+'%';};
-  draw();clearInterval(labT);labT=setInterval(()=>{n--;draw();if(n<=0){clearInterval(labT);sfx.reveal();labName();window.scrollTo({top:0,behavior:'smooth'});}},1000);
-  $('#sSkipL').onclick=()=>{clearInterval(labT);sfx.reveal();labName();window.scrollTo({top:0,behavior:'smooth'});};}
+  <button class="btn" id="sSkipL">${review?'جاهزين، كمّلوا التسمية ←':'تخطّوا وابدأوا التحدي ←'}</button>`;
+  const draw=()=>{$('#sClock').textContent=Math.floor(n/60)+':'+String(n%60).padStart(2,'0');$('#sClock').className=n<=20?'warn':'';$('#sBar').style.width=(n/TOT*100)+'%';};
+  draw();clearInterval(labT);labT=setInterval(()=>{n--;draw();if(n<=0)next();},1000);
+  $('#sSkipL').onclick=next;}
 function labLearn(){labStep(0);const i=L.i,p=PARTS[i];L.seen.add(i);
   $('#marks').querySelectorAll('.mk').forEach(m=>{const k=+m.dataset.i;m.className='mk'+(k===i?' cur':L.seen.has(k)?' seen':'');});
   $('#labPanel').innerHTML=`<div class="qhead"><span>الجزء ${i+1} من ${PARTS.length}</span><span class="qt">تعرّفوا</span></div><div class="pinfo"><div class="pn">${p[0]}</div><p>${p[3]}</p></div>
@@ -948,7 +949,7 @@ function labLearn(){labStep(0);const i=L.i,p=PARTS[i];L.seen.add(i);
   const go=$('#lGo');if(go)go.onclick=()=>{sfx.reveal();labName();};
   const j=$('#lJump');if(j)j.onclick=e=>{e.preventDefault();sfx.reveal();labName();};}
 function labName(){clearInterval(labT);labStep(1);$('#marks').querySelectorAll('.mk').forEach(m=>m.className='mk');L.done=new Set();L.nq=shuf([...PARTS.keys()]);L.ni=0;labNQ();window.scrollTo({top:0,behavior:'smooth'});}
-function labNQ(){const i=L.nq[L.ni],panel=$('#labPanel');delete panel.dataset.lock;let first=true;
+function labNQ(){const i=L.nq[L.ni],panel=$('#labPanel');delete panel.dataset.lock;let first=true;L.wrong=0;
   $('#marks').querySelectorAll('.mk').forEach(m=>{const k=+m.dataset.i;m.className='mk'+(L.done.has(k)?' ok':'');});
   const opts=shuf([i,...shuf([...PARTS.keys()].filter(k=>k!==i)).slice(0,3)]);
   panel.innerHTML=`<div class="qhead"><span>الجزء ${L.ni+1} من ${PARTS.length}</span><span class="qt">اختاروا الرقم</span></div>
@@ -959,8 +960,8 @@ function labNQ(){const i=L.nq[L.ni],panel=$('#labPanel');delete panel.dataset.lo
     if(k===i){panel.dataset.lock=1;sfx.ok();L.pts+=first?5:2;L.done.add(i);if(b)b.classList.add('ok');mk(i).className='mk ok';
       $('#lfb').innerHTML=`<div class="hint" style="background:#dff3e6;border-color:#2f8a5b">✓ صحيح! رقم ${i+1} هو ${PARTS[i][0]}.</div>`;
       setTimeout(()=>{L.ni++;if(L.ni<PARTS.length)labNQ();else{sfx.win();panel.innerHTML=`<div class="hint" style="background:#dff3e6;border-color:#2f8a5b">أحسنتم! عرفتم أرقام الأجزاء الـ${PARTS.length} كلها.</div><button class="btn next" id="lToF" style="margin-top:10px">التالي: وظائف الأجزاء ←</button>`;$('#lToF').onclick=()=>{sfx.click();labFunc();};}},1000);}
-    else{first=false;sfx.no();if(b){b.disabled=true;b.classList.add('no');}const m=mk(k);if(m&&!L.done.has(k)){m.classList.add('bad');setTimeout(()=>m.classList.remove('bad'),700);}
-      $('#lfb').innerHTML='<div class="hint">ليس هذا الرقم، انظروا إلى السهم جيداً وحاولوا مرة أخرى.</div>';}};
+    else{first=false;sfx.no();L.wrong=(L.wrong||0)+1;if(b){b.disabled=true;b.classList.add('no');}if(L.wrong>=2){panel.dataset.lock=1;L.wrong=0;$('#lfb').innerHTML='<div class="hint">خطأين! ارجعوا لصورة المجهر وشوفوها مرة ثانية 🔍</div>';setTimeout(()=>labStudy(true),1600);return;}const m=mk(k);if(m&&!L.done.has(k)){m.classList.add('bad');setTimeout(()=>m.classList.remove('bad'),700);}
+      $('#lfb').innerHTML='<div class="hint">ليس هذا الرقم، باقي لكم محاولة واحدة. انظروا إلى السهم جيداً.</div>';}};
   L.pickNum=pick;panel.querySelectorAll('.numopt').forEach(b=>b.onclick=()=>pick(+b.dataset.k));}
 function labSkip(){clearInterval(labT);if(L.mo)L.mo.disconnect();sfx.click();S.labPts=L.pts||0;startCase();}
 function labFunc(){if(L.mo)L.mo.disconnect();labStep(2);L.fq=shuf([...PARTS.keys()]).slice(0,6);L.fi=0;labFQ();window.scrollTo({top:0,behavior:'smooth'});}
