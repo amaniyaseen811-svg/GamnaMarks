@@ -2044,6 +2044,38 @@ function skipIntro(){
 <button class="btn bgo" id="btnReady" style="display:none" onclick="startGame()">⚔️ ابدأ الإنقاذ!</button>
 <button class="btn" id="btnSkip" onclick="startGame()" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.2);margin-top:5px">⚡ تخطّ وابدأ</button>
 </div></div>
+<style>
+.lvov{position:fixed;inset:0;z-index:5000;background:rgba(0,0,8,.88);display:none;align-items:center;justify-content:center;padding:16px;}
+.lvov.on{display:flex;}
+.lvbox{width:100%;max-width:440px;background:linear-gradient(160deg,#0b0b2e,#06061a);border:2px solid rgba(79,195,247,.35);border-radius:18px;padding:18px 14px;text-align:center;font-family:Tajawal,sans-serif;color:#fff;}
+.lvbox h3{margin:0 0 4px;color:#4fc3f7;font-size:1.15rem;}
+.lvbox .lvsub{color:rgba(255,255,255,.5);font-size:.78rem;margin-bottom:12px;}
+.lvc{width:100%;display:flex;gap:10px;align-items:center;text-align:right;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.1);border-radius:14px;padding:12px;margin-bottom:10px;cursor:pointer;color:#fff;font-family:Tajawal,sans-serif;transition:all .2s;}
+.lvc:hover,.lvc:active{transform:translateY(-2px);}
+.lvc.e:hover{border-color:#4caf50;background:rgba(76,175,80,.12);}
+.lvc.n:hover{border-color:#ffc107;background:rgba(255,193,7,.1);}
+.lvc.h:hover{border-color:#f44336;background:rgba(244,67,54,.12);}
+.lvc .ic{font-size:1.8rem;}
+.lvc .hd{font-weight:900;font-size:.98rem;margin-bottom:2px;}
+.lvc .tx{font-size:.76rem;color:rgba(255,255,255,.6);line-height:1.55;}
+.lvchip{display:inline-block;font-size:.66rem;font-weight:800;border-radius:12px;padding:2px 9px;margin-bottom:6px;}
+.lvchip.easy{background:rgba(76,175,80,.2);color:#81c784;}
+.lvchip.normal{background:rgba(255,193,7,.18);color:#ffc107;}
+.lvchip.hard{background:rgba(244,67,54,.2);color:#ef9a9a;}
+.smhint{display:none;margin:8px auto 0;background:rgba(76,175,80,.15);border:1.5px solid #4caf50;color:#a5d6a7;font-family:Tajawal,sans-serif;font-weight:700;font-size:.8rem;border-radius:20px;padding:6px 16px;cursor:pointer;}
+.smhint.on{display:block;}
+.smhint:disabled{opacity:.4;cursor:default;}
+.opt.gone{opacity:.18;pointer-events:none;}
+</style>
+<div class="lvov" id="lvOv">
+  <div class="lvbox">
+    <h3>🎚️ اختر المستوى</h3>
+    <div class="lvsub">كل مستوى بأسئلة وقوانين مختلفة</div>
+    <button class="lvc e" onclick="smPickLevel('easy')"><span class="ic">🟢</span><span><div class="hd">سهل</div><div class="tx">٣٠ ثانية لكل سؤال، زر تلميح 💡 يحذف خيارين، والخطأ مرتين ما برجّعك من الأول — بتشوف الجواب الصح وبتكمل.</div></span></button>
+    <button class="lvc n" onclick="smPickLevel('normal')"><span class="ic">🟡</span><span><div class="hd">عادي</div><div class="tx">اللعبة الأصلية: ٢٠ ثانية، محاولتان، والخطأ مرتين يرجعك للبداية.</div></span></button>
+    <button class="lvc h" onclick="smPickLevel('hard')"><span class="ic">🔴</span><span><div class="hd">صعب</div><div class="tx">أسئلة تفكير وتحليل تتغير كل مرة، ١٥ ثانية فقط بدون استراحة، و١٥ نقطة للإجابة.</div></span></button>
+  </div>
+</div>
 <div id="p4" class="pg" style="background:linear-gradient(180deg,#03000d,#060520,#000a03);flex-direction:column">
 <div class="phdr">
 <div style="display:flex;align-items:center;gap:7px">
@@ -2062,6 +2094,7 @@ function skipIntro(){
 <div style="display:flex;gap:3px;justify-content:center"><span class="hh" id="h1">❤️</span><span class="hh" id="h2">❤️</span></div>
 </div>
 <div class="qpanel">
+<div class="lvchip normal" id="lvChip">🟡 عادي</div>
 <div class="qbadge" id="qbadge">❓ السؤال 1</div>
 <div class="qtmr-wrap">
   <div class="qtmr-row">
@@ -2090,6 +2123,7 @@ function skipIntro(){
 <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px">
 <div style="color:rgba(255,193,7,.5);font-size:.69rem;font-weight:700;text-align:center;margin-bottom:8px">🔵 اختر الإجابة الصحيحة لإنقاذ السنافر!</div>
 <div class="opts" id="opts"></div>
+<button class="smhint" id="smHint" onclick="smUseHint()">💡 تلميح: احذف خيارين</button>
 </div>
 <div class="rimg" id="rimg"><img id="rimgEl" src="" alt="نتيجة"/></div>
 <div class="fb" id="fb"></div>
@@ -2487,6 +2521,59 @@ var IMG_END="/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhc
 
 var score=0, qi=0, atts=2, answered=false, ctmr=null;
 
+/* ═══════════ المستويات: سهل / عادي / صعب ═══════════ */
+var SM_LEVEL='normal', SM_HINT_USED=false;
+var QS_NORMAL=QS.slice();
+var SM_TIME={easy:30,normal:20,hard:15};
+var SM_PTS={easy:10,normal:10,hard:15};
+/* بنك المستوى الصعب — يُختار منه ١٠ أسئلة عشوائياً كل جولة */
+var QS_HARD=[
+{q:"خلية عضلية تتحرك كثيراً وتحتاج طاقة كبيرة. أيّ عضية تتوقع أن يكثر عددها فيها؟",o:["الليسوسومات","الميتوكوندريا","المريكزات","جهاز جولجي"],a:1,e:"الخلايا التي تحتاج طاقة كبيرة (مثل العضلات) فيها ميتوكوندريا كثيرة لإنتاج ATP!"},
+{q:"إذا تلفت جميع الريبوسومات في خلية، أيّ عملية تتوقف مباشرة؟",o:["إنتاج الطاقة","هضم الفضلات","بناء البروتينات","انقسام النواة"],a:2,e:"الريبوسومات هي مصانع البروتين، فبدونها يتوقف بناء البروتينات!"},
+{q:"ما المسار الصحيح لبروتين تصنعه الخلية لتُخرجه إلى خارجها؟",o:["جولجي ← ريبوسوم ← شبكة إندوبلازمية ← الغشاء","ريبوسوم ← شبكة إندوبلازمية ← جهاز جولجي ← الغشاء البلازمي","النواة ← ليسوسوم ← الغشاء","ميتوكوندريا ← جولجي ← النواة"],a:1,e:"يُصنع البروتين في الريبوسوم، ينتقل عبر الشبكة الإندوبلازمية، يُغلَّف في جولجي، ثم يخرج من الغشاء البلازمي!"},
+{q:"خلية تتراكم فيها العضيات التالفة ولا تتخلص منها. أيّ عضية فيها خلل على الأرجح؟",o:["الليسوسومات","الريبوسومات","النواة","السيتوبلازم"],a:0,e:"الليسوسومات تحتوي إنزيمات هاضمة تتخلص من العضيات التالفة — خللها يسبب التراكم!"},
+{q:"خلية في غدة تفرز إنزيمات بكميات كبيرة. أيّ عضية تكون نشطة جداً فيها لتغليف الإفرازات وإرسالها؟",o:["المريكزات","الليسوسومات","جهاز جولجي","الفجوة"],a:2,e:"جهاز جولجي يعدّل البروتينات ويغلّفها ويرسلها — لذلك ينشط في الخلايا المُفرِزة!"},
+{q:"ماذا يحدث لخلية حيوانية إذا أُزيلت نواتها؟",o:["تنقسم بسرعة أكبر","تفقد مركز التحكم فلا تنقسم وتموت بعد مدة","تتحول لخلية نباتية","لا يتغير شيء"],a:1,e:"النواة مركز التحكم وفيها DNA؛ بدونها لا تستطيع الخلية إدارة أنشطتها أو الانقسام!"},
+{q:"وُجدت خلية فيها مريكزات، ولا يوجد فيها جدار خلوي ولا بلاستيدات خضراء. ما نوعها؟",o:["خلية نباتية","خلية حيوانية","خلية بكتيرية","لا يمكن التحديد"],a:1,e:"المريكزات وغياب الجدار والبلاستيدات صفات الخلية الحيوانية!"},
+{q:"أيّ العضيات التالية موجودة في الخلية الحيوانية والنباتية معاً؟",o:["البلاستيدات الخضراء","الجدار الخلوي","الميتوكوندريا","الفجوة العصارية الكبيرة"],a:2,e:"الميتوكوندريا موجودة في الخليتين، أما الجدار والبلاستيدات والفجوة الكبيرة فهي للنباتية!"},
+{q:"يوصف الغشاء البلازمي بأنه «اختياري النفاذية». ماذا يعني ذلك؟",o:["يمنع دخول كل المواد","يسمح بدخول كل المواد","يسمح بمرور بعض المواد ويمنع غيرها","يصنع المواد بنفسه"],a:2,e:"اختياري النفاذية = يتحكم بما يدخل ويخرج، فيسمح لبعض المواد ويمنع أخرى!"},
+{q:"لماذا سُمّيت الشبكة الإندوبلازمية الخشنة بهذا الاسم؟",o:["لأنها صلبة","لأن الريبوسومات ملتصقة على سطحها","لأنها تحتوي DNA","لأنها خارج الخلية"],a:1,e:"الريبوسومات الملتصقة على سطحها تجعلها تبدو خشنة!"},
+{q:"أين تُصنع الريبوسومات داخل الخلية؟",o:["في النوية داخل النواة","في الميتوكوندريا","في الليسوسومات","في الغشاء البلازمي"],a:0,e:"النوية الموجودة داخل النواة هي مكان تصنيع الريبوسومات!"},
+{q:"خلية حيوانية لا تستطيع تكوين المغزل وتنقسم بشكل غير سليم. أيّ عضية يُحتمل أن فيها خللاً؟",o:["الريبوسومات","المريكزات","جهاز جولجي","الليسوسومات"],a:1,e:"المريكزات تنظّم تكوين المغزل أثناء انقسام الخلية الحيوانية!"},
+{q:"لماذا يكون شكل الخلية الحيوانية غير ثابت (مرناً)؟",o:["لأنها بلا نواة","لأنها لا تملك جداراً خلوياً","لأن فيها فجوة كبيرة","لأن فيها بلاستيدات"],a:1,e:"غياب الجدار الخلوي الصلب يجعل شكل الخلية الحيوانية مرناً وغير ثابت!"},
+{q:"لو شبّهنا الخلية بمدينة، فأيّ عضية تشبه «مكتب البريد» الذي يغلّف الطرود ويرسلها؟",o:["الميتوكوندريا","النواة","جهاز جولجي","الليسوسومات"],a:2,e:"جهاز جولجي يغلّف البروتينات ويرسلها لوجهاتها مثل مكتب البريد!"},
+{q:"لو شبّهنا الخلية بمدينة، فأيّ عضية تشبه «محطة الكهرباء»؟",o:["الريبوسومات","الميتوكوندريا","الغشاء البلازمي","المريكزات"],a:1,e:"الميتوكوندريا تنتج الطاقة ATP مثل محطة الكهرباء في المدينة!"}
+];
+function smShuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function smBuildQS(){
+  QS = (SM_LEVEL==='hard') ? smShuffle(QS_HARD.slice()).slice(0,10) : QS_NORMAL.slice();
+  QTIME = SM_TIME[SM_LEVEL]||20;
+  var c=document.getElementById('lvChip');
+  if(c){ c.className='lvchip '+SM_LEVEL; c.textContent={easy:'🟢 سهل',normal:'🟡 عادي',hard:'🔴 صعب'}[SM_LEVEL]; }
+}
+function smPickLevel(l){
+  SM_LEVEL=l; smBuildQS();
+  document.getElementById('lvOv').classList.remove('on');
+  smRealStart();
+}
+function smUseHint(){
+  if(answered||SM_HINT_USED||SM_LEVEL!=='easy') return;
+  var q=QS[qi]; SM_HINT_USED=true;
+  var all=Array.prototype.slice.call(document.querySelectorAll('#opts .opt'));
+  var wrong=all.filter(function(b){ return b.textContent!==q.o[q.a] && !b.disabled; });
+  smShuffle(wrong).slice(0,2).forEach(function(b){ b.classList.add('gone'); b.disabled=true; });
+  document.getElementById('smHint').disabled=true;
+}
+/* المستوى السهل: بعد الخطأ مرتين نعرض الجواب ونكمل بدل الرجوع للبداية */
+function smEasyContinue(q,why){
+  var fb=document.getElementById('fb');
+  fb.textContent=(why||'❌')+' الإجابة الصحيحة: '+q.o[q.a]+' — '+q.e;
+  fb.className='fb on ng';
+  var g=document.getElementById('g'+qi); if(g) g.textContent='🤍';
+  document.getElementById('btnNext').style.display='block';
+}
+
+
 function go(n) {
   if (n !== 4 && typeof stopQTmr === 'function') stopQTmr();
   document.querySelectorAll('.pg').forEach(function(p) { p.classList.remove('on'); });
@@ -2517,6 +2604,9 @@ function startCellTimer() {
 
 function startGame() {
   if (ctmr) clearInterval(ctmr);
+  document.getElementById('lvOv').classList.add('on');
+}
+function smRealStart() {
   score=0; qi=0; atts=2; answered=false;
   document.getElementById('pwN').textContent = '0';
   for (var i=0; i<10; i++) { var g=document.getElementById('g'+i); if(g) g.textContent='⚫'; }
@@ -2574,6 +2664,7 @@ function toggleQPause(){
   var pb = document.getElementById('qtmrPause');
   if (!qTmrId) return;
   /* الاستراحة مسموحة مرة واحدة فقط (الثامن والعاشر) */
+  if (!qTmrPaused && SM_LEVEL==='hard') { alert('لا توجد استراحة في المستوى الصعب ⏱️'); return; }
   if (!qTmrPaused) {
     if (smBreaksUsed >= 1) { alert('الاستراحة مسموحة مرة واحدة فقط في الجولة.'); return; }
     smBreaksUsed++;
@@ -2612,6 +2703,7 @@ function onQTimeout(){
     fb.className = 'fb on ng';
     if (riEl && typeof IMG_LOSE !== 'undefined') { riEl.src = 'data:image/jpeg;base64,' + IMG_LOSE; ri.className = 'rimg on'; }
     var pb = document.getElementById('qtmrPause'); if (pb) pb.disabled = true;
+    if (SM_LEVEL==='easy') { var _h=document.getElementById('smHint'); if(_h) _h.disabled=true; smEasyContinue(q,'⏰'); return; }
     setTimeout(function(){
       document.getElementById('loseMsg').innerHTML = '<p>الإجابة الصحيحة: <strong style="color:#ffc107">' + q.o[q.a] + '</strong></p><p>انتهى الوقت! شرشبيل أمسك بالسنافر — العب من البداية!</p>';
       go(6);
@@ -2631,6 +2723,8 @@ function showQ() {
   document.getElementById('btnNext').style.display = 'none';
   document.getElementById('rimg').className = 'rimg';
   document.getElementById('bbody').scrollTop = 0;
+  SM_HINT_USED=false;
+  var _hb=document.getElementById('smHint'); if(_hb){ _hb.disabled=false; _hb.className='smhint'+(SM_LEVEL==='easy'?' on':''); }
 
   if (qi >= QS.length) {
     document.getElementById('wsc').textContent = score;
@@ -2680,7 +2774,8 @@ function checkAns(correct, btn, q) {
     answered = true;
     all.forEach(function(b){ b.disabled=true; });
     btn.classList.add('ok');
-    score += 10;
+    score += (SM_PTS[SM_LEVEL]||10);
+    var _hb2=document.getElementById('smHint'); if(_hb2) _hb2.disabled=true;
     document.getElementById('pwN').textContent = score;
     var g = document.getElementById('g'+qi);
     if (g) g.textContent = '💙';
@@ -2712,6 +2807,7 @@ function checkAns(correct, btn, q) {
       document.getElementById('h1').className = 'hh lost';
       all.forEach(function(b){ b.disabled=true; });
       all.forEach(function(b){ if(b.textContent===q.o[q.a]) b.classList.add('ok'); });
+      if (SM_LEVEL==='easy') { var _h=document.getElementById('smHint'); if(_h) _h.disabled=true; ri.className='rimg on'; smEasyContinue(q,'❌'); return; }
       fb.textContent = '❌ خطأ مرتين! سيعود من البداية...';
       fb.className = 'fb on ng';
       riEl.src = 'data:image/jpeg;base64,' + IMG_LOSE;
@@ -2733,6 +2829,7 @@ function nextQ() {
 }
 
 function restartGame() {
+  smBuildQS();
   score=0; qi=0; atts=2; answered=false;
   document.getElementById('pwN').textContent = '0';
   for (var i=0; i<10; i++) { var g=document.getElementById('g'+i); if(g) g.textContent='⚫'; }
