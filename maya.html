@@ -436,6 +436,23 @@ body{font-family:'Tajawal',sans-serif;background:var(--dark);color:white;directi
 .mode-sub{color:rgba(255,255,255,0.45);font-size:0.83rem;text-align:center;margin:5px 0 16px;}
 .mode-card{width:100%;display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.09);border-radius:15px;padding:14px;margin-bottom:12px;cursor:pointer;transition:all 0.25s;}
 .mode-card:active,.mode-card:hover{transform:translateY(-2px);border-color:var(--red);background:rgba(244,67,54,0.08);}
+.lv-card{width:100%;display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.09);border-radius:15px;padding:14px;margin-bottom:12px;cursor:pointer;transition:all 0.25s;text-align:right;color:#fff;font-family:'Tajawal',sans-serif;}
+.lv-card:hover,.lv-card:active{transform:translateY(-2px);}
+.lv-card.easy:hover{border-color:#4caf50;background:rgba(76,175,80,0.1);}
+.lv-card.norm:hover{border-color:var(--gold);background:rgba(255,193,7,0.08);}
+.lv-card.hard:hover{border-color:#ef5350;background:rgba(239,83,80,0.1);}
+.lv-badge{display:inline-block;font-size:0.72rem;font-weight:800;padding:3px 10px;border-radius:20px;margin-inline-start:6px;vertical-align:middle;}
+.lv-badge.easy{background:rgba(76,175,80,0.2);color:#81c784;}
+.lv-badge.norm{background:rgba(255,193,7,0.18);color:var(--gold);}
+.lv-badge.hard{background:rgba(239,83,80,0.2);color:#ef9a9a;}
+.btn-hint{display:none;margin:8px auto 0;background:rgba(76,175,80,0.15);border:1.5px solid #4caf50;color:#a5d6a7;font-family:'Tajawal',sans-serif;font-weight:700;font-size:0.82rem;border-radius:20px;padding:6px 16px;cursor:pointer;}
+.btn-hint.show{display:block;}
+.btn-hint:disabled{opacity:0.4;cursor:default;}
+.opt.gone{opacity:0.18;pointer-events:none;}
+.qtimer{display:none;margin-inline-start:8px;font-weight:900;font-size:0.85rem;color:#ffc107;background:rgba(0,0,0,0.3);border-radius:12px;padding:2px 9px;}
+.qtimer.show{display:inline-block;}
+.qtimer.low{color:#ff5252;animation:tpulse 0.6s infinite;}
+@keyframes tpulse{50%{transform:scale(1.15);}}
 .mode-card.grp:active,.mode-card.grp:hover{border-color:var(--gold);background:rgba(255,193,7,0.08);}
 .mc-ico{font-size:2.1rem;flex-shrink:0;}
 .mc-h{font-family:'Amiri',serif;font-size:1.08rem;color:#fff;font-weight:700;margin-bottom:3px;}
@@ -1570,7 +1587,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--dark);color:white;directi
     <div class="cbox">
       <div style="font-family:'Amiri',serif;font-size:0.95rem;color:var(--gold);margin-bottom:6px;line-height:1.75;">6 أحرف تكشف اسم القاتل</div>
       <div class="cct">_ _ _ _ _ _</div>
-      <div class="cch">كل إجابة صحيحة = حرف 🔍 | 🖐️ بصمة القاتل تظهر مرتين في الغرفة (١٢ دليلاً) | <span style="color:#ef5350;">⚠️ محاولتان لكل سؤال!</span></div>
+      <div class="cch" id="introRules">كل إجابة صحيحة = حرف 🔍 | 🖐️ بصمة القاتل تظهر مرتين في الغرفة (١٢ دليلاً) | <span style="color:#ef5350;">⚠️ محاولتان لكل سؤال!</span></div>
     </div>
   </div>
   <button class="btn-start" onclick="showConcept()">🔍 ابدأ التحقيق مع مايا!</button>
@@ -1649,10 +1666,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--dark);color:white;directi
       <div class="qbadge" id="qBadge">دليل 1 من 6</div>
       <div class="att-row">
         <span class="ah" id="ah1">❤️</span><span class="ah" id="ah2">❤️</span>
-        <span class="att-lbl">محاولتان</span>
+        <span class="att-lbl">محاولتان</span><span class="qtimer" id="qTimer">30</span>
       </div>
       <div class="qtxt" id="qTxt"></div>
       <div class="opts" id="optsGrid"></div>
+      <button class="btn-hint" id="btnHint" onclick="useHint()">💡 تلميح: احذف خيارين</button>
       <div class="fb" id="fbArea"></div>
     </div>
     <!-- Left: Suspects -->
@@ -1827,6 +1845,36 @@ body{font-family:'Tajawal',sans-serif;background:var(--dark);color:white;directi
     </div>
 
     <div class="mode-mini" onclick="showTeacher()">👩‍🏫 لوحة المعلمة</div>
+  </div>
+</div>
+
+<!-- ===== LEVEL PICK ===== -->
+<div id="s-level" class="screen">
+  <div class="mode-wrap">
+    <div class="mode-title">🎚️ اختاري مستوى التحقيق</div>
+    <div class="mode-sub">كل مستوى بأسئلة وقوانين مختلفة</div>
+    <button class="lv-card easy" onclick="chooseLevel('easy')">
+      <div class="mc-ico">🟢</div>
+      <div class="mc-b">
+        <div class="mc-h">سهل <span class="lv-badge easy">للبداية</span></div>
+        <div class="mc-t">زر تلميح 💡 يحذف خيارين، وإذا أخطأتِ مرتين تأخذين دليلاً بديلاً لنفس الحرف بدل ما ترجعي من الأول.</div>
+      </div>
+    </button>
+    <button class="lv-card norm" onclick="chooseLevel('normal')">
+      <div class="mc-ico">🟡</div>
+      <div class="mc-b">
+        <div class="mc-h">عادي <span class="lv-badge norm">الأصلي</span></div>
+        <div class="mc-t">محاولتان لكل سؤال، والخطأ مرتين يرجعك لأول التحقيق.</div>
+      </div>
+    </button>
+    <button class="lv-card hard" onclick="chooseLevel('hard')">
+      <div class="mc-ico">🔴</div>
+      <div class="mc-b">
+        <div class="mc-h">صعب <span class="lv-badge hard">للمحققات المحترفات</span></div>
+        <div class="mc-t">أسئلة تحليلية (حساب أعداد، احتمالات، تزاوج اختباري)، ٣٠ ثانية لكل سؤال ⏱️، خيارات مخلوطة، و٣٠ نقطة للإجابة.</div>
+      </div>
+    </button>
+    <div class="mode-mini" onclick="showMode()">→ رجوع</div>
   </div>
 </div>
 
@@ -2331,7 +2379,7 @@ function pickCase(){ const r=readyCases(); return r[Math.floor(Math.random()*r.l
 function stQ(caseObj,st,v){
   const s=caseObj.stations[st];
   const q=(s.qs&&s.qs[v])||(s.qs&&s.qs[0]);
-  return q?Object.assign({},q,{rl:s.letter}):Object.assign(blankQ(s.letter,st+1,v),{rl:s.letter});
+  return q?Object.assign({},q,{rl:s.letter,_st:st,_v:v}):Object.assign(blankQ(s.letter,st+1,v),{rl:s.letter,_st:st,_v:v});
 }
 
 let CUR = null;
@@ -2359,13 +2407,158 @@ function useCase(c){
   PERM_OK=c.killer;
   PERM_OPTS=makePerms(c.killer);
   QS=[];
-  for(let v=0;v<2;v++) for(let st=0;st<6;st++) QS.push(stQ(c,st,v));
+  if(LEVEL==="hard" && GMODE!=="group"){ QS=buildHardQS(c); }
+  else { for(let v=0;v<2;v++) for(let st=0;st<6;st++) QS.push(stQ(c,st,v)); }
   const ai=document.getElementById('arrestedImg');
   if(ai) ai.style.display = c.hasArrestImg ? '' : 'none';
   const sl=document.getElementById('suspList');
   if(sl) sl.innerHTML = CASES.map(x=>'<span class="hl">'+x.suspect+'</span> — '+x.motive).join('<br>');
 }
 useCase(CASES[0]);
+
+
+/* ═══════════ المستويات: سهل / عادي / صعب ═══════════ */
+var LEVEL='normal';
+var QTIMER=null, QTLEFT=0, HINT_USED=false;
+const LV_TIME=30;           /* ثواني كل سؤال في المستوى الصعب */
+const LV_RULES={
+  easy:'🟢 المستوى السهل: زر تلميح 💡 لكل سؤال، وإذا أخطأتِ مرتين بيجيكِ دليل بديل لنفس الحرف.',
+  normal:'كل إجابة صحيحة = حرف 🔍 | 🖐️ بصمة القاتل تظهر مرتين في الغرفة (١٢ دليلاً) | <span style="color:#ef5350;">⚠️ محاولتان لكل سؤال!</span>',
+  hard:'🔴 المستوى الصعب: أسئلة تحليلية | ⏱️ ٣٠ ثانية لكل سؤال | <span style="color:#ef5350;">⚠️ الخطأ مرتين أو انتهاء الوقت مرتين يرجعك لأول التحقيق!</span>'
+};
+
+/* بنك أسئلة المستوى الصعب — ٦ محطات × ٣ أسئلة (يُختار سؤالان عشوائياً من كل محطة)
+   الخيار الصحيح يحمل تلقائياً حرف القاتل الخاص بالقضية، فيصلح لكل القضايا الأربع */
+const HARD_BANK=[
+ [ {si:"🧪",st:"المختبر السري — تزاوج اختباري",
+    q:"نبتة طويلة مجهولة الطراز لُقّحت مع نبتة قصيرة (tt)، فكان نصف الأبناء تقريباً قصاراً. ما طراز النبتة الطويلة؟",
+    opts:["TT","Tt","tt","لا يمكن معرفته"],ans:1,
+    exp:"ظهور أبناء قصار (tt) يعني أن النبتة الطويلة أعطت أليلاً متنحياً t، إذن طرازها Tt (هجين)."},
+   {si:"📈",st:"المختبر السري — من النسبة للآباء",
+    q:"ظهر في الأبناء نباتات طويلة وقصيرة بنسبة 3 : 1 تقريباً. ما طرازا الأبوين؟",
+    opts:["TT × tt","Tt × tt","Tt × Tt","TT × Tt"],ans:2,
+    exp:"النسبة 3 : 1 هي نتيجة تزاوج فردين هجينين Tt × Tt."},
+   {si:"👪",st:"المختبر السري — لغز العائلة",
+    q:"أبوان طويلان أنجبا ابناً قصيراً (tt). ماذا نستنتج عن الأبوين؟",
+    opts:["كلاهما نقي TT","كلاهما هجين Tt","أحدهما قصير","حدثت طفرة حتماً"],ans:1,
+    exp:"ليظهر الابن tt يجب أن يأخذ t من كل أب، والأبوان طويلان، إذن كلاهما Tt."} ],
+ [ {si:"🔢",st:"سجل الأعداد",
+    q:"من تزاوج Tt × Tt نتجت 400 نبتة. كم نبتة قصيرة نتوقع؟",
+    opts:["50","100","200","300"],ans:1,
+    exp:"نسبة القصار ¼، و¼ × 400 = 100 نبتة."},
+   {si:"🔢",st:"سجل الأعداد — سطر ثانٍ",
+    q:"من تزاوج Tt × Tt نتجت 400 نبتة. كم نبتة طويلة هجينة (Tt) نتوقع؟",
+    opts:["100","200","300","400"],ans:1,
+    exp:"الطراز Tt نسبته 2 من 4 = ½، و½ × 400 = 200 نبتة."},
+   {si:"🔢",st:"سجل الأعداد — الهامش",
+    q:"من تزاوج Tt × tt نتجت 80 نبتة. كم نبتة طويلة نتوقع؟",
+    opts:["20","40","60","80"],ans:1,
+    exp:"Tt × tt يعطي Tt و tt بنسبة 1 : 1، فنصف الأبناء طوال = 40 نبتة."} ],
+ [ {si:"🎲",st:"ورقة الاحتمالات",
+    q:"أبوان طرازهما Bb × Bb (البنّي سائد على الأزرق). ما احتمال إنجاب طفل عيناه زرقاوان؟",
+    opts:["0%","25%","50%","75%"],ans:1,
+    exp:"الطفل الأزرق bb يظهر في خانة واحدة من أربع = ¼ = 25%."},
+   {si:"🎲",st:"ورقة الاحتمالات — سؤال المحترفين",
+    q:"من بين الأبناء الطوال فقط الناتجين من Tt × Tt، ما نسبة النقي (TT) منهم؟",
+    opts:["¼","⅓","½","¾"],ans:1,
+    exp:"الطوال هم TT و Tt و Tt (3 خانات)، والنقي منها خانة واحدة = ⅓."},
+   {si:"🎲",st:"ورقة الاحتمالات — الطرف الآخر",
+    q:"أب Bb وأم bb. ما احتمال أن يكون ابنهما بنّي العينين؟",
+    opts:["25%","50%","75%","100%"],ans:1,
+    exp:"Bb × bb يعطي Bb و bb بالتساوي، فاحتمال البنّي ½ = 50%."} ],
+ [ {si:"🔍",st:"ملف التزاوج الاختباري",
+    q:"لماذا نلقّح الفرد مجهول الطراز مع فرد متنحٍّ نقي في التزاوج الاختباري؟",
+    opts:["لأن المتنحي يعطي أبناءً أقوى","لأن المتنحي النقي لا يعطي إلا أليلاً متنحياً، فتكشف صفات الأبناء أليلات الفرد المجهول","لأن المتنحي يغيّر طراز المجهول","لزيادة عدد الأبناء فقط"],ans:1,
+    exp:"المتنحي النقي يعطي دائماً أليلاً متنحياً، فما يظهر في الأبناء يدلّ مباشرة على أليلات الفرد المجهول."},
+   {si:"🔍",st:"ملف التزاوج الاختباري — النتيجة",
+    q:"في تزاوج اختباري، كان جميع الأبناء (100 نبتة) بالصفة السائدة. ما طراز الفرد المجهول على الأرجح؟",
+    opts:["سائد نقي TT","هجين Tt","متنحٍّ tt","لا نستطيع الاستنتاج"],ans:0,
+    exp:"لو كان هجيناً لظهر نحو نصف الأبناء بالصفة المتنحية. ظهورهم كلهم سائدين يدلّ على أنه TT."},
+   {si:"🔍",st:"ملف التزاوج الاختباري — الجدول",
+    q:"ما نسبة الطرز الجينية الناتجة من تزاوج Tt × Tt؟",
+    opts:["3 : 1","1 TT : 2 Tt : 1 tt","1 : 1","كلها Tt"],ans:1,
+    exp:"مربع بانيت يعطي TT، Tt، Tt، tt، أي نسبة جينية 1 : 2 : 1 (والشكلية 3 : 1)."} ],
+ [ {si:"⚖️",st:"لوح التزاوجات",
+    q:"أيّ تزاوج تكون جميع أبنائه هجينة (Tt)؟",
+    opts:["Tt × Tt","TT × tt","Tt × tt","TT × TT"],ans:1,
+    exp:"TT يعطي T دائماً و tt يعطي t دائماً، فكل الأبناء Tt."},
+   {si:"⚖️",st:"لوح التزاوجات — صف ثانٍ",
+    q:"تزاوج RR × Rr (الأسود R سائد). ما نتيجة الأبناء؟",
+    opts:["كلهم سود: نصفهم RR ونصفهم Rr","3 سود : 1 أحمر","كلهم حمر","نصفهم سود ونصفهم حمر"],ans:0,
+    exp:"RR يعطي R دائماً، و Rr يعطي R أو r، فالأبناء RR و Rr بالتساوي — وكلهم سود."},
+   {si:"⚖️",st:"لوح التزاوجات — السطر الأخير",
+    q:"أيّ تزاوج يعطي نسبة شكلية 1 : 1؟",
+    opts:["TT × TT","Tt × Tt","Tt × tt","TT × tt"],ans:2,
+    exp:"Tt × tt يعطي نصف الأبناء Tt (طوال) ونصفهم tt (قصار) = 1 : 1."} ],
+ [ {si:"📜",st:"وصية أنطونيو — القانون",
+    q:"ينصّ قانون الانعزال لمندل على أن:",
+    opts:["الصفة السائدة تختفي في الجيل الثاني","أليلَي الصفة ينفصلان عند تكوين الخلايا الجنسية، فتحمل كل خلية جنسية أليلاً واحداً","الأبناء يحملون صفة وسطاً بين الأبوين","كل الأبناء يشبهون الأم"],ans:1,
+    exp:"قانون الانعزال: ينفصل الأليلان عند تكوين الخلايا الجنسية، فتحمل كل خلية أليلاً واحداً فقط للصفة."},
+   {si:"📜",st:"وصية أنطونيو — المقارنة",
+    q:"نبتتان طويلتان: الأولى TT والثانية Tt. ما الصحيح؟",
+    opts:["تختلفان في الطراز الشكلي فقط","تتشابهان في الطراز الشكلي وتختلفان في الطراز الجيني","تتشابهان في الطراز الجيني","كلتاهما نقية"],ans:1,
+    exp:"كلتاهما طويلة (نفس الطراز الشكلي) لكن الأليلات مختلفة (TT نقية و Tt هجين)."},
+   {si:"📜",st:"وصية أنطونيو — اللغز الأخير",
+    q:"اختفت صفة القِصَر في الجيل الأول ثم ظهرت في الجيل الثاني. ما التفسير؟",
+    opts:["حدثت طفرة جديدة","أليل القِصَر كان مختبئاً في الأفراد الهجينة، ثم انعزل واجتمع أليلان متنحيان tt","الجيل الأول كان نقياً","البيئة غيّرت الصفة"],ans:1,
+    exp:"الجيل الأول كله Tt، والأليل t مخفي فيه. عند تزاوجه انعزل الأليلان فظهر tt في ربع الجيل الثاني."} ]
+];
+const HARD_FAKE="نتبكمفقعغطحجويلصخثض";
+function shuffleArr(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function hardQ(c,st,raw){
+  const letter=c.stations[st].letter;
+  const pool=shuffleArr(HARD_FAKE.split('').filter(ch=>c.killer.indexOf(ch)<0));
+  let k=0;
+  const opts=raw.opts.map((t,i)=>({t:t,l:i===raw.ans?letter:pool[k++]}));
+  const order=shuffleArr(opts.map((_,i)=>i));
+  return {si:raw.si,st:raw.st,q:raw.q,opts:order.map(i=>opts[i]),ans:order.indexOf(raw.ans),
+          exp:raw.exp,cm:"بصمة الحرف ("+letter+")! 🔥",rl:letter,_st:st,_hard:true};
+}
+function buildHardQS(c){
+  const r1=[],r2=[];
+  for(let st=0;st<6;st++){
+    const pick=shuffleArr([0,1,2]);
+    r1.push(hardQ(c,st,HARD_BANK[st][pick[0]]));
+    r2.push(hardQ(c,st,HARD_BANK[st][pick[1]]));
+  }
+  return r1.concat(r2);
+}
+function chooseLevel(l){
+  LEVEL=l; GMODE='solo';
+  useCase(pickCase());
+  const r=document.getElementById('introRules'); if(r) r.innerHTML=LV_RULES[l]||LV_RULES.normal;
+  showS('s-intro'); window.scrollTo(0,0);
+}
+function stopQTimer(){ if(QTIMER){clearInterval(QTIMER);QTIMER=null;} const t=document.getElementById('qTimer'); if(t) t.className='qtimer'; }
+function startQTimer(q){
+  stopQTimer();
+  if(LEVEL!=='hard' || GMODE==='group') return;
+  QTLEFT=LV_TIME;
+  const t=document.getElementById('qTimer');
+  t.textContent='⏱️ '+QTLEFT; t.className='qtimer show';
+  QTIMER=setInterval(()=>{
+    if(document.documentElement.classList.contains('gm-paused')) return;
+    QTLEFT--; t.textContent='⏱️ '+QTLEFT;
+    t.className='qtimer show'+(QTLEFT<=10?' low':'');
+    if(QTLEFT<=0){ stopQTimer(); if(!answered) wrongAttempt(null,q,'⏰ انتهى الوقت!'); }
+  },1000);
+}
+function useHint(){
+  const q=window._curQ; if(!q||answered||HINT_USED) return;
+  HINT_USED=true;
+  const all=Array.from(document.querySelectorAll('.opt'));
+  const wrong=all.map((b,i)=>i).filter(i=>i!==q.ans && !all[i].disabled);
+  shuffleArr(wrong).slice(0,2).forEach(i=>{all[i].classList.add('gone');all[i].disabled=true;});
+  document.getElementById('btnHint').disabled=true;
+}
+/* المستوى السهل: دليل بديل لنفس الحرف بدل الرجوع للبداية */
+function easySwap(q){
+  if(!CUR || q._st==null) return false;
+  const s=CUR.stations[q._st]; const n=(s.qs&&s.qs.length)||1;
+  const nv=((q._v||0)+1)%n;
+  QS[qIdx]=stQ(CUR,q._st,nv);
+  return true;
+}
 
 let score=0,qIdx=0,atts=2,answered=false,letters=[],pending=null;
 let permAtts=2,permAnswered=false;
@@ -2667,10 +2860,11 @@ function showConcept(){ showS('s-concept'); window.scrollTo(0,0); }
 
 /* شاشة اختيار نمط اللعب */
 function showMode(){ showS('s-mode'); window.scrollTo(0,0); }
-function startSolo(){ GMODE='solo'; useCase(pickCase()); showS('s-intro'); window.scrollTo(0,0); }
+function startSolo(){ GMODE='solo'; showS('s-level'); window.scrollTo(0,0); }
 
 function startGame(){
-  if(GMODE==='group'){ return gStartRound(); }
+  if(GMODE==='group'){ LEVEL='normal'; stopQTimer(); return gStartRound(); }
+  if(CUR) useCase(CUR);
   score=0;qIdx=0;atts=2;answered=false;letters=[];pending=null;
   for(let i=0;i<6;i++){const s=document.getElementById('ls'+i);if(s){s.textContent='_';s.className='ls';s.style.cssText='';}}
   document.getElementById('gBoardBox').style.display='none';
@@ -2711,12 +2905,16 @@ function paintQ(q,badge){
   document.getElementById('fbArea').textContent='';
   document.getElementById('btnNQ').className='btn-nq';
   resetHearts();
+  window._curQ=q; HINT_USED=false;
+  const hb=document.getElementById('btnHint');
+  if(hb){ hb.disabled=false; hb.className='btn-hint'+(LEVEL==='easy'&&GMODE!=='group'?' show':''); }
   const g=document.getElementById('optsGrid');g.innerHTML='';
   q.opts.forEach((o,idx)=>{
     const b=document.createElement('button');b.className='opt';
     b.innerHTML='<span class="opt-l">'+o.l+'</span>'+o.t;
     b.onclick=()=>checkAns(idx,b,q);g.appendChild(b);
   });
+  startQTimer(q);
 }
 
 function showQ(i){
@@ -2730,8 +2928,9 @@ function checkAns(sel,btn,q){
   const all=document.querySelectorAll('.opt');
   const fb=document.getElementById('fbArea');
   if(sel===q.ans){
-    answered=true;all.forEach(b=>b.disabled=true);
-    btn.classList.add('correct');score+=20;
+    answered=true;all.forEach(b=>b.disabled=true);stopQTimer();
+    const hb=document.getElementById('btnHint'); if(hb) hb.disabled=true;
+    btn.classList.add('correct');score+=(LEVEL==='hard'&&GMODE!=='group'?30:20);
     if(GMODE==='group'){
       fb.textContent='✅ '+q.exp;fb.className='fb ok show';
       pending=q;
@@ -2753,25 +2952,40 @@ function checkAns(sel,btn,q){
     document.getElementById('btnNQ').className='btn-nq show';
     document.getElementById('btnNQ').textContent='🔍 اكتشف الحرف المخفي! ←';
   }else{
-    btn.classList.add('wrong');btn.disabled=true;
-    atts--;
-    if(atts===1){
-      document.getElementById('ah2').className='ah lost';
-      fb.textContent='❌ خطأ! لديك محاولة أخيرة...';fb.className='fb bad show';
-      setTimeout(()=>{btn.classList.remove('wrong');fb.className='fb';fb.textContent='';},1300);
-    }else{
-      document.getElementById('ah1').className='ah lost';
-      all.forEach(b=>b.disabled=true);answered=true;
-      all[q.ans].classList.add('correct');
-      fb.textContent='❌ الإجابة: '+q.opts[q.ans].t;fb.className='fb bad show';
-      if(GMODE==='group'){
-        gMissed();
-        const nb=document.getElementById('btnNQ');
-        nb.className='btn-nq show';nb.textContent='🔁 جرّبي دليلاً آخر لنفس الحرف ←';
-        return;
-      }
-      setTimeout(()=>showRstOv(q),1500);
+    wrongAttempt(btn,q,'');
+  }
+}
+
+function wrongAttempt(btn,q,why){
+  const all=document.querySelectorAll('.opt');
+  const fb=document.getElementById('fbArea');
+  if(btn){btn.classList.add('wrong');btn.disabled=true;}
+  atts--;
+  if(atts===1){
+    document.getElementById('ah2').className='ah lost';
+    fb.textContent=(why?why+' ':'')+'❌ لديك محاولة أخيرة...';fb.className='fb bad show';
+    setTimeout(()=>{if(btn)btn.classList.remove('wrong');if(!answered){fb.className='fb';fb.textContent='';}},1300);
+    if(!btn) startQTimer(q);
+  }else{
+    stopQTimer();
+    document.getElementById('ah1').className='ah lost';
+    all.forEach(b=>b.disabled=true);answered=true;
+    const hb=document.getElementById('btnHint'); if(hb) hb.disabled=true;
+    all[q.ans].classList.add('correct');
+    fb.textContent=(why?why+' ':'')+'❌ الإجابة: '+q.opts[q.ans].t;fb.className='fb bad show';
+    if(GMODE==='group'){
+      gMissed();
+      const nb=document.getElementById('btnNQ');
+      nb.className='btn-nq show';nb.textContent='🔁 جرّبي دليلاً آخر لنفس الحرف ←';
+      return;
     }
+    if(LEVEL==='easy' && easySwap(q)){
+      fb.textContent='❌ الإجابة: '+q.opts[q.ans].t+' — 💡 '+q.exp;
+      const nb=document.getElementById('btnNQ');
+      nb.className='btn-nq show';nb.textContent='🔁 خذي دليلاً بديلاً لنفس الحرف ←';
+      return;
+    }
+    setTimeout(()=>showRstOv(q),1500);
   }
 }
 
@@ -2782,6 +2996,7 @@ function showRstOv(q){
 }
 
 function restartFromQ(){
+  stopQTimer();
   document.getElementById('rstOv').className='rst-ov';
   startGame();
 }
@@ -2801,7 +3016,8 @@ function nextQ(){
     document.getElementById('lpMsg').textContent=pending.cm;
     document.getElementById('lpOv').className='lpov show';
     pending=null;
-  }else{qIdx++;buildPB();showQ(qIdx);}
+  }else if(LEVEL==='easy' && answered && QS[qIdx] && QS[qIdx]!==window._curQ){showQ(qIdx);}
+  else{qIdx++;buildPB();showQ(qIdx);}
 }
 
 function closeLPop(){
@@ -2811,6 +3027,7 @@ function closeLPop(){
 }
 
 function showFinalQ(){
+  stopQTimer();
   const cl=document.getElementById('collLets');cl.innerHTML='';
   letters.forEach((l)=>{
     const d=document.createElement('div');
