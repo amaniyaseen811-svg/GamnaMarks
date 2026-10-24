@@ -1068,7 +1068,7 @@ function P(n){
 }
 
 function startTm(){
-  var t=(window.GMX&&GMX.lvl==='hard')?60:90,T0=t;if(tm)clearInterval(tm);
+  var t=(window.GMX&&GMX.lvl==='hard')?60:((window.GMX&&GMX.lvl==='easy')?120:90),T0=t;if(tm)clearInterval(tm);
   islPaused=false;var _pb=document.getElementById('islPause');
   if(_pb){_pb.style.display=pauseUsed?'none':'inline-block';_pb.disabled=false;_pb.innerHTML='\u23F8 10\u062B';}
   var te=document.getElementById("ct"),bar=document.getElementById("cf");
@@ -2205,7 +2205,8 @@ window.addEventListener('load',function(){
     <button class="gmx-card" data-m="exam"><div class="e">📝</div><b>امتحان</b><span>محاولة وحدة لكل سؤال، بدون شرح وبدون استراحة</span></button>
   </div>
   <div class="gmx-sub" style="margin:2px 0 6px">⭐ اختاري المستوى:</div>
-  <div class="gmx-grid" id="gmxLvl">
+  <div class="gmx-grid" id="gmxLvl" style="grid-template-columns:1fr 1fr 1fr">
+    <button class="gmx-card" data-l="easy"><div class="e">🟢</div><b>سهل</b><span>120 ثانية للمراقبة، زر تلميح 💡، والغلطة بـ‎-15 بس</span></button>
     <button class="gmx-card sel" data-l="normal"><div class="e">🙂</div><b>عادي</b><span>90 ثانية لمراقبة الخلية، أسئلة أساسية</span></button>
     <button class="gmx-card" data-l="hard"><div class="e">🔥</div><b>صعب</b><span>60 ثانية بس، أسئلة تفكير أعمق، والغلطة بـ‎-50</span></button>
   </div>
@@ -2408,7 +2409,7 @@ window.addEventListener('load',function(){
   var _P=P;
   window.P=function(n){
     if(n===6&&!G.st[1]){G.st[1]=1;showStage(1,'🔬 مراقبة الخلية',[
-      'بتظهرلك الخلية النباتية مع أسماء أجزائها لمدة <b>'+(G.lvl==='hard'?60:90)+' ثانية</b>.','ركّزي واحفظي اسم ووظيفة كل جزء.','بعدها الخلية بتختفي وبتبلّش الأسئلة!'],function(){_P(6);});return;}
+      'بتظهرلك الخلية النباتية مع أسماء أجزائها لمدة <b>'+(G.lvl==='hard'?60:(G.lvl==='easy'?120:90))+' ثانية</b>.','ركّزي واحفظي اسم ووظيفة كل جزء.','بعدها الخلية بتختفي وبتبلّش الأسئلة!'],function(){_P(6);});return;}
     if(n===11)onTrophy();
     if(n===13)buildWS(1);
     if(n===14)buildWS(2);
@@ -2424,7 +2425,7 @@ window.addEventListener('load',function(){
     freshRun();if(!G.t0)G.t0=Date.now();
     _startG();resetHearts();turnUI();
     if(!G.st[2]){G.st[2]=1;showStage(2,'🌉 عبور الجسر',[
-      '7 أسئلة عن الخلية النباتية. كل إجابة صح = <b>+300 Power</b> وجزء من الجسر.','❤️ إلك 3 محاولات بكل سؤال، وكل غلطة = ‎-'+(G.lvl==='hard'?50:30)+' Power.',(G.lvl==='hard'?'🔥 المستوى الصعب: أسئلة تفكير وتطبيق!':'🙂 المستوى العادي'),
+      '7 أسئلة عن الخلية النباتية. كل إجابة صح = <b>+300 Power</b> وجزء من الجسر.','❤️ إلك 3 محاولات بكل سؤال، وكل غلطة = ‎-'+(G.lvl==='hard'?50:(G.lvl==='easy'?15:30))+' Power.',(G.lvl==='hard'?'🔥 المستوى الصعب: أسئلة تفكير وتطبيق!':(G.lvl==='easy'?'🟢 المستوى السهل: زر تلميح 💡 بكل سؤال، و3 أخطاء ما بترجّعك للبداية!':'🙂 المستوى العادي')),
       multi()?'👥 اللعب بالدور: كل سؤال لـ'+esc(G.pl[0].n)+' ثم '+esc(G.pl[1].n)+'.':(G.mode==='exam'?'📝 وضع الامتحان: محاولة وحدة لكل سؤال وبدون شرح.':'🔄 3 أخطاء بنفس السؤال = ترجعي للبداية.')],null);}
   };
   window.rstG=function(){freshRun();_startG();resetHearts();turnUI();};
@@ -2435,6 +2436,28 @@ window.addEventListener('load',function(){
   var _nxtQ=nxtQ;window.nxtQ=function(){if(multi())G.cur=(G.cur+1)%G.pl.length;_nxtQ();};
   var _q8=doQ8;window.doQ8=function(){_q8();at=(G.mode==='exam')?1:3;resetHearts();turnUI();};
   var _q11=doQ11;window.doQ11=function(){_q11();at=(G.mode==='exam')?1:3;resetHearts();turnUI();};
+
+
+  /* ---------- مستوى سهل: زر التلميح 💡 يحذف خيارين ---------- */
+  (function(){
+    var st=document.createElement('style');
+    st.textContent='.islhint{display:none;margin:8px auto 0;background:rgba(76,175,80,.15);border:1.5px solid #4caf50;color:#a5d6a7;font-family:inherit;font-weight:700;font-size:.82rem;border-radius:20px;padding:6px 16px;cursor:pointer}.islhint.on{display:block}.islhint:disabled{opacity:.4;cursor:default}#cr .cc.gone{opacity:.15;pointer-events:none}';
+    document.head.appendChild(st);
+    var cr=$('cr');if(!cr)return;
+    var hb=document.createElement('button');hb.id='islHint';hb.className='islhint';hb.textContent='💡 تلميح: احذف خيارين';
+    cr.parentNode.insertBefore(hb,cr.nextSibling);
+    var gone=[],used=false,curQ=null;
+    function apply(){document.querySelectorAll('#cr .cc').forEach(function(c){var a=c.querySelector('.ca');if(a&&gone.indexOf(a.textContent)>-1){c.classList.add('gone');c.onclick=null;}});}
+    function paint(){var on=G.lvl==='easy'&&G.mode!=='exam'&&document.querySelectorAll('#cr .cc').length>2;hb.className='islhint'+(on?' on':'');hb.disabled=used||an;}
+    hb.onclick=function(){
+      if(used||an||!curQ)return;used=true;
+      var cards=Array.prototype.slice.call(document.querySelectorAll('#cr .cc')).filter(function(c){var a=c.querySelector('.ca');return a&&a.textContent!==curQ.o[curQ.a]&&!c.classList.contains('of');});
+      shuf(cards).slice(0,2).forEach(function(c){gone.push(c.querySelector('.ca').textContent);});
+      apply();paint();
+    };
+    var _mk=mkCr;window.mkCr=function(q){if(q!==curQ){curQ=q;gone=[];used=false;}_mk(q);apply();paint();};
+    setInterval(function(){if(hb.className.indexOf('on')>-1)hb.disabled=used||an;},300);
+  })();
 
   /* turn banner for duel / team */
   (function(){var bb=$('bb');if(!bb)return;var t=document.createElement('div');t.id='gmxTurn';var s=document.createElement('div');s.id='gmxScore';bb.insertBefore(s,bb.firstChild);bb.insertBefore(t,bb.firstChild);})();
@@ -2461,7 +2484,7 @@ window.addEventListener('load',function(){
       $('bN').style.display='block';turnUI();return;
     }
     card.classList.add('ng');card.classList.add('of');card.onclick=null;
-    var pen=G.lvl==='hard'?50:30;at--;upPw(-pen);me.pts-=pen;G.mis++;
+    var pen=G.lvl==='hard'?50:(G.lvl==='easy'?15:30);at--;upPw(-pen);me.pts-=pen;G.mis++;
     rv.src='data:image/jpeg;base64,'+NG;ri.className='ri on';
     if(at>0){
       $(at===2?'h3':'h2').className='hh lo';
@@ -2473,7 +2496,7 @@ window.addEventListener('load',function(){
     all.forEach(function(c){c.classList.add('of');c.onclick=null;});
     all.forEach(function(c){if(c.querySelector('.ca').textContent===q.o[q.a])c.classList.add('ok');});
     me.bad++;
-    if(G.mode==='solo'){
+    if(G.mode==='solo' && G.lvl!=='easy'){
       fb.textContent='❌ 3 أخطاء! ستعود من البداية!';fb.className='fb on ng';
       setTimeout(function(){$('lm').textContent='الإجابة: '+q.o[q.a];P(12);},2000);
     }else{
@@ -2572,8 +2595,8 @@ window.addEventListener('load',function(){
   };
 
   /* ---------- 14. results ---------- */
-  function lbGet(){try{return JSON.parse(localStorage.getItem(G.lvl==='hard'?'island_lb_hard':'island_lb')||'[]');}catch(e){return [];}}
-  function lbSet(a){try{localStorage.setItem(G.lvl==='hard'?'island_lb_hard':'island_lb',JSON.stringify(a.slice(0,50)));}catch(e){}}
+  function lbGet(){try{return JSON.parse(localStorage.getItem(G.lvl==='hard'?'island_lb_hard':(G.lvl==='easy'?'island_lb_easy':'island_lb'))||'[]');}catch(e){return [];}}
+  function lbSet(a){try{localStorage.setItem(G.lvl==='hard'?'island_lb_hard':(G.lvl==='easy'?'island_lb_easy':'island_lb'),JSON.stringify(a.slice(0,50)));}catch(e){}}
   function fillResults(){
     var secs=((G.t1||Date.now())-(G.t0||Date.now()))/1000;
     var fin=G.final!=null?G.final:pw;
@@ -2582,7 +2605,7 @@ window.addEventListener('load',function(){
     var gr=pct>=90?['🏆','ممتاز']:pct>=80?['🌟','جيد جداً']:pct>=65?['👍','جيد']:pct>=50?['🙂','مقبول']:['📚','تحتاج مراجعة'];
     $('gmxREm').textContent=gr[0];$('gmxRGrade').textContent=gr[1]+' · '+pct+'%';
     var modeName={solo:'فردي',duel:'تحدّي',team:'فرق',exam:'امتحان'}[G.mode];
-    $('gmxRName').textContent=(multi()?G.pl.map(function(p){return p.n;}).join(' ضد '):G.pl[0].n)+' · وضع '+modeName+' · '+(G.lvl==='hard'?'🔥 صعب':'🙂 عادي');
+    $('gmxRName').textContent=(multi()?G.pl.map(function(p){return p.n;}).join(' ضد '):G.pl[0].n)+' · وضع '+modeName+' · '+(G.lvl==='hard'?'🔥 صعب':(G.lvl==='easy'?'🟢 سهل':'🙂 عادي'));
     $('gmxRPow').textContent=fin;$('gmxRTime').textContent=fmt(secs);$('gmxRMis').textContent=G.mis;
     $('gmxRW1').textContent=G.ws[1]!=null?G.ws[1]+'/10':'-';$('gmxRW2').textContent=G.ws[2]!=null?G.ws[2]+'/10':'-';
     var pl=$('gmxRPl');pl.innerHTML='';
@@ -2596,7 +2619,7 @@ window.addEventListener('load',function(){
     if(!G.saved){G.saved=true;G.rec={n:G.pl[0].n+(multi()?' / '+G.pl[1].n:''),p:fin,t:Math.round(secs),d:Date.now()};lb.push(G.rec);lb.sort(function(a,b){return b.p-a.p||a.t-b.t;});lbSet(lb);}
     var rank=1;for(var i=0;i<lb.length;i++){if(lb[i].d===G.rec.d){rank=i+1;break;}}
     $('gmxRRank').textContent=rank+' / '+lb.length;
-    $('gmxRLb').innerHTML='<div style="background:none;color:#ffc107;font-weight:900;justify-content:center">🏅 لوحة الشرف · '+(G.lvl==='hard'?'المستوى الصعب':'المستوى العادي')+'</div>'+
+    $('gmxRLb').innerHTML='<div style="background:none;color:#ffc107;font-weight:900;justify-content:center">🏅 لوحة الشرف · '+(G.lvl==='hard'?'المستوى الصعب':(G.lvl==='easy'?'المستوى السهل':'المستوى العادي'))+'</div>'+
       lb.slice(0,5).map(function(r,i){return '<div class="'+(r.d===G.rec.d?'me':'')+'"><span>'+(i+1)+'. '+esc(r.n)+'</span><span>'+r.p+' · '+fmt(r.t)+'</span></div>';}).join('');
   }
 
