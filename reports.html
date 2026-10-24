@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>تقارير الطلاب — GamnaMarks</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1330;--card:#1b2150;--line:rgba(255,255,255,.14);--tx:#fff;--mut:rgba(255,255,255,.7);--acc:#ff8a3d;--acc2:#ff4f8b;--ok:#5fe0a8;--no:#ff7a7a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Tajawal,system-ui,sans-serif;padding:16px}
+h1{font-size:24px;margin:4px 0 2px}
+.sub{color:var(--mut);font-size:14px;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+input,select{font:inherit;color:var(--tx);background:rgba(255,255,255,.08);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+select option{color:#000}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
+button{font:800 15px Tajawal,system-ui,sans-serif;cursor:pointer;border:0;border-radius:999px;padding:11px 18px;color:#fff;background:linear-gradient(90deg,var(--acc),var(--acc2))}
+button.ghost{background:rgba(255,255,255,.1);border:1px solid var(--line)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.stat{background:rgba(255,255,255,.06);border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font-size:24px}
+.stat span{font-size:13px;color:var(--mut)}
+.tblWrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:760px}
+th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{color:var(--mut);font-weight:700;position:sticky;top:0;background:var(--card)}
+td.ok{color:var(--ok);font-weight:700} td.no{color:var(--no);font-weight:700}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.1);font-size:13px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tabs button{padding:9px 14px}
+.tabs button:not(.on){background:rgba(255,255,255,.08)}
+#lock{max-width:360px;margin:60px auto;text-align:center}
+.note{color:var(--mut);font-size:13px;margin-top:6px}
+@media print{body{background:#fff;color:#000}.card{background:#fff;border-color:#bbb}th{background:#fff;color:#000}.noprint{display:none!important}td.ok,td.no{color:#000}}
+</style>
+</head>
+<body>
+<div id="lock" class="card">
+  <div style="font-size:46px">🔐</div>
+  <h1>تقارير الطلاب</h1>
+  <div class="sub">صفحة المعلمة — اكتبي كلمة السر</div>
+  <input id="pw" type="password" placeholder="كلمة السر">
+  <div style="margin-top:10px"><button id="enter" style="width:100%">دخول</button></div>
+  <div class="note" id="pwNote"></div>
+</div>
+
+<div id="app" style="display:none">
+  <h1>📊 تقارير الطلاب — GamnaMarks</h1>
+  <div class="sub">كل طالب دخل أي لعبة: اسمه، صفه، علاماته، أداؤه، والوقت اللي قضاه</div>
+
+  <div class="card noprint">
+    <div class="row">
+      <input id="q" placeholder="🔎 ابحثي باسم الطالب">
+      <select id="fGame"><option value="">كل الألعاب</option></select>
+      <select id="fClass"><option value="">كل الصفوف</option></select>
+      <input id="fFrom" type="date" title="من تاريخ">
+    </div>
+    <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+      <button id="reload">🔄 تحديث</button>
+      <button class="ghost" id="xls">⬇ تنزيل Excel</button>
+      <button class="ghost" onclick="print()">🖨 طباعة</button>
+      <button class="ghost" onclick="location.href='index.html'">🏠 الرئيسية</button>
+    </div>
+    <div class="note" id="status"></div>
+  </div>
+
+  <div class="card"><div class="stats" id="stats"></div></div>
+
+  <div class="tabs noprint">
+    <button class="on" data-v="plays">كل المحاولات</button>
+    <button data-v="students">ملخص كل طالب</button>
+  </div>
+  <div class="card tblWrap"><table id="tbl"></table></div>
+</div>
+
+<script>
+(function(){
+  var PROJECT='cursed-castle-bb43b', KEY='AIzaSyADxQ7-3UDxYD3VTOoVrn7d6516_5bqd5Y';
+  var BASE='https://firestore.googleapis.com/v1/projects/'+PROJECT+'/databases/(default)/documents/gm_reports';
+  var PASS='amani2026';
+  var ALL=[], VIEW='plays';
+  function $(id){return document.getElementById(id)}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function fmt(ms){var s=Math.round((ms||0)/1000),m=Math.floor(s/60),h=Math.floor(m/60);s%=60;m%=60;return (h?h+' س ':'')+(m?m+' د ':'')+s+' ث'}
+
+  function unlock(){
+    if($('pw').value.trim()===PASS){try{sessionStorage.setItem('gm_rep_ok','1')}catch(e){}$('lock').style.display='none';$('app').style.display='block';load()}
+    else $('pwNote').textContent='كلمة السر غلط';
+  }
+  $('enter').onclick=unlock;
+  $('pw').addEventListener('keydown',function(e){if(e.key==='Enter')unlock()});
+  try{if(sessionStorage.getItem('gm_rep_ok')){$('lock').style.display='none';$('app').style.display='block';setTimeout(load,0)}}catch(e){}
+
+  function fromFields(f){
+    var o={};Object.keys(f||{}).forEach(function(k){var v=f[k];
+      o[k]=v.stringValue!=null?v.stringValue:v.integerValue!=null?Number(v.integerValue):v.doubleValue!=null?v.doubleValue:v.booleanValue!=null?v.booleanValue:null});
+    try{o.sections=JSON.parse(o.sections||'[]')}catch(e){o.sections=[]}
+    return o;
+  }
+  function fetchAll(token,acc){
+    acc=acc||[];
+    return fetch(BASE+'?pageSize=300&key='+KEY+(token?'&pageToken='+encodeURIComponent(token):''))
+      .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+      .then(function(j){(j.documents||[]).forEach(function(d){acc.push(fromFields(d.fields))});
+        return j.nextPageToken&&acc.length<20000?fetchAll(j.nextPageToken,acc):acc});
+  }
+  function load(){
+    $('status').textContent='⏳ جاري تحميل التقارير...';
+    var local=[];try{local=JSON.parse(localStorage.getItem('gm_reports_local')||'[]')}catch(e){}
+    fetchAll().then(function(remote){merge(remote,local);$('status').textContent='✔ '+remote.length+' تقرير من كل الأجهزة'+(local.length?' + محفوظات هذا الجهاز':'')})
+      .catch(function(){merge([],local);$('status').textContent='⚠ ما قدرت أوصل للسيرفر — هذه تقارير هذا الجهاز فقط ('+local.length+')'});
+  }
+  function merge(a,b){
+    var m={};a.concat(b).forEach(function(r){if(!r||!r.id)return;var o=m[r.id];if(!o||(r.timeMs||0)>=(o.timeMs||0))m[r.id]=r});
+    ALL=Object.keys(m).map(function(k){return m[k]}).sort(function(x,y){return (y.date||'').localeCompare(x.date||'')});
+    fillSelect('fGame',ALL.map(function(r){return r.game}));
+    fillSelect('fClass',ALL.map(function(r){return r.klass}).filter(Boolean));
+    render();
+  }
+  function fillSelect(id,vals){
+    var s=$(id),cur=s.value,first=s.options[0].outerHTML,u={};vals.forEach(function(v){u[v]=1});
+    s.innerHTML=first+Object.keys(u).sort().map(function(v){return '<option>'+esc(v)+'</option>'}).join('');s.value=cur;
+  }
+  function filtered(){
+    var q=$('q').value.trim(),g=$('fGame').value,c=$('fClass').value,f=$('fFrom').value;
+    return ALL.filter(function(r){return(!q||(r.name||'').indexOf(q)>-1)&&(!g||r.game===g)&&(!c||r.klass===c)&&(!f||(r.date||'')>=f)});
+  }
+  function render(){
+    var rows=filtered(),names={},t=0,pc=[],sc=0;
+    rows.forEach(function(r){names[(r.name||'')+'|'+(r.klass||'')]=1;t+=r.timeMs||0;sc+=r.score||0;if(r.pct!=null)pc.push(r.pct)});
+    var avg=pc.length?Math.round(pc.reduce(function(a,b){return a+b},0)/pc.length)+'%':'—';
+    $('stats').innerHTML=st('👩‍🎓 عدد الطلاب',Object.keys(names).length)+st('🎮 عدد المحاولات',rows.length)+st('📈 متوسط الأداء',avg)+st('⏱ مجموع وقت اللعب',fmt(t))+st('⭐ مجموع النقاط',sc);
+    VIEW==='plays'?renderPlays(rows):renderStudents(rows);
+  }
+  function st(l,v){return '<div class="stat"><span>'+l+'</span><b>'+esc(v)+'</b></div>'}
+  function d(s){var x=new Date(s);return isNaN(x)?'':x.toLocaleDateString('ar-EG')+' '+x.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}
+  function renderPlays(rows){
+    $('tbl').innerHTML='<tr><th>#</th><th>الاسم</th><th>الصف</th><th>اللعبة</th><th>التاريخ</th><th>الوقت</th><th>النقاط</th><th>✅</th><th>❌</th><th>الأداء</th><th>التقدير</th><th>تفاصيل العلامات</th></tr>'+
+      rows.map(function(r,i){return '<tr><td>'+(i+1)+'</td><td><b>'+esc(r.name)+'</b></td><td>'+esc(r.klass)+'</td><td>'+esc(r.game)+'</td><td>'+d(r.date)+'</td><td>'+esc(r.timeText||fmt(r.timeMs))+'</td><td>'+(r.score||0)+'</td><td class="ok">'+(r.correct||0)+'</td><td class="no">'+(r.wrong||0)+'</td><td>'+(r.pct!=null?r.pct+'%':'—')+'</td><td><span class="pill">'+esc(r.rating)+'</span></td><td>'+
+        (r.sections||[]).map(function(s){return esc(s.label)+': '+s.got+'/'+s.max}).join(' · ')+'</td></tr>'}).join('')||'<tr><td colspan="12">لسا ما في تقارير</td></tr>';
+  }
+  function studentGroups(rows){
+    var g={};rows.forEach(function(r){var k=(r.name||'')+'|'+(r.klass||'');var o=g[k]||(g[k]={name:r.name,klass:r.klass,plays:0,games:{},time:0,score:0,c:0,w:0,pct:[],last:''});
+      o.plays++;o.games[r.game]=1;o.time+=r.timeMs||0;o.score+=r.score||0;o.c+=r.correct||0;o.w+=r.wrong||0;if(r.pct!=null)o.pct.push(r.pct);if((r.date||'')>o.last)o.last=r.date});
+    return Object.keys(g).map(function(k){var o=g[k];o.avg=o.pct.length?Math.round(o.pct.reduce(function(a,b){return a+b},0)/o.pct.length):null;return o})
+      .sort(function(a,b){return (b.avg||0)-(a.avg||0)||b.score-a.score});
+  }
+  function renderStudents(rows){
+    var s=studentGroups(rows);
+    $('tbl').innerHTML='<tr><th>الترتيب</th><th>الاسم</th><th>الصف</th><th>عدد الألعاب</th><th>المحاولات</th><th>مجموع الوقت</th><th>مجموع النقاط</th><th>✅</th><th>❌</th><th>متوسط الأداء</th><th>آخر دخول</th></tr>'+
+      s.map(function(o,i){return '<tr><td>'+(i+1)+'</td><td><b>'+esc(o.name)+'</b></td><td>'+esc(o.klass)+'</td><td>'+Object.keys(o.games).length+'</td><td>'+o.plays+'</td><td>'+fmt(o.time)+'</td><td>'+o.score+'</td><td class="ok">'+o.c+'</td><td class="no">'+o.w+'</td><td>'+(o.avg!=null?o.avg+'%':'—')+'</td><td>'+d(o.last)+'</td></tr>'}).join('')||'<tr><td colspan="11">لسا ما في تقارير</td></tr>';
+  }
+  document.querySelectorAll('.tabs button').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tabs button').forEach(function(x){x.classList.remove('on')});b.classList.add('on');VIEW=b.getAttribute('data-v');render()}});
+  ['q','fGame','fClass','fFrom'].forEach(function(id){$(id).addEventListener('input',render)});
+  $('reload').onclick=load;
+  $('xls').onclick=function(){
+    var rows=filtered(),H=['الاسم','الصف','اللعبة','التاريخ','الوقت (دقائق)','النقاط','صحيحة','خاطئة','الأداء %','التقدير','تفاصيل العلامات'];
+    var q=function(v){v=String(v==null?'':v);return '"'+v.replace(/"/g,'""')+'"'};
+    var csv=[H.map(q).join(',')].concat(rows.map(function(r){return [r.name,r.klass,r.game,d(r.date),Math.round((r.timeMs||0)/6000)/10,r.score||0,r.correct||0,r.wrong||0,r.pct!=null?r.pct:'',r.rating,
+      (r.sections||[]).map(function(s){return s.label+': '+s.got+'/'+s.max}).join(' | ')].map(q).join(',')})).join('\r\n');
+    var a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'}));
+    a.download='تقارير-الطلاب-'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();a.remove();
+  };
+})();
+</script>
+</body>
+</html>
