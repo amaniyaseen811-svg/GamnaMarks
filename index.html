@@ -3114,8 +3114,8 @@ function syncSubs(){
   var L=(typeof LANG!=='undefined'&&LANG)?LANG:'ar';
   for(var i=0;i<v.textTracks.length;i++){
     var tt=v.textTracks[i];
-    // العربية محروقة داخل الفيديو، فلا نعرضها مرتين
-    tt.mode=(tt.language===L && L!=='ar')?'showing':'disabled';
+    // العربية والإنجليزية محروقتان داخل الفيديو، فلا نعرضهما مرتين
+    tt.mode=(tt.language===L && L!=='ar' && L!=='en')?'showing':'disabled';
   }
 }
 function openIntro(){
