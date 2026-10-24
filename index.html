@@ -2519,6 +2519,7 @@ function startPlayverse(){
     <div class="stat">🎯 <span id="gameCount">0</span> <span data-i18n="statGames">لعبة</span></div>
     <div class="stat">📚 <span id="subjectCount">0</span> <span data-i18n="statSubjects">مادة</span></div>
     <div class="stat" id="gmVisitorCounter" style="display:none" title="">👥 <span id="gmVisitorsNum">0</span> زائر</div>
+    <div class="stat" id="gmVisitsCounter" style="display:none">👁️ <span id="gmVisitsNum">0</span> زيارة</div>
   </div>
 </header>
 
@@ -3280,7 +3281,7 @@ function skipGameIntro(){
     if(snap.exists()){
       var d=snap.data();
       document.getElementById('gmVisitorsNum').textContent=(d.visitors||0).toLocaleString('en');
-      document.getElementById('gmVisitorCounter').title='الزيارات: '+(d.visits||0);
+      document.getElementById('gmVisitsNum').textContent=(d.visits||0).toLocaleString('en');document.getElementById('gmVisitsCounter').style.display='';
       document.getElementById('gmVisitorCounter').style.display='';
     }
   }catch(e){}
