@@ -3257,6 +3257,44 @@ function skipGameIntro(){
 
 <script src="gamnamarks-lock.js"></script>
 
+
+<!-- ===== خلفية مغبّشة للفيديوهات العامودية على الشاشات العريضة ===== -->
+<script>
+(function(){
+  function setup(vid){
+    var v=document.getElementById(vid); if(!v) return;
+    var box=v.parentNode;
+    var c=document.createElement('canvas');
+    c.width=48; c.height=27;
+    c.setAttribute('aria-hidden','true');
+    c.style.cssText='position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;filter:blur(28px) brightness(.45) saturate(1.2);transform:scale(1.15);display:none';
+    box.insertBefore(c,box.firstChild);
+    if(getComputedStyle(box).position==='static') box.style.position='relative';
+    box.style.overflow='hidden';
+    v.style.position='relative'; v.style.zIndex='1'; v.style.background='transparent';
+    var ctx=c.getContext('2d'), raf=null, tainted=false;
+    function wide(){ return window.innerWidth>window.innerHeight; }
+    function portraitVideo(){ return v.videoWidth && v.videoHeight && v.videoHeight>v.videoWidth; }
+    function draw(){
+      raf=null;
+      if(tainted||!wide()||!portraitVideo()){ c.style.display='none'; return; }
+      c.style.display='block';
+      try{
+        var vw=v.videoWidth, vh=v.videoHeight, k=Math.max(c.width/vw,c.height/vh);
+        var w=vw*k, h=vh*k;
+        ctx.drawImage(v,(c.width-w)/2,(c.height-h)/2,w,h);
+      }catch(e){ tainted=true; c.style.display='none'; return; }
+      if(!v.paused&&!v.ended) raf=requestAnimationFrame(draw);
+    }
+    function kick(){ if(!raf) raf=requestAnimationFrame(draw); }
+    ['play','playing','loadeddata','seeked','timeupdate'].forEach(function(e){ v.addEventListener(e,kick); });
+    window.addEventListener('resize',kick);
+    v.addEventListener('emptied',function(){ c.style.display='none'; });
+  }
+  function init(){ setup('introVideo'); setup('gameIntroVideo'); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+})();
+</script>
 <!-- ===== عداد الزوار (GamnaMarks) ===== -->
 <script type="module">
 (async function(){
