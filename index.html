@@ -2518,6 +2518,7 @@ function startPlayverse(){
   <div class="stats-bar">
     <div class="stat">🎯 <span id="gameCount">0</span> <span data-i18n="statGames">لعبة</span></div>
     <div class="stat">📚 <span id="subjectCount">0</span> <span data-i18n="statSubjects">مادة</span></div>
+    <div class="stat" id="gmVisitorCounter" style="display:none" title="">👥 <span id="gmVisitorsNum">0</span> زائر</div>
   </div>
 </header>
 
@@ -3254,6 +3255,37 @@ function skipGameIntro(){
 </script>
 
 <script src="gamnamarks-lock.js"></script>
+
+<!-- ===== عداد الزوار (GamnaMarks) ===== -->
+<script type="module">
+(async function(){
+  try{
+    var SDK='https://www.gstatic.com/firebasejs/10.12.0/';
+    var A=await import(SDK+'firebase-app.js');
+    var F=await import(SDK+'firebase-firestore.js');
+    var cfg={apiKey:"AIzaSyADxQ7-3UDxYD3VTOoVrn7d6516_5bqd5Y",authDomain:"cursed-castle-bb43b.firebaseapp.com",projectId:"cursed-castle-bb43b",storageBucket:"cursed-castle-bb43b.firebasestorage.app",messagingSenderId:"458563878259",appId:"1:458563878259:web:715ce9f960b2972ccd9906"};
+    var app=A.getApps().find(function(a){return a.name==='gmCounter';})||A.initializeApp(cfg,'gmCounter');
+    var db=F.getFirestore(app);
+    var ref=F.doc(db,'gm_stats','visitors');
+    var newVisitor=false,newVisit=false;
+    try{ if(!localStorage.getItem('gm_visited')){newVisitor=true;localStorage.setItem('gm_visited','1');} }catch(e){}
+    try{ if(!sessionStorage.getItem('gm_session')){newVisit=true;sessionStorage.setItem('gm_session','1');} }catch(e){}
+    if(newVisit||newVisitor){
+      var upd={};
+      if(newVisit) upd.visits=F.increment(1);
+      if(newVisitor) upd.visitors=F.increment(1);
+      await F.setDoc(ref,upd,{merge:true});
+    }
+    var snap=await F.getDoc(ref);
+    if(snap.exists()){
+      var d=snap.data();
+      document.getElementById('gmVisitorsNum').textContent=(d.visitors||0).toLocaleString('en');
+      document.getElementById('gmVisitorCounter').title='الزيارات: '+(d.visits||0);
+      document.getElementById('gmVisitorCounter').style.display='';
+    }
+  }catch(e){}
+})();
+</script>
 </body>
 
 
