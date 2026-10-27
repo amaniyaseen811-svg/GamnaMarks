@@ -212,6 +212,8 @@ button:focus-visible{outline:3px solid var(--hard);outline-offset:3px}
 .modal-card h2{font-size:1.9rem;margin:6px 0}
 .modal-card p{margin:0 0 16px}
 .modal-card .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.modal-card.wide{max-width:min(980px,100%);max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal-card.wide .row{position:sticky;bottom:-24px;background:var(--card);padding:10px 0 4px;margin:0 -4px}
 
 /* Results */
 #results{padding:24px 14px;max-width:760px;margin:0 auto;text-align:center}
