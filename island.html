@@ -2648,3 +2648,67 @@ window.addEventListener('load',function(){
   if(b2){b2.setAttribute('onclick','P(16)');b2.textContent='📊 شوفي نتيجتك';}
 })();
 </script>
+
+<!-- ===== GamnaMarks: اللعب الأونلاين الجماعي (الجزيرة المسحورة) ===== -->
+<script src="gm-live.js"></script>
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  if(!window.GMLive||!$('gmxMode'))return;
+
+  /* 1) بطاقة "أونلاين" بشاشة طرق اللعب */
+  var grid=document.querySelector('#gmxMode .gmx-grid');
+  if(grid&&!$('gmlCard')){
+    var c=document.createElement('button');
+    c.className='gmx-card';c.id='gmlCard';
+    c.style.cssText='grid-column:1/-1;border-color:#4fc3f7;background:rgba(41,182,246,.12)';
+    c.innerHTML='<div class="e">🌐</div><b style="color:#4fc3f7">أونلاين مع صاحباتي</b><span>كل وحدة من تلفونها وبشخصيتها، بنفس الوقت: 🤝 تعاون أو 🏁 تنافس</span>';
+    c.onclick=function(){
+      var s=document.querySelector('#gmxLvl .gmx-card.sel');
+      var lvl=s?s.getAttribute('data-l'):'normal';
+      $('gmxMode').classList.remove('on');
+      GMLive.open({game:'island',total:12,lvl:lvl,
+        onBack:function(){$('gmxMode').classList.add('on');},
+        onStart:startOnline});
+    };
+    grid.appendChild(c);
+  }
+
+  /* 2) لما تبلّش الغرفة: نفس طريق اللعب الفردي بس بمستوى الغرفة واسم البنت */
+  function startOnline(cfg){
+    var l=document.querySelector('#gmxLvl .gmx-card[data-l="'+cfg.lvl+'"]');if(l)l.click();
+    var solo=document.querySelector('#gmxMode .gmx-card[data-m="solo"]');if(solo)solo.click();
+    var n=$('gmxN0');if(n)n.value=cfg.name;
+    $('gmxGo').click();
+    if(window.GMX)GMX.live=true;
+    doneSeen=false;GMLive.refresh();
+  }
+
+  /* 3) مسار السباق فوق أسئلة التماسيح */
+  var bb=$('bb');
+  if(bb){var bd=document.createElement('div');bd.id='gmlIsl';bd.style.display='none';bb.insertBefore(bd,bb.firstChild);GMLive.mountBoard(bd);}
+
+  /* 4) كل ثانية: بنبعث وين وصلت البنت */
+  var doneSeen=false;
+  setInterval(function(){
+    if(!GMLive.active()||!window.GMX)return;
+    var G=window.GMX;
+    var p11=$('p11');
+    if(p11&&p11.classList.contains('on'))doneSeen=true;
+    var c=0;for(var i=0;i<11;i++){var g=$('g'+i);if(g&&g.textContent!=='⚫'&&g.textContent!=='')c++;}
+    var pts=doneSeen?(G.final||pw):pw;
+    GMLive.report({step:c,pts:pts,mis:G.mis||0,done:doneSeen,won:!!G.bossWon});
+  },1000);
+
+  /* 5) شاشة النتيجة: ترتيب الغرفة + اسم الوضع */
+  var _P=window.P;
+  window.P=function(n){
+    if(n===0&&GMLive.active()){GMLive.leave();if(window.GMX)GMX.live=false;GMLive.refresh();}
+    _P(n);
+    if(n===16&&GMLive.mode()){
+      var rn=$('gmxRName');if(rn)rn.textContent=rn.textContent.replace('وضع فردي','وضع أونلاين '+(GMLive.mode()==='race'?'🏁 تنافس':'🤝 تعاون'));
+      var rp=$('gmxRPl');if(rp){var d=document.createElement('div');d.innerHTML=GMLive.resultHTML();rp.appendChild(d);}
+    }
+  };
+})();
+</script>
