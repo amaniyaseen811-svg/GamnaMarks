@@ -100,6 +100,7 @@ window.palaceVideo = function (url) {
   return true;
 };
 function palaceStart(script, config) {
+  if (window.palaceLobby && !palaceStart.ok) { palaceStart.ok = true; window.palaceLobby(function () { palaceStart(script, config); }); return; }
   palaceRotateMsg(); palaceFit();
   if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && location.hash.indexOf('mobile') < 0) { try { history.replaceState(null, '', location.pathname + location.search + '#mobile'); } catch (e) { location.hash = 'mobile'; } }
   palaceSet(0);
@@ -143,6 +144,9 @@ function palaceStart(script, config) {
 }
 </script>
 <!--palace-end-->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="palace-net.js"></script>
 <script src="../gm-report.js" data-game="قصر المغذيات — إنقاذ آدم"></script>
 <script src="palace-end.js"></script>
 <!--/palace-end-->
