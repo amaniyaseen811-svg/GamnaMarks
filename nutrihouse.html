@@ -849,6 +849,625 @@ $('#homeBtn').onclick=()=>{modal(`<div class="big">🏠</div><h2>${T('العود
 $('#toResults').onclick=toTrophy;
 $('#againBtn').onclick=()=>{buildModes();show('modes')};
 $('#resHome').onclick=()=>show('cover');
+/* =====================================================================
+   NutriHouse Online — اللعب الجماعي أونلاين (كل بنت من جهازها)
+   4 طرق دخول: إنشاء غرفة · كود · غرفة الصف · دخول سريع
+   نمطان: ⚔️ تنافسي (كل بنت فيلتها) · 🤝 تعاوني (فيلا وحدة للكل)
+   تحكم المعلمة: فتح/إغلاق اللعب الجماعي · تسكير غرفة · إخراج طالبة
+   ===================================================================== */
+const NHMP=(function(){
+  const SDK=window.NHMP_SDK||'https://www.gstatic.com/firebasejs/10.12.0/';
+  const CFG={apiKey:"AIzaSyADxQ7-3UDxYD3VTOoVrn7d6516_5bqd5Y",authDomain:"cursed-castle-bb43b.firebaseapp.com",projectId:"cursed-castle-bb43b",storageBucket:"cursed-castle-bb43b.firebasestorage.app",messagingSenderId:"458563878259",appId:"1:458563878259:web:715ce9f960b2972ccd9906"};
+  const PASS='amani2026',COL='pv_rooms',CFGC='pv_config',CFGD='nutrihouse_online',STALE=45000,MAXQ=8;
+  const AVS=['👧','🧕','👩‍🎓','👩‍🔬','👩‍🍳','👸','🦋','🌸','🌟','🐱','🦄','🌙'];
+  const CLASSES=[['9a','التاسع أ'],['9b','التاسع ب'],['9c','التاسع ج'],['9d','التاسع د'],['9e','التاسع هـ'],['9f','التاسع و']];
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const now=()=>Date.now();
+  function today(){const d=new Date();return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')}
+  function gen(n){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<n;i++)s+=A[Math.floor(Math.random()*A.length)];return s}
+  function ss(k,v){try{if(v===undefined)return sessionStorage.getItem(k);sessionStorage.setItem(k,v)}catch(e){return null}}
+  function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+
+  /* ---------- Firebase (تطبيق مُسمّى حتى لا يتعارض مع باقي المنصة) ---------- */
+  let FB=null,fbP=null;
+  function fb(){
+    if(FB)return Promise.resolve(FB);if(fbP)return fbP;
+    fbP=(async()=>{try{
+      const a=await import(SDK+'firebase-app.js'),f=await import(SDK+'firebase-firestore.js');
+      let app;try{app=a.getApp('nhmp')}catch(e){app=a.initializeApp(CFG,'nhmp')}
+      FB=Object.assign({db:f.getFirestore(app)},f);return FB;
+    }catch(e){console.warn('[NHMP] Firebase off',e);fbP=null;return null}})();
+    return fbP;
+  }
+  const roomRef=id=>FB.doc(FB.db,COL,id);
+  const plRef=(id,pid)=>FB.doc(FB.db,COL,id,'players',pid);
+  const plCol=id=>FB.collection(FB.db,COL,id,'players');
+  const cfgRef=()=>FB.doc(FB.db,CFGC,CFGD);
+
+  /* ---------- الحالة ---------- */
+  let pid=ss('nhmp_pid');if(!pid){pid='p'+gen(10);ss('nhmp_pid',pid)}
+  const S={on:false,rid:null,R:null,P:{},unsub:[],started:false,enabled:true,cfgUnsub:null,
+    name:ls('nhmp_name')||'',av:ls('nhmp_av')||AVS[0],myKeys:new Set(),myDone:new Set(),doneBy:{},
+    last:'',lastW:0,timer:null,finDone:false,claiming:false,cards:{},busyJoin:false};
+  const isCoop=()=>!!(S.on&&S.R&&S.R.type==='coop');
+  const alive=p=>!!(p&&!p.left&&!p.kicked&&now()-(p.seen||0)<STALE);
+  const isOn=id=>id===pid?S.on:alive(S.P[id]);
+  function hostId(){
+    if(!S.R)return null;if(isOn(S.R.host))return S.R.host;
+    const ps=Object.entries(S.P).filter(([id,p])=>isOn(id)).sort((a,b)=>(a[1].joined||0)-(b[1].joined||0));
+    return ps.length?ps[0][0]:S.R.host;
+  }
+  const amHost=()=>hostId()===pid;
+  const scr=()=>{const a=document.querySelector('.screen.active');return a?a.id:''};
+
+  /* ---------- الأنماط ---------- */
+  const css=document.createElement('style');css.textContent=`
+#nhmp{padding:26px 14px 40px;max-width:760px;margin:0 auto;text-align:center}
+#nhmp h2{margin:.2em 0}
+.nhmp-card{background:var(--card);border:2px solid var(--ink);border-radius:16px;box-shadow:var(--shadow);padding:16px;margin:14px auto;text-align:start}
+.nhmp-card h3{margin:0 0 10px;font-size:1.05rem}
+.nhmp-in{font:inherit;width:100%;box-sizing:border-box;padding:11px 12px;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--ink);font-size:1.05rem}
+.nhmp-avs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;justify-content:center}
+.nhmp-av{width:46px;height:46px;font-size:1.6rem;border-radius:50%;border:2px solid var(--line);background:var(--chip);cursor:pointer;padding:0;line-height:1}
+.nhmp-av.sel{border-color:var(--hard);box-shadow:0 0 0 3px var(--hard)}
+.nhmp-ways{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.nhmp-way{font:inherit;color:var(--ink);background:var(--card);border:2px solid var(--ink);border-radius:14px;box-shadow:var(--shadow);padding:14px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
+.nhmp-way .i{font-size:1.9rem}.nhmp-way b{font-size:1rem}.nhmp-way small{color:var(--muted);font-weight:600}
+.nhmp-way.sel{background:var(--chip);border-color:var(--hard)}
+.nhmp-way:disabled,.nhmp-btns .btn:disabled{opacity:.45;cursor:not-allowed}
+.nhmp-sub{margin-top:12px;display:grid;gap:10px}
+.nhmp-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}
+.nhmp-code-in{text-align:center;letter-spacing:.4em;text-transform:uppercase;font-weight:800;font-size:1.4rem;max-width:220px}
+.nhmp-cls{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.nhmp-cls button{font:inherit;font-weight:800;color:var(--ink);background:var(--chip);border:2px solid var(--line);border-radius:12px;padding:12px 6px;cursor:pointer}
+.nhmp-msg{min-height:1.4em;margin-top:8px;font-weight:700;color:var(--bad);text-align:center}
+.nhmp-off{background:#fde8e7;color:#8a1f1c;border:2px solid var(--bad);border-radius:14px;padding:14px;font-weight:800;margin:12px auto}
+.nhmp-big{font-size:2.2rem;font-weight:900;letter-spacing:.25em;background:var(--hard);color:#14305a;border:2px solid #14305a;border-radius:14px;padding:6px 18px;display:inline-block;direction:ltr}
+.nhmp-ppl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0}
+.nhmp-chip{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:2px solid var(--line);border-radius:999px;padding:5px 12px;font-weight:700}
+.nhmp-chip.off{opacity:.45}.nhmp-chip .a{font-size:1.3rem}
+.nhmp-seg{display:inline-flex;border:2px solid var(--ink);border-radius:12px;overflow:hidden}
+.nhmp-seg button{font:inherit;font-weight:800;border:0;background:var(--card);color:var(--ink);padding:10px 14px;cursor:pointer}
+.nhmp-seg button.sel{background:var(--hard);color:#14305a}
+.nhmp-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.nhmp-hint{color:var(--muted);font-weight:600;font-size:.92rem;margin:6px 0 0;text-align:center}
+.nhmp-foot{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.nhmp-strip{margin:8px 10px 0;background:var(--card);border:2px solid var(--ink);border-radius:14px;box-shadow:var(--shadow);padding:8px 10px}
+.nhmp-strip-h{display:flex;align-items:center;gap:8px;font-weight:800}
+.nhmp-strip-h .tag{color:var(--muted);font-size:.85rem;font-weight:700;flex:1}
+.nhmp-strip-h button{font:inherit;border:2px solid var(--line);background:var(--chip);color:var(--ink);border-radius:8px;padding:2px 10px;cursor:pointer;font-weight:800}
+.nhmp-cards{display:flex;gap:8px;overflow-x:auto;padding:8px 2px 4px;scroll-snap-type:x mandatory}
+.nhmp-strip.min .nhmp-cards{display:none}
+.nhmp-pc{flex:0 0 132px;scroll-snap-align:start;background:var(--chip);border:2px solid var(--line);border-radius:12px;padding:5px;cursor:pointer;font:inherit;color:var(--ink);text-align:center}
+.nhmp-pc.me{border-color:var(--hard)}.nhmp-pc.off{opacity:.45}
+.nhmp-pc svg{display:block;width:100%;height:auto;border-radius:8px}
+.nhmp-pc .n{font-weight:800;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+.nhmp-pc .s{font-size:.78rem;font-weight:700;color:var(--muted)}
+.nhmp-busy{opacity:.55;filter:grayscale(.4)}
+.nhmp-ov{position:fixed;inset:0;z-index:99000;background:rgba(8,18,40,.62);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 12px}
+.nhmp-ov.show{display:flex}
+.nhmp-ovc{background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:18px;box-shadow:var(--shadow);padding:18px;max-width:640px;width:100%;text-align:center}
+.nhmp-ovc svg.house{width:100%;height:auto;border-radius:12px;border:2px solid var(--ink)}
+.nhmp-tg{font:inherit;font-weight:900;font-size:1.15rem;border:2px solid #14305a;border-radius:14px;padding:14px 18px;cursor:pointer;width:100%;box-shadow:var(--shadow)}
+.nhmp-tg.on{background:#2bb673;color:#fff}.nhmp-tg.off{background:var(--bad);color:#fff}
+.nhmp-room{background:var(--chip);border:2px solid var(--line);border-radius:14px;padding:10px;margin-top:10px;text-align:start}
+.nhmp-room.closed{opacity:.6}
+.nhmp-room .h{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-weight:800}
+.nhmp-room .h .sp{flex:1}
+.nhmp-badge{font-size:.8rem;border-radius:999px;padding:2px 9px;background:var(--card);border:1px solid var(--line);font-weight:800}
+.nhmp-kick{border:0;background:var(--bad);color:#fff;border-radius:50%;width:24px;height:24px;cursor:pointer;font-weight:900;line-height:1;padding:0}
+.nhmp-sm{font:inherit;font-weight:800;border:2px solid var(--ink);border-radius:10px;padding:6px 12px;cursor:pointer;background:var(--card);color:var(--ink)}
+.nhmp-sm.red{background:var(--bad);color:#fff;border-color:#14305a}
+.nhmp-res{display:grid;gap:6px;text-align:start}
+.nhmp-res div{background:var(--chip);border-radius:10px;padding:6px 10px;font-weight:700}
+.nhmp-styles{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.nhmp-styles button{font:inherit;font-weight:800;color:var(--ink);background:var(--chip);border:2px solid var(--line);border-radius:12px;padding:10px 6px;cursor:pointer}
+#nhmpV .nhmp-ovc{max-width:900px}
+.nhmp-wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:8px}
+.nhmp-wcard{background:var(--chip);border:2px solid var(--line);border-radius:12px;padding:6px}
+.nhmp-wcard.off{opacity:.5}.nhmp-wcard .n{font-weight:800;margin-top:4px}.nhmp-wcard .s{font-size:.85rem;color:var(--muted);font-weight:700}
+.nhmp-styles button.sel{border-color:var(--hard);box-shadow:0 0 0 3px var(--hard)}
+`;document.head.appendChild(css);
+
+  /* ---------- شاشة اللوبي ---------- */
+  const sec=document.createElement('section');sec.id='nhmp';sec.className='screen';
+  sec.innerHTML=`
+  <h2>${T('🌐 اللعب الجماعي أونلاين')}</h2>
+  <p class="lead">${T('كل بنت من جهازها، وبتشوفوا بيوت بعض وانتو بتبنوا!')}</p>
+  <div class="nhmp-off" id="nhmpOff" hidden>${T('⛔ اللعب الجماعي مغلق حاليًا من المعلمة. بتقدري تلعبي فردي.')}</div>
+  <div id="nhmpS1">
+    <div class="nhmp-card"><h3>${T('👤 اسمك وشخصيتك')}</h3>
+      <input class="nhmp-in" id="nhmpName" maxlength="18" placeholder="${T('اكتبي اسمك')}">
+      <div class="nhmp-avs" id="nhmpAvs"></div></div>
+    <div class="nhmp-card"><h3>${T('🚪 كيف بدك تدخلي؟')}</h3>
+      <div class="nhmp-ways">
+        <button class="nhmp-way" data-w="create"><span class="i">➕</span><b>${T('أنشئي غرفة')}</b><small>${T('وابعتي الكود لصاحباتك')}</small></button>
+        <button class="nhmp-way" data-w="code"><span class="i">🔑</span><b>${T('ادخلي بكود')}</b><small>${T('عندك كود من صاحبتك')}</small></button>
+        <button class="nhmp-way" data-w="class"><span class="i">🏫</span><b>${T('غرفة صفي')}</b><small>${T('بدون كود، اختاري صفك')}</small></button>
+        <button class="nhmp-way" data-w="quick"><span class="i">⚡</span><b>${T('دخول سريع')}</b><small>${T('مع أي حدا فاتح هلأ')}</small></button>
+      </div>
+      <div class="nhmp-sub" id="nhmpCodeBox" hidden>
+        <div class="nhmp-row"><input class="nhmp-in nhmp-code-in" id="nhmpCode" maxlength="4" placeholder="ABCD" autocomplete="off"><button class="btn" id="nhmpCodeGo">${T('دخول')}</button></div></div>
+      <div class="nhmp-sub" id="nhmpClassBox" hidden><div class="nhmp-cls" id="nhmpCls"></div></div>
+      <div class="nhmp-msg" id="nhmpMsg"></div>
+    </div>
+  </div>
+  <div id="nhmpW" hidden></div>
+  <div class="nhmp-foot">
+    <button class="btn ghost" id="nhmpBack">${T('↩ رجوع')}</button>
+    <button class="btn ghost" id="nhmpTeach">${T('🔐 لوحة المعلمة')}</button>
+  </div>`;
+  document.body.insertBefore(sec,$('#modal'));
+
+  /* overlay عام (إشعارات + بيت صاحبة + لوحة المعلمة) */
+  function overlay(id){let o=document.getElementById(id);if(!o){o=document.createElement('div');o.id=id;o.className='nhmp-ov';o.innerHTML='<div class="nhmp-ovc"></div>';document.body.appendChild(o);o.addEventListener('click',e=>{if(e.target===o&&id!=='nhmpT')o.classList.remove('show')})}return o}
+  function note(html,btn){const o=overlay('nhmpN');o.firstChild.innerHTML=html+`<div class="nhmp-btns"><button class="btn" id="nhmpNOk">${btn||T('تمام')}</button></div>`;o.classList.add('show');$('#nhmpNOk').onclick=()=>o.classList.remove('show')}
+
+  const msg=t=>{$('#nhmpMsg').textContent=t||''};
+  const avBox=$('#nhmpAvs');
+  AVS.forEach(a=>{const b=document.createElement('button');b.className='nhmp-av'+(a===S.av?' sel':'');b.textContent=a;b.onclick=()=>{S.av=a;ls('nhmp_av',a);avBox.querySelectorAll('.nhmp-av').forEach(x=>x.classList.toggle('sel',x===b))};avBox.appendChild(b)});
+  CLASSES.forEach(([k,n])=>{const b=document.createElement('button');b.textContent=T(n);b.onclick=()=>join('class',k,n);$('#nhmpCls').appendChild(b)});
+  sec.querySelectorAll('.nhmp-way').forEach(b=>b.onclick=()=>{
+    if(!S.enabled)return;
+    sec.querySelectorAll('.nhmp-way').forEach(x=>x.classList.toggle('sel',x===b));msg('');
+    const w=b.dataset.w;$('#nhmpCodeBox').hidden=w!=='code';$('#nhmpClassBox').hidden=w!=='class';
+    if(w==='create')join('create');else if(w==='quick')join('quick');else if(w==='code')setTimeout(()=>$('#nhmpCode').focus(),50);
+  });
+  $('#nhmpCode').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'')});
+  $('#nhmpCode').addEventListener('keydown',e=>{if(e.key==='Enter')$('#nhmpCodeGo').click()});
+  $('#nhmpCodeGo').onclick=()=>{const c=$('#nhmpCode').value.trim();if(c.length<4){msg(T('اكتبي الكود كامل (4 خانات)'));return}join('code',c)};
+  $('#nhmpBack').onclick=()=>{if(S.on)leave();buildModes();show('modes')};
+  $('#nhmpTeach').onclick=openTeacher;
+
+  function setEnabledUI(){
+    $('#nhmpOff').hidden=S.enabled;
+    sec.querySelectorAll('.nhmp-way,#nhmpCodeGo,#nhmpCls button').forEach(b=>b.disabled=!S.enabled);
+    if(!S.enabled){$('#nhmpCodeBox').hidden=true;$('#nhmpClassBox').hidden=true}
+  }
+  function stepView(w){$('#nhmpS1').hidden=!!w;$('#nhmpW').hidden=!w}
+
+  async function openLobby(){
+    if(!S.name)S.name=(ls('gm_student_name')||'').trim().split(/\s+/).slice(0,2).join(' ');$('#nhmpName').value=S.name;msg('');stepView(S.on&&!S.started);show('nhmp');
+    sec.querySelectorAll('.nhmp-way').forEach(x=>x.classList.remove('sel'));$('#nhmpCodeBox').hidden=true;$('#nhmpClassBox').hidden=true;
+    const f=await fb();
+    if(!f){msg(T('📶 ما في اتصال بالإنترنت. اللعب الجماعي بحتاج نت.'));return}
+    if(!S.cfgUnsub){
+      S.cfgUnsub=f.onSnapshot(cfgRef(),s=>{
+        const d=s.exists()?s.data():{};const was=S.enabled;S.enabled=d.enabled!==false;setEnabledUI();
+        if(was&&!S.enabled&&S.on)endOnline('disabled');
+      },e=>console.warn('[NHMP] cfg',e));
+    }
+    setEnabledUI();
+  }
+
+  /* ---------- الدخول للغرف ---------- */
+  function readMe(){
+    const n=$('#nhmpName').value.trim().replace(/\s+/g,' ');
+    if(n.length<2){msg(T('✏️ اكتبي اسمك أول (حرفين على الأقل)'));$('#nhmpName').focus();return false}
+    S.name=n.slice(0,18);ls('nhmp_name',S.name);return true;
+  }
+  async function join(way,arg,label){
+    if(S.busyJoin)return;if(!S.enabled){msg(T('⛔ اللعب الجماعي مغلق حاليًا من المعلمة.'));return}
+    if(!readMe())return;
+    const f=await fb();if(!f){msg(T('📶 ما في اتصال بالإنترنت.'));return}
+    S.busyJoin=true;msg(T('⏳ لحظة...'));
+    try{
+      const c=await f.getDoc(cfgRef());if(c.exists()&&c.data().enabled===false){S.enabled=false;setEnabledUI();msg('');return}
+      const base={game:'nutrihouse',type:'comp',style:'cottage',size:'large',status:'waiting',host:pid,hostName:S.name,day:today(),created:now(),claim:{},banned:[]};
+      let id;
+      if(way==='create'){
+        let code;for(let i=0;i<6;i++){code=gen(4);const s=await f.getDoc(roomRef('nh_'+code));if(!s.exists()||s.data().day!==today())break}
+        id='nh_'+code;await f.setDoc(roomRef(id),Object.assign({},base,{kind:'code',code,label:code}));
+      }else if(way==='code'){
+        id='nh_'+arg;const s=await f.getDoc(roomRef(id));
+        if(!s.exists()||s.data().day!==today()){msg(T('❌ ما لقيت غرفة بهاد الكود. تأكدي منه.'));return}
+      }else if(way==='class'){
+        id='nh_c_'+arg+'_'+today();
+        await f.runTransaction(f.db,async tx=>{const s=await tx.get(roomRef(id));if(!s.exists())tx.set(roomRef(id),Object.assign({},base,{kind:'class',code:'',label:label}))});
+      }else{
+        const q=f.query(f.collection(f.db,COL),f.where('game','==','nutrihouse'),f.where('kind','==','quick'),f.where('day','==',today()),f.where('status','==','waiting'));
+        const r=await f.getDocs(q);let best=null;
+        r.forEach(d=>{const v=d.data();if(now()-(v.created||0)<10*60000&&(!best||v.created>best.v.created))best={id:d.id,v}});
+        if(best)id=best.id;else{id='nh_q_'+gen(6);await f.setDoc(roomRef(id),Object.assign({},base,{kind:'quick',code:'',label:'غرفة سريعة'}))}
+      }
+      const s=await f.getDoc(roomRef(id));const R=s.data();
+      if(R.status==='closed'){msg(T('🔒 هاي الغرفة مسكّرة من المعلمة.'));return}
+      if((R.banned||[]).includes(S.name)){msg(T('🚪 المعلمة أخرجتك من هاي الغرفة.'));return}
+      if(R.status==='waiting'||R.status==='playing'){
+        const ps=await f.getDocs(plCol(id));let n=0;ps.forEach(d=>{if(d.id!==pid&&alive(d.data()))n++});
+        if(n>=MAXQ*2){msg(T('👭 الغرفة مليانة، جربي غرفة ثانية.'));return}
+      }
+      await enter(id);msg('');
+    }catch(e){console.warn('[NHMP] join',e);msg(T('⚠️ صار خطأ بالاتصال، جربي كمان مرة.'))}
+    finally{S.busyJoin=false}
+  }
+  async function enter(id){
+    if(S.on)leave();
+    const f=FB;S.rid=id;S.on=true;S.started=false;S.P={};S.R=null;S.cards={};S.last='';
+    await f.setDoc(plRef(id,pid),{name:S.name,av:S.av,joined:now(),seen:now(),left:false,kicked:false,score:0,hearts:3,st:{},done:{},cur:null,fin:false,where:'nhmp'},{merge:true});
+    S.unsub.push(f.onSnapshot(roomRef(id),s=>{
+      if(!S.on||S.rid!==id)return;
+      if(!s.exists()){endOnline('closed');return}
+      const old=S.R;S.R=s.data();
+      if(S.R.status==='closed'){endOnline('closed');return}
+      if((S.R.banned||[]).includes(S.name)&&!(old&&(old.banned||[]).includes(S.name))){endOnline('kicked');return}
+      if(S.R.status==='playing'&&!S.started){go();return}
+      renderWait();
+      if(isCoop()&&scr()==='game'&&!$('#chooser').hidden&&!G.cur)showChooser(G.order.length===0);
+    },e=>console.warn('[NHMP] room',e)));
+    S.unsub.push(f.onSnapshot(plCol(id),s=>{
+      if(!S.on||S.rid!==id)return;
+      s.forEach(d=>{S.P[d.id]=d.data()});
+      const me=S.P[pid];if(me&&me.kicked){endOnline('kicked');return}
+      renderWait();renderStrip();coopApply();renderAv();if(scr()==='results')renderRes();
+    },e=>console.warn('[NHMP] players',e)));
+    clearInterval(S.timer);S.timer=setInterval(sync,1500);
+    stepView(true);renderWait();
+  }
+  function leave(){
+    S.unsub.forEach(u=>{try{u()}catch(e){}});S.unsub=[];clearInterval(S.timer);
+    if(S.rid&&FB){FB.setDoc(plRef(S.rid,pid),{left:true,seen:now()},{merge:true}).catch(()=>{})}
+    S.on=false;S.started=false;S.rid=null;S.R=null;S.P={};S.cards={};
+    const st=$('#nhmpStrip');if(st)st.hidden=true;const ag=document.getElementById('nhmpAv');if(ag)ag.remove();
+  }
+  window.addEventListener('pagehide',()=>{if(S.on&&S.rid&&FB)FB.setDoc(plRef(S.rid,pid),{left:true,seen:now()},{merge:true}).catch(()=>{})});
+
+  function endOnline(why){
+    if(!S.on)return;const playing=S.started&&(scr()==='game');leave();
+    const m={closed:T('🔒 المعلمة سكّرت هاي الغرفة.'),kicked:T('🚪 المعلمة أخرجتك من الغرفة.'),disabled:T('⛔ المعلمة سكّرت اللعب الجماعي حاليًا.')}[why]||T('انقطع الاتصال بالغرفة.');
+    if(G.mode==='online')G.mode='solo';
+    if(playing){note(`<div style="font-size:3rem">📴</div><h2>${m}</h2><p>${T('بتقدري تكملي بناء فيلتك لحالك 👍')}</p>`,T('أكمّل البناء'))}
+    else if(scr()==='nhmp'){stepView(false);setEnabledUI();msg(m)}
+    else note(`<div style="font-size:3rem">📴</div><h2>${m}</h2>`);
+  }
+
+  /* ---------- غرفة الانتظار ---------- */
+  function renderWait(){
+    if(!S.on||!S.R||scr()!=='nhmp')return;const R=S.R,host=amHost(),w=$('#nhmpW');
+    const ppl=Object.entries(S.P).filter(([id,p])=>!p.left&&!p.kicked).sort((a,b)=>(a[1].joined||0)-(b[1].joined||0));
+    const hid=hostId();
+    const head=R.kind==='code'?`<p>${T('رمز الغرفة — ابعتيه لصاحباتك:')}</p><div class="nhmp-big">${esc(R.code)}</div>`:
+      `<div class="nhmp-big" style="letter-spacing:0">${R.kind==='class'?'🏫 '+esc(T(R.label)):'⚡ '+T('غرفة سريعة')}</div>`;
+    const typeTxt=R.type==='coop'?T('🤝 تعاوني — كلنا بنبني فيلا وحدة'):T('⚔️ تنافسي — كل وحدة بتبني فيلتها ومين أسرع وأشطر');
+    let ctl='';
+    if(host&&R.status==='waiting'){
+      ctl=`<h3>${T('⚙️ إنتِ صاحبة الغرفة، اختاري:')}</h3>
+      <div class="nhmp-row"><div class="nhmp-seg"><button data-t="comp" class="${R.type!=='coop'?'sel':''}">${T('⚔️ تنافسي')}</button><button data-t="coop" class="${R.type==='coop'?'sel':''}">${T('🤝 تعاوني')}</button></div></div>`;
+      if(R.type==='coop'){
+        ctl+=`<p class="nhmp-hint">${T('بالتعاوني كلكم بتبنوا نفس الفيلا، فاختاري شكلها وحجمها:')}</p><div class="nhmp-styles">${Object.keys(STYLES).map(k=>`<button data-s="${k}" class="${R.style===k?'sel':''}">${STYLES[k][0]} ${esc(STYLES[k][1])}</button>`).join('')}</div>
+        <div class="nhmp-row" style="margin-top:8px"><div class="nhmp-seg"><button data-z="small" class="${R.size==='small'?'sel':''}">${T('🏠 صغيرة (4 أسئلة)')}</button><button data-z="large" class="${R.size!=='small'?'sel':''}">${T('🏰 كبيرة (7 أسئلة)')}</button></div></div>`;
+      }
+    }
+    const btns=R.status==='playing'?`<button class="btn" id="nhmpGo">${T('🚀 اللعب بلّش! ادخلي')}</button>`:
+      host?`<button class="btn" id="nhmpStart">${T('🚀 ابدئي اللعب')}</button>`:`<p class="nhmp-hint">${L('⏳ بانتظار {0} تبدأ اللعب...',esc(S.P[hid]?S.P[hid].name:R.hostName))}</p>`;
+    w.innerHTML=`<div class="nhmp-card" style="text-align:center">${head}
+      <p style="font-weight:800;margin:12px 0 4px">${typeTxt}</p>
+      <h3 style="margin-top:12px">${L('👭 الموجودات ({0})',ppl.filter(([id])=>isOn(id)).length)}</h3>
+      <div class="nhmp-ppl">${ppl.map(([id,p])=>`<span class="nhmp-chip${isOn(id)?'':' off'}"><span class="a">${esc(p.av)}</span>${esc(p.name)}${id===hid?' 👑':''}${id===pid?' '+T('(أنا)'):''}</span>`).join('')}</div>
+      ${ctl?'<div class="nhmp-card" style="margin:10px 0">'+ctl+'</div>':''}
+      <div class="nhmp-btns">${btns}<button class="btn ghost" id="nhmpLeave">${T('🚪 اطلعي من الغرفة')}</button></div></div>`;
+    w.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>FB.updateDoc(roomRef(S.rid),{type:b.dataset.t}));
+    w.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>FB.updateDoc(roomRef(S.rid),{style:b.dataset.s}));
+    w.querySelectorAll('[data-z]').forEach(b=>b.onclick=()=>FB.updateDoc(roomRef(S.rid),{size:b.dataset.z}));
+    const st=$('#nhmpStart');if(st)st.onclick=()=>{st.disabled=true;FB.updateDoc(roomRef(S.rid),{status:'playing',host:pid,startedAt:now()}).catch(()=>{st.disabled=false})};
+    const g=$('#nhmpGo');if(g)g.onclick=go;
+    $('#nhmpLeave').onclick=()=>{leave();stepView(false);msg('')};
+  }
+
+  function go(){
+    if(!S.on||S.started)return;S.started=true;G.mode='online';G.players=null;
+    sfx.pick();show('info');sync(true);
+  }
+
+  /* ---------- مزامنة حالتي ---------- */
+  function myState(){
+    const st={},done={};
+    S.myKeys.forEach(k=>{const a=[];document.querySelectorAll('#slot-'+k+' .st.on').forEach(e=>{const n=+e.dataset.s;if(!a.includes(n))a.push(n)});st[k]=a.sort((x,y)=>x-y)});
+    S.myDone.forEach(k=>done[k]=1);
+    return {score:G.score,hearts:G.hearts,cur:G.cur||null,st,done,style:G.style,size:G.size,fin:S.started&&G.order.length===KEYS.length,built:G.order.length,where:scr(),name:S.name,av:S.av};
+  }
+  function sync(force){
+    if(!S.on||!S.rid||!FB)return;
+    const d=myState(),j=JSON.stringify(d);
+    if(!force&&j===S.last&&now()-S.lastW<10000)return;
+    renderAv();
+    S.last=j;S.lastW=now();d.seen=now();d.left=false;
+    FB.setDoc(plRef(S.rid,pid),d,{merge:true}).catch(e=>console.warn('[NHMP] sync',e));
+  }
+
+  /* ---------- رسم بيت صغير لأي بنت ---------- */
+  const SVC={};const sv=st=>SVC[st]||(SVC[st]=styledV(st||'cottage'));
+  function houseSVG(p,cls){
+    const SV=sv(p.style),st=p.st||{},dn=p.done||{},fin=!!p.fin;
+    let s=`<rect x="-400" y="-400" width="1600" height="1300" fill="${fin?'#3d4f7e':'#1d3b6e'}"/>${fin?'':'<rect x="-400" y="-400" width="1600" height="1300" fill="url(#grid)"/>'}<rect x="-400" y="400" width="1600" height="500" fill="${fin?'#4f8a2b':'#d8c29a'}"/>`;
+    ORDER.forEach(k=>{if(!SV[k])return;const on=dn[k]?SV[k].map((_,i)=>i+1):(st[k]||[]);if(!on.length)return;s+='<g>'+SV[k].filter((x,i)=>on.includes(i+1)).join('')+'</g>'});
+    return `<svg class="${cls||''}" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${s}</svg>`;
+  }
+  function coopView(P,R){ /* بالتعاوني: البيت المشترك = تجميع شغل الكل */
+    P=P||S.P;R=R||S.R;const st={},dn={};Object.values(P).forEach(p=>{if(p.left&&!Object.keys(p.done||{}).length)return;Object.assign(dn,p.done||{});Object.entries(p.st||{}).forEach(([k,a])=>{st[k]=Array.from(new Set((st[k]||[]).concat(a)))})});
+    return {style:R&&R.style,st,done:dn,fin:KEYS.every(k=>dn[k])};
+  }
+
+  /* ---------- شريط صاحباتي داخل اللعبة ---------- */
+  const strip=document.createElement('div');strip.className='nhmp-strip';strip.id='nhmpStrip';strip.hidden=true;
+  strip.innerHTML=`<div class="nhmp-strip-h"><span>👭</span><b id="nhmpSt1"></b><span class="tag" id="nhmpSt2"></span><button id="nhmpStT" aria-label="${T('إخفاء')}">▾</button></div><div class="nhmp-cards" id="nhmpCards"></div>`;
+  $('#game .hud').after(strip);
+  $('#nhmpStT').onclick=()=>{strip.classList.toggle('min');$('#nhmpStT').textContent=strip.classList.contains('min')?'▸':'▾'};
+  function status(p){
+    if(p.fin)return T('🏁 خلّصت!');const w=p.where;
+    if(w==='nhmp')return T('⏳ بالانتظار');if(w==='info'||w==='styles'||w==='size')return T('🎨 بتجهّز');
+    if(w==='trophy'||w==='ws'||w==='genie'||w==='results')return T('📝 أوراق العمل');
+    if(p.cur&&SEC[p.cur])return '🔨 '+SEC[p.cur].icon+' '+SEC[p.cur].name;return T('🏗️ بتبني');
+  }
+  function renderStrip(){
+    if(!S.on||!S.started){strip.hidden=true;return}
+    strip.hidden=false;const coop=isCoop();
+    $('#nhmpSt1').textContent=coop?T('بنبني مع بعض'):T('صاحباتي');
+    $('#nhmpSt2').textContent=(S.R&&S.R.kind==='code'?'🔑 '+S.R.code:S.R&&S.R.kind==='class'?'🏫 '+T(S.R.label):'⚡')+' · '+(coop?T('🤝 تعاوني'):T('⚔️ تنافسي'));
+    const box=$('#nhmpCards');
+    let ps=Object.entries(S.P).filter(([id,p])=>!p.kicked&&(!p.left||p.fin));
+    ps.sort((a,b)=>coop?((a[1].joined||0)-(b[1].joined||0)):((b[1].score||0)-(a[1].score||0)));
+    const seen={};
+    if(coop){ /* أول كرت: فيلتنا المشتركة */
+      const v=coopView(),n=KEYS.filter(k=>v.done[k]).length,key=JSON.stringify([v.st,v.done]);
+      let c=S.cards.__house;if(!c){c=document.createElement('button');c.className='nhmp-pc me';c.onclick=()=>bigView(pid);S.cards.__house=c}
+      if(c._k!==key){c._k=key;c.innerHTML=houseSVG(v)+`<div class="n">${T('🏡 فيلتنا')}</div><div class="s">🏗️ ${n}/7</div>`}
+      seen.__house=1;box.appendChild(c);
+    }
+    ps.forEach(([id,p],i)=>{
+      seen[id]=1;const me=id===pid,on=isOn(id);const medal=!coop&&ps.length>1?(['🥇','🥈','🥉'][i]||''):'';
+      const hv=coop?null:houseSVG(p);
+      const sub=coop?status(p):`⭐ ${p.score||0} · 🏗️ ${p.built||0}/7`;
+      const key=JSON.stringify([coop,p.st,p.done,p.style,p.fin,p.score,p.built,p.cur,p.where,on,medal]);
+      let c=S.cards[id];
+      if(!c){c=document.createElement('button');c.className='nhmp-pc';c.onclick=()=>bigView(id);S.cards[id]=c}
+      c.classList.toggle('me',me);c.classList.toggle('off',!on);
+      if(c._k!==key){c._k=key;c.innerHTML=(hv||`<div style="font-size:2.4rem;padding:6px 0">${esc(p.av)}</div>`)+`<div class="n">${medal}${coop?'':esc(p.av)+' '}${esc(p.name)}${me?' '+T('(أنا)'):''}</div><div class="s">${coop?esc(sub):sub}</div>${coop?'':`<div class="s">${esc(status(p))}</div>`}`}
+      box.appendChild(c);
+    });
+    Object.keys(S.cards).forEach(id=>{if(!seen[id]){S.cards[id].remove();delete S.cards[id]}});
+  }
+  function bigView(id){
+    const p=S.P[id];if(!p)return;const coop=isCoop();const o=overlay('nhmpH');
+    const h=coop?houseSVG(coopView(),'house'):houseSVG(p,'house');
+    const built=coop?KEYS.filter(k=>coopView().done[k]).map(k=>SEC[k].icon+' '+SEC[k].name+(S.doneBy[k]?' ('+esc(S.doneBy[k])+')':'')).join('، '):KEYS.filter(k=>(p.done||{})[k]).map(k=>SEC[k].icon+' '+SEC[k].name).join('، ');
+    o.firstChild.innerHTML=`<h2>${esc(p.av)} ${coop?T('فيلتنا المشتركة'):L('فيلا {0}',esc(p.name))}</h2>${h}
+      <p style="font-weight:700">${coop?esc(status(p))+' — '+esc(p.name):`⭐ ${p.score||0} · ${esc(status(p))}`}</p>
+      <p class="nhmp-hint">${built?T('✅ الأقسام المكتملة: ')+built:T('لسا ما اكتمل أي قسم.')}</p>
+      <div class="nhmp-btns"><button class="btn" id="nhmpHOk">${T('رجوع للبناء')}</button></div>`;
+    o.classList.add('show');$('#nhmpHOk').onclick=()=>o.classList.remove('show');
+  }
+
+
+  /* ---------- شخصيات البنات واقفات على أرض الفيلا ---------- */
+  const SPOT={garden:[60,440],bedrooms:[230,440],kitchen:[130,440],reception:[370,440],salon:[520,440],pool:[640,440],wall:[740,440]};
+  const avCss=document.createElement('style');avCss.textContent=`
+.nhav .who{transition:transform .9s cubic-bezier(.4,1.3,.5,1)}
+.nhav .bob{animation:nhbob 1.1s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+.nhav .ham{animation:nhham .5s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:20% 80%}
+.nhav .off{opacity:.4}
+@keyframes nhbob{50%{transform:translateY(-6px)}}
+@keyframes nhham{from{transform:rotate(-25deg)}to{transform:rotate(25deg)}}
+@media (prefers-reduced-motion: reduce){.nhav .bob,.nhav .ham{animation:none}.nhav .who{transition:none}}`;
+  document.head.appendChild(avCss);
+  /* أماكن الوقوف: list = [[id,{cur}]] */
+  function spots(list){
+    const at={},out={};let idle=0;
+    list.forEach(([id,o])=>{let x,y;
+      if(o.cur&&SPOT[o.cur]){const n=at[o.cur]=(at[o.cur]||0)+1;[x,y]=SPOT[o.cur];x+=(n-1)*62*(x>400?-1:1)}
+      else{x=300+(idle%5)*62;y=455;idle++}
+      out[id]=[Math.max(34,Math.min(766,x)),y]});
+    return out;
+  }
+  function avInner(o){ /* o:{av,name,me,on,cur,fin,x} */
+    const nm=esc((o.me?T('أنا'):o.name)||'').slice(0,12),bw=Math.max(40,nm.length*11+14),act=o.fin?'🎉':o.cur?'🔨':'💭',work=o.cur&&!o.fin;
+    return `<g class="${o.on?'':'off'}"><ellipse cx="0" cy="2" rx="17" ry="5" fill="#000" opacity=".25"/>
+      <g class="${work?'bob':''}"><circle cx="0" cy="-22" r="21" fill="${o.me?'#ffc233':'#ffffff'}" stroke="#14305a" stroke-width="2.5"/>
+      <text x="0" y="-11" text-anchor="middle" font-size="28">${esc(o.av||'👧')}</text></g>
+      <text class="${work?'ham':''}" x="${o.x>400?-22:22}" y="-34" text-anchor="middle" font-size="18">${act}</text>
+      <rect x="${-bw/2}" y="4" width="${bw}" height="18" rx="9" fill="${o.me?'#ffc233':'#14305a'}" opacity=".92"/>
+      <text x="0" y="17.5" text-anchor="middle" font-size="12" font-weight="800" fill="${o.me?'#14305a':'#fff'}" font-family="Tajawal,system-ui,sans-serif">${nm}</text></g>`;
+  }
+  const PLAYW=['game','results','trophy','ws','genie'];
+  function renderAv(){
+    const W=$('#world');if(!W)return;let g=W.querySelector('#nhmpAv');
+    if(!S.on||!S.started){if(g)g.remove();return}
+    if(!g){g=document.createElementNS('http://www.w3.org/2000/svg','g');g.id='nhmpAv';g.setAttribute('class','nhav');W.appendChild(g)}
+    else if(g!==W.lastElementChild)W.appendChild(g);
+    const ps=Object.entries(S.P).filter(([id,p])=>!p.kicked&&!p.left&&PLAYW.includes(id===pid?scr():p.where));
+    ps.sort((a,b)=>(a[1].joined||0)-(b[1].joined||0));
+    const info=ps.map(([id,p])=>{const me=id===pid;return [id,{av:me?S.av:p.av,name:p.name,me,on:isOn(id),cur:me?G.cur:p.cur,fin:me?G.order.length===KEYS.length:p.fin}]});
+    const pos=spots(info),seen={};
+    info.forEach(([id,o])=>{
+      const [x,y]=pos[id];o.x=x;seen[id]=1;let w=g.querySelector(`[data-p="${id}"]`);
+      if(!w){w=document.createElementNS('http://www.w3.org/2000/svg','g');w.setAttribute('class','who');w.dataset.p=id;g.appendChild(w)}
+      w.style.transform=`translate(${x}px,${y}px) scale(1.5)`;
+      const key=JSON.stringify([o,x>400]);if(w._k!==key){w._k=key;w.innerHTML=avInner(o)}
+    });
+    g.querySelectorAll('[data-p]').forEach(w=>{if(!seen[w.dataset.p])w.remove()});
+  }
+  /* بيت + شخصيات (للمشاهدة): ps=[[id,p]] */
+  function sceneSVG(view,ps){
+    const info=ps.map(([id,p])=>[id,{av:p.av,name:p.name,me:false,on:alive(p),cur:PLAYW.includes(p.where)?p.cur:null,fin:p.fin}]);
+    const pos=spots(info);
+    const avs=info.map(([id,o])=>{const [x,y]=pos[id];o.x=x;return `<g transform="translate(${x} ${y}) scale(1.5)">${avInner(o)}</g>`}).join('');
+    return houseSVG(view,'house').replace('</svg>',`<g class="nhav">${avs}</g></svg>`);
+  }
+  /* ---------- التعاوني: تطبيق شغل صاحباتي على فيلتي ---------- */
+  function coopApply(){
+    if(!isCoop()||!S.started||scr()!=='game'||!$('#slot-garden'))return;
+    let changed=false;
+    Object.entries(S.P).forEach(([id,p])=>{
+      if(id===pid)return;const st=p.st||{},dn=p.done||{};
+      Object.keys(st).forEach(k=>{
+        if(S.myKeys.has(k))return;const slot=$('#slot-'+k);if(!slot)return;
+        const all=dn[k]||G.done[k],want=new Set(st[k]);let any=false;
+        slot.querySelectorAll('.st').forEach(e=>{const on=all||want.has(+e.dataset.s);if(on)any=true;e.classList.toggle('on',on)});
+        $('#ghost-'+k).style.opacity=any?0:'';
+      });
+      Object.keys(dn).forEach(k=>{
+        if(G.done[k]||!SEC[k])return;G.done[k]=true;G.order.push(k);S.doneBy[k]=p.name;changed=true;
+        $('#slot-'+k).querySelectorAll('.st').forEach(e=>e.classList.add('on'));$('#ghost-'+k).style.opacity=0;
+        if(!G.busy)settle(k);toast(L('🎉 {0} {1} كمّلت {2}!',p.av||'',p.name,SEC[k].name));
+      });
+    });
+    if(changed&&scr()==='game'&&!G.cur&&!G.busy){
+      if(G.order.length===KEYS.length)finale();else if(!$('#chooser').hidden)showChooser(false);
+    }
+  }
+  function claim(k){
+    const ref=roomRef(S.rid);
+    return FB.runTransaction(FB.db,async tx=>{
+      const s=await tx.get(ref);const c=((s.data()||{}).claim||{})[k];
+      if(c&&c.by!==pid&&isOn(c.by))return false;
+      tx.update(ref,{['claim.'+k]:{by:pid,name:S.name,av:S.av,t:now()}});return true;
+    });
+  }
+
+  /* ---------- النتائج ---------- */
+  function renderRes(){
+    if(!S.rid||!S.started)return;const rp=$('#rPlayers');rp.hidden=false;
+    const ps=Object.entries(S.P).filter(([id,p])=>!p.kicked&&(p.score||p.built||id===pid));
+    if(isCoop()){
+      const v=coopView();const n=KEYS.filter(k=>v.done[k]).length;
+      rp.innerHTML=`<b>${n===7?T('🤝 بنيتوا الفيلا مع بعض! 🏡'):L('🤝 بنيتوا مع بعض {0} من 7 أقسام',n)}</b><div class="nhmp-res" style="margin-top:6px">${ps.sort((a,b)=>(b[1].score||0)-(a[1].score||0)).map(([id,p])=>`<div>${esc(p.av)} ${esc(p.name)}${id===pid?' '+T('(أنا)'):''} — ⭐ ${p.score||0} · ${KEYS.filter(k=>(p.done||{})[k]).map(k=>SEC[k].icon).join(' ')||'—'}</div>`).join('')}</div>`;
+    }else{
+      ps.sort((a,b)=>(b[1].score||0)-(a[1].score||0));
+      rp.innerHTML=`<b>${T('🏆 ترتيب البنات بالغرفة')}</b><div class="nhmp-res" style="margin-top:6px">${ps.map(([id,p],i)=>`<div>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${esc(p.av)} ${esc(p.name)}${id===pid?' '+T('(أنا)'):''} — ⭐ ${p.score||0} · 🏗️ ${p.built||0}/7${p.fin?' 🏁':''}</div>`).join('')}</div>`;
+    }
+  }
+
+  /* ---------- لوحة المعلمة ---------- */
+  const TS={unsub:[],rooms:{},pl:{},cfg:true};
+  function tClose(){TS.watch=null;overlay('nhmpV').classList.remove('show');TS.unsub.forEach(u=>{try{u()}catch(e){}});TS.unsub=[];Object.values(TS.pl).forEach(x=>{try{x.u()}catch(e){}});TS.pl={};overlay('nhmpT').classList.remove('show')}
+  function openTeacher(){
+    const o=overlay('nhmpT');o.classList.add('show');
+    if(ss('nhmp_t')==='1'){tPanel();return}
+    o.firstChild.innerHTML=`<div style="font-size:2.6rem">🔐</div><h2>${T('لوحة المعلمة')}</h2>
+      <input class="nhmp-in" type="password" id="nhmpTP" placeholder="${T('كلمة السر')}" style="max-width:260px;text-align:center">
+      <div class="nhmp-msg" id="nhmpTM"></div>
+      <div class="nhmp-btns"><button class="btn" id="nhmpTGo">${T('دخول')}</button><button class="btn ghost" id="nhmpTX">${T('إلغاء')}</button></div>`;
+    const go=()=>{if($('#nhmpTP').value===PASS){ss('nhmp_t','1');tPanel()}else $('#nhmpTM').textContent=T('❌ كلمة السر غلط')};
+    $('#nhmpTGo').onclick=go;$('#nhmpTP').onkeydown=e=>{if(e.key==='Enter')go()};$('#nhmpTX').onclick=tClose;setTimeout(()=>$('#nhmpTP').focus(),50);
+  }
+  async function tPanel(){
+    const o=overlay('nhmpT'),c=o.firstChild;
+    c.innerHTML=`<h2>${T('🧑‍🏫 لوحة المعلمة — اللعب الجماعي')}</h2>
+      <button class="nhmp-tg" id="nhmpTog">…</button>
+      <p class="nhmp-hint">${T('لما تسكّريه: البنات بيطلعوا من الغرف وبيكملوا لعب فردي، وما حدا بيقدر يدخل غرفة جديدة.')}</p>
+      <h3 style="margin:16px 0 0;text-align:start">${T('🏠 غرف اليوم')}</h3><div id="nhmpTR"><p class="nhmp-hint">⏳</p></div>
+      <div class="nhmp-btns"><button class="nhmp-sm red" id="nhmpTAll">${T('🔒 سكّري كل الغرف المفتوحة')}</button><button class="btn ghost" id="nhmpTX">${T('إغلاق اللوحة')}</button></div>`;
+    $('#nhmpTX').onclick=tClose;
+    const f=await fb();if(!f){$('#nhmpTR').innerHTML=`<p class="nhmp-msg">${T('📶 ما في اتصال بالإنترنت.')}</p>`;return}
+    const tog=$('#nhmpTog');
+    const drawTog=()=>{tog.className='nhmp-tg '+(TS.cfg?'on':'off');tog.textContent=TS.cfg?T('✅ اللعب الجماعي مفتوح — اضغطي لتسكيره'):T('⛔ اللعب الجماعي مسكّر — اضغطي لفتحه')};
+    tog.onclick=()=>{const v=!TS.cfg;tog.disabled=true;f.setDoc(cfgRef(),{enabled:v,t:now()},{merge:true}).then(()=>{TS.cfg=v;drawTog()}).catch(()=>alert(T('⚠️ ما زبط، جربي كمان مرة'))).finally(()=>tog.disabled=false)};
+    TS.unsub.push(f.onSnapshot(cfgRef(),s=>{TS.cfg=!(s.exists()&&s.data().enabled===false);drawTog()}));
+    $('#nhmpTAll').onclick=()=>{if(!confirm(T('أكيد بدك تسكّري كل الغرف المفتوحة؟')))return;Object.entries(TS.rooms).forEach(([id,r])=>{if(r.status!=='closed')f.updateDoc(roomRef(id),{status:'closed'})})};
+    const q=f.query(f.collection(f.db,COL),f.where('game','==','nutrihouse'),f.where('day','==',today()));
+    TS.unsub.push(f.onSnapshot(q,s=>{
+      TS.rooms={};s.forEach(d=>{TS.rooms[d.id]=d.data()});
+      Object.keys(TS.rooms).forEach(id=>{if(!TS.pl[id]){TS.pl[id]={p:{},u:f.onSnapshot(plCol(id),ps=>{const m={};ps.forEach(d=>m[d.id]=d.data());TS.pl[id].p=m;tRender()})}}});
+      tRender();
+    },e=>{$('#nhmpTR').innerHTML=`<p class="nhmp-msg">${T('⚠️ ما قدرت أجيب الغرف.')}</p>`;console.warn(e)}));
+  }
+  /* ---------- 👁️ مشاهدة المعلمة (بدون ما تظهر ولا تنحسب) ---------- */
+  function watch(id){TS.watch=id;const o=overlay('nhmpV');o.style.zIndex=99100;o.classList.add('show');o.firstChild.innerHTML='';wRender()}
+  function wRender(){
+    const id=TS.watch,o=document.getElementById('nhmpV');if(!id||!o||!o.classList.contains('show'))return;
+    const r=TS.rooms[id];const c=o.firstChild;
+    if(!r){c.innerHTML=`<p>${T('الغرفة مش موجودة.')}</p><div class="nhmp-btns"><button class="btn" id="nhmpVX">${T('رجوع')}</button></div>`;$('#nhmpVX').onclick=()=>{TS.watch=null;o.classList.remove('show')};return}
+    const P=(TS.pl[id]||{}).p||{},ps=Object.entries(P).filter(([x,p])=>!p.left&&!p.kicked).sort((a,b)=>(a[1].joined||0)-(b[1].joined||0));
+    const name=r.kind==='code'?'🔑 '+esc(r.code):r.kind==='class'?'🏫 '+esc(T(r.label)):'⚡ '+T('غرفة سريعة');
+    const coop=r.type==='coop';const sc=c.scrollTop;
+    let body;
+    if(!ps.length)body=`<p class="nhmp-hint">${T('ما في حدا جوّا الغرفة هلأ.')}</p>`;
+    else if(coop){const v=coopView(P,r),n=KEYS.filter(k=>v.done[k]).length;
+      body=sceneSVG(v,ps)+`<p style="font-weight:800">🏗️ ${L('بنوا {0} من 7 أقسام',n)}</p>`;}
+    else body=`<div class="nhmp-wgrid">${ps.slice().sort((a,b)=>(b[1].score||0)-(a[1].score||0)).map(([x,p],i)=>`<div class="nhmp-wcard${alive(p)?'':' off'}">${sceneSVG(p,[[x,p]])}<div class="n">${['🥇','🥈','🥉'][i]||''} ${esc(p.av)} ${esc(p.name)}</div><div class="s">⭐ ${p.score||0} · 🏗️ ${p.built||0}/7 · ${esc(status(p))}</div></div>`).join('')}</div>`;
+    const list=ps.length?`<div class="nhmp-res" style="margin-top:8px">${ps.map(([x,p])=>`<div class="${alive(p)?'':'nhmp-busy'}">${esc(p.av)} ${esc(p.name)} — ⭐ ${p.score||0} · ${esc(status(p))}${alive(p)?'':' · 💤'}</div>`).join('')}</div>`:'';
+    c.innerHTML=`<h2>👁️ ${T('مشاهدة')} ${name}</h2><p class="nhmp-hint">${coop?T('🤝 تعاوني'):T('⚔️ تنافسي')} · ${L('{0} متصلة الآن',ps.filter(([x,p])=>alive(p)).length)} · ${T('البنات ما بيشوفوكي')}</p>
+      ${body}${coop?list:''}<div class="nhmp-btns"><button class="btn" id="nhmpVX">${T('↩ رجوع للوحة')}</button></div>`;
+    c.scrollTop=sc;$('#nhmpVX').onclick=()=>{TS.watch=null;o.classList.remove('show')};
+  }
+  setInterval(()=>{if(TS.watch)wRender()},5000); /* تحديث حالة "متصلة" */
+  function tRender(){
+    const box=$('#nhmpTR');if(!box)return;const f=FB;
+    const ids=Object.keys(TS.rooms).sort((a,b)=>(TS.rooms[b].created||0)-(TS.rooms[a].created||0));
+    if(!ids.length){box.innerHTML=`<p class="nhmp-hint">${T('ما في غرف اليوم لسا.')}</p>`;return}
+    box.innerHTML=ids.map(id=>{
+      const r=TS.rooms[id],ps=Object.entries((TS.pl[id]||{}).p||{}).filter(([pid2,p])=>!p.left&&!p.kicked);
+      const live=ps.filter(([x,p])=>alive(p));
+      const name=r.kind==='code'?'🔑 '+esc(r.code):r.kind==='class'?'🏫 '+esc(T(r.label)):'⚡ '+T('غرفة سريعة');
+      const st={waiting:T('⏳ انتظار'),playing:T('🎮 بتلعب'),closed:T('🔒 مسكّرة')}[r.status]||r.status;
+      return `<div class="nhmp-room${r.status==='closed'?' closed':''}"><div class="h"><span>${name}</span><span class="nhmp-badge">${r.type==='coop'?T('🤝 تعاوني'):T('⚔️ تنافسي')}</span><span class="nhmp-badge">${st}</span><span class="sp"></span>
+        ${r.status!=='closed'?`<button class="nhmp-sm" data-watch="${id}">${T('👁️ شاهدي')}</button>`:''}
+        ${r.status==='closed'?`<button class="nhmp-sm" data-open="${id}">${T('🔓 افتحيها')}</button>`:`<button class="nhmp-sm red" data-close="${id}">${T('🔒 سكّري الغرفة')}</button>`}</div>
+        <div class="nhmp-ppl" style="justify-content:flex-start">${ps.length?ps.map(([x,p])=>`<span class="nhmp-chip${alive(p)?'':' off'}"><span class="a">${esc(p.av)}</span>${esc(p.name)} <small>⭐${p.score||0} · ${p.built||0}/7</small>${r.status!=='closed'?`<button class="nhmp-kick" title="${T('إخراج')}" data-kick="${id}|${x}">✕</button>`:''}</span>`).join(''):`<span class="nhmp-hint">${T('ما في حدا جوّا')}</span>`}</div>
+        <div class="nhmp-hint" style="text-align:start">${L('{0} متصلة الآن',live.length)}</div></div>`;
+    }).join('');
+    box.querySelectorAll('[data-watch]').forEach(b=>b.onclick=()=>watch(b.dataset.watch));
+    wRender();
+    box.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{if(confirm(T('أكيد بدك تسكّري هاي الغرفة؟ البنات بيكملوا لعب فردي.')))f.updateDoc(roomRef(b.dataset.close),{status:'closed'})});
+    box.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>f.updateDoc(roomRef(b.dataset.open),{status:'waiting',created:now()}));
+    box.querySelectorAll('[data-kick]').forEach(b=>b.onclick=()=>{
+      const [rid,x]=b.dataset.kick.split('|'),p=(TS.pl[rid].p||{})[x]||{};
+      if(!confirm(L('أكيد بدك تطلّعي {0} من الغرفة؟',p.name||'')))return;
+      f.updateDoc(plRef(rid,x),{kicked:true});f.updateDoc(roomRef(rid),{banned:f.arrayUnion(p.name||'')});
+    });
+  }
+
+  /* ---------- ربط اللوبي بشاشة طرق اللعب ---------- */
+  MODES.push(['online','🌐',T('جماعي أونلاين'),T('كل بنت من جهازها وبتشوفوا بيوت بعض')]);
+
+  /* ---------- الخطافات على اللعبة الأصلية (بدون تغيير منطقها) ---------- */
+  const H={buildModes,show,startGame,pickSection,showChooser,completeSection,finale,results};
+  buildModes=function(){
+    if(S.on)leave();if(G.mode==='online')G.mode='solo';H.buildModes();
+    const bs=$('#modeGrid').querySelectorAll('.mode'),b=bs[bs.length-1];
+    if(b)b.onclick=()=>{sfx.pick();document.querySelectorAll('.mode').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');$('#namesBox').hidden=true;openLobby()};
+  };
+  show=function(id){
+    if(id==='cover'&&S.on)leave();
+    H.show(id);if(S.on){sync(true);if(id==='game')renderStrip();if(id==='results')renderRes()}
+  };
+  const infoGo=$('#infoGo').onclick;
+  $('#infoGo').onclick=function(){
+    if(isCoop()){G.style=S.R.style||'cottage';startGame(S.R.size||'large')}else infoGo.apply(this,arguments);
+  };
+  startGame=function(size){
+    S.myKeys=new Set();S.myDone=new Set();S.doneBy={};S.finDone=false;
+    H.startGame(size);if(S.on){renderStrip();coopApply();renderAv();sync(true)}
+  };
+  pickSection=function(k){
+    if(!isCoop()){S.myKeys.add(k);return H.pickSection(k)}
+    if(G.busy||S.claiming||G.done[k])return;
+    const c=(S.R.claim||{})[k];
+    if(c&&c.by!==pid&&isOn(c.by)){toast(L('🔨 {0} عم تبني هاد القسم، اختاري قسم ثاني',c.name));return}
+    S.claiming=true;
+    claim(k).then(ok=>{
+      S.claiming=false;
+      if(ok===false){toast(T('🔨 في بنت سبقتك على هاد القسم، اختاري قسم ثاني'));return}
+      if(!S.myKeys.has(k))resetSlot(k);S.myKeys.add(k);H.pickSection(k);sync(true);
+    }).catch(()=>{S.claiming=false;if(!S.myKeys.has(k))resetSlot(k);S.myKeys.add(k);H.pickSection(k)});
+  };
+  showChooser=function(first){
+    H.showChooser(first);if(!isCoop())return;
+    const bs=$('#secGrid').children,cl=S.R.claim||{};
+    KEYS.forEach((k,i)=>{const b=bs[i];if(!b)return;
+      if(G.done[k]){if(S.doneBy[k]){const t=document.createElement('span');t.className='tag';t.textContent='👷‍♀️ '+S.doneBy[k];b.appendChild(t)}return}
+      const c=cl[k];if(c&&c.by!==pid&&isOn(c.by)){b.classList.add('nhmp-busy');const t=document.createElement('span');t.className='tag';t.textContent='🔨 '+(c.av||'')+' '+c.name;b.appendChild(t)}
+    });
+  };
+  completeSection=function(){
+    const k=G.cur;H.completeSection();if(S.on&&k){S.myDone.add(k);S.doneBy[k]=S.name;sync(true)}
+  };
+  finale=function(){if(S.finDone)return;S.finDone=true;H.finale();sync(true)};
+  results=function(timeout,keep){H.results(timeout,keep);if(S.on){sync(true);renderRes()}};
+
+  return {S,openLobby,leave};
+})();
+
 })();
 </script>
 <script src="gm-report.js"></script>
