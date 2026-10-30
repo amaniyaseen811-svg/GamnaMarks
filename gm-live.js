@@ -46,13 +46,18 @@
   function lsGet(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { } }
   function now() { return Date.now(); }
+  /* شخصيات مرسومة خاصة باللعبة (لو موجودة) أو إيموجي */
+  function charList() { return (S.cfg.chars && S.cfg.chars.length) ? S.cfg.chars : CHARS.map(function (c) { return { id: c.e, n: c.n }; }); }
+  function charOf(id) { var L = S.cfg.chars || []; for (var i = 0; i < L.length; i++) if (L[i].id === id) return L[i]; return null; }
+  function avHTML(id) { var c = charOf(id); return c ? '<img class="gml-img" src="' + c.av + '" alt="' + esc(c.n) + '">' : esc(id); }
+  function avTxt(p) { return charOf(p.av) ? '' : (p.av + ' '); }
   function ms(t) { return t && t.toMillis ? t.toMillis() : (typeof t === 'number' ? t : 0); }
 
   /* ---------------- Firebase ---------------- */
   var fbP = null;
   function initFB() {
     if (S.fb) return Promise.resolve(S.fb);
-    if (window.GMLIVE_TEST_FB) { S.fb = window.GMLIVE_TEST_FB; return Promise.resolve(S.fb); } /* للتجربة فقط */
+    if (window.GMLIVE_TEST_FB) { S.fb = window.GMLIVE_TEST_FB; return Promise.resolve(S.fb); }
     if (fbP) return fbP;
     fbP = (async function () {
       try {
@@ -143,6 +148,15 @@
       '.gml-lane.me .gml-cell .who{font-size:1.35rem}',
       '.gml-cell .who.hop{animation:gmlHop .7s ease}',
       '@keyframes gmlHop{0%{transform:translate(60%,0)}45%{transform:translate(-10%,-16px)}100%{transform:translate(-50%,0)}}',
+      '.gml-img{width:1.6em;height:1.6em;border-radius:50%;object-fit:cover;vertical-align:middle;border:2px solid var(--c,#ffc107);background:#000;display:inline-block}',
+      '.gml-ch.pic{padding:4px 2px;font-size:.62rem;color:#cfe;display:flex;flex-direction:column;align-items:center;gap:2px}',
+      '.gml-ch.pic img{width:100%;max-width:60px;aspect-ratio:1;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.25)}',
+      '.gml-ch.pic.sel img{border-color:#ffc107;box-shadow:0 0 10px #ffc107}',
+      '.gml-chars.pics{grid-template-columns:repeat(4,1fr)}',
+      '.gml-pc .e .gml-img{width:46px;height:46px}',
+      '.gml-row .e .gml-img{width:30px;height:30px}',
+      '.gml-cell .who .gml-img{width:24px;height:24px;border-width:2px}',
+      '.gml-lane.me .gml-cell .who .gml-img{width:28px;height:28px}',
       '.gml-bf{font-size:.78rem;color:#ffe082;text-align:center;margin-top:2px}',
       '.gml-rows{margin-top:6px}',
       '.gml-row{display:grid;grid-template-columns:26px 34px 1fr auto;align-items:center;gap:6px;background:rgba(255,255,255,.05);border-radius:10px;padding:5px 7px;margin:4px 0;font-size:.82rem;text-align:right}',
@@ -190,13 +204,14 @@
   /* ---------------- screen 1: name + character ---------------- */
   function viewMe() {
     S.name = S.name || lsGet('gml_name') || lsGet('gm_student_name') || '';
-    S.av = lsGet('gml_av') || S.av;
+    var L = charList(), sv = lsGet('gml_av');
+    S.av = L.some(function (c) { return c.id === sv; }) ? sv : (L.some(function (c) { return c.id === S.av; }) ? S.av : L[0].id);
     show(
       '<div class="gml-h">🌐 العبي أونلاين مع صاحباتك</div>' +
       '<div class="gml-sub">كل وحدة من تلفونها، بنفس الوقت، وكل وحدة بشخصيتها 🎭</div>' +
       '<input class="gml-in" id="gmlName" maxlength="18" placeholder="اكتبي اسمك" value="' + esc(S.name) + '">' +
       '<div class="gml-sub" style="margin:8px 0 2px">🎭 اختاري شخصيتك:</div>' +
-      '<div class="gml-chars" id="gmlChars">' + CHARS.map(function (c) { return '<button class="gml-ch' + (c.e === S.av ? ' sel' : '') + '" data-e="' + c.e + '" title="' + c.n + '">' + c.e + '</button>'; }).join('') + '</div>' +
+      '<div class="gml-chars' + (S.cfg.chars ? ' pics' : '') + '" id="gmlChars">' + charList().map(function (c) { return '<button class="gml-ch' + (c.id === S.av ? ' sel' : '') + (c.av ? ' pic' : '') + '" data-e="' + esc(c.id) + '" title="' + esc(c.n) + '">' + (c.av ? '<img src="' + c.av + '" alt=""><span>' + esc(c.n) + '</span>' : esc(c.id)) + '</button>'; }).join('') + '</div>' +
       '<button class="gml-btn gold" id="gmlNew">➕ أنشئي غرفة جديدة</button>' +
       '<button class="gml-btn" id="gmlJoin">🔑 ادخلي بكود غرفة</button>' +
       '<div class="gml-err" id="gmlErr"></div>' +
@@ -312,7 +327,7 @@
       '<div class="gml-code">' + esc(S.code) + '</div>' +
       '<div><span class="gml-tag">' + modeName(S.mode) + '</span><span class="gml-tag">' + lvlName(S.lvl) + '</span><span class="gml-tag">👥 ' + players.length + '</span></div>' +
       '<div class="gml-pl">' + pl.map(function (p) {
-        return '<div class="gml-pc" style="--c:' + p.c + '"><div class="e">' + (p.spec ? '👩‍🏫' : esc(p.av)) + '</div><div class="n">' + esc(p.n) + (p.id === S.pid ? ' (أنا)' : '') + '</div>' +
+        return '<div class="gml-pc" style="--c:' + p.c + '"><div class="e">' + (p.spec ? '👩‍🏫' : avHTML(p.av)) + '</div><div class="n">' + esc(p.n) + (p.id === S.pid ? ' (أنا)' : '') + '</div>' +
           (p.host ? '<div style="font-size:.65rem;color:#ffc107">👑 صاحبة الغرفة</div>' : '') + '</div>';
       }).join('') + '</div>' +
       '<div class="gml-sub" style="font-size:.82rem">' + (S.mode === 'race'
@@ -375,7 +390,7 @@
     if (!S.started) return;
     Object.keys(S.players).forEach(function (k) {
       var p = S.players[k], o = old[k]; if (!o || k === S.pid || p.spec) return;
-      if (p.done && !o.done) toast(p.av + ' ' + p.n + (p.won ? ' حرّرت فارس! 🏆' : ' خلّصت المغامرة'), 'fin' + k);
+      if (p.done && !o.done) toast(avTxt(p) + p.n + (p.won ? ' حرّرت فارس! 🏆' : ' خلّصت المغامرة'), 'fin' + k);
       else if (S.mode === 'coop' && p.step > o.step && p.step < S.total) toast('💚 ' + p.n + ' جاوبت صح وبنت قطعة من جسر الفريق!');
       else if (S.mode === 'race' && p.step > o.step && p.step > S.mine.step && o.step <= S.mine.step && !S.mine.done) toast('⚡ ' + p.n + ' سبقتك! يلا شدّي حيلك 💪');
       if (p.runs > (o.runs || 0)) toast('😱 ' + p.n + ' رجعت من البداية' + (S.mode === 'coop' ? '، شجّعوها!' : ''));
@@ -402,7 +417,7 @@
     chip.style.display = 'block'; renderBoards();
     if (window.PVChat && PVChat.startWith) { try { PVChat.startWith('L' + S.code, S.name, S.host ? 'teacher' : 'student'); } catch (e) { } }
     if (S.spec) { openFull(true); return; }
-    if (S.cfg.onStart) S.cfg.onStart({ name: S.name, av: S.av, lvl: S.lvl, mode: S.mode, code: S.code, host: S.host });
+    if (S.cfg.onStart) S.cfg.onStart({ name: S.name, av: S.av, char: charOf(S.av), lvl: S.lvl, mode: S.mode, code: S.code, host: S.host });
   }
 
   /* ---------------- boards ---------------- */
@@ -438,7 +453,7 @@
           var thing = k === 0 ? '🏝️' : (k === S.total ? (p.done && p.won ? '🏆' : '👹') : '🐊');
           var cls = 'gml-cell' + (k < st ? ' past' : '') + (k === 0 ? ' shore' : '') + (k === S.total ? ' goal' : '');
           cells += '<span class="' + cls + '"><span class="t">' + thing + '</span>' +
-            (k === st ? '<span class="who' + (hop ? ' hop' : '') + '" style="--c:' + p.c + '">' + esc(p.av) + '</span>' : '') + '</span>';
+            (k === st ? '<span class="who' + (hop ? ' hop' : '') + '" style="--c:' + p.c + '">' + avHTML(p.av) + '</span>' : '') + '</span>';
         }
         return '<div class="gml-lane' + (p.id === S.pid ? ' me' : '') + (p.done ? ' done' : '') + '" style="--c:' + p.c + '">' +
           '<span class="ln">' + esc(p.n) + (p.done ? ' ✅' : '') + '</span><span class="cells">' + cells + '</span></div>';
@@ -446,14 +461,14 @@
     if (!full) pl.forEach(function (p) { S.prev[p.id] = Math.max(0, Math.min(p.step || 0, S.total)); });
     var foot = S.mode === 'coop'
       ? '<div class="gml-bf">🤝 كل إجابة صح من أي وحدة بتبني جسر الفريق · اضغطي للتفاصيل</div>'
-      : '<div class="gml-bf">' + (r[0] ? '👑 بالمقدمة: ' + esc(r[0].av + ' ' + r[0].n) : '') + ' · اضغطي للتفاصيل</div>';
+      : '<div class="gml-bf">' + (r[0] ? '👑 بالمقدمة: ' + esc(avTxt(r[0]) + r[0].n) : '') + ' · اضغطي للتفاصيل</div>';
     var rows = '';
     if (full) {
       rows = '<div class="gml-rows">' + r.map(function (p, i) {
         var pct = Math.min(100, Math.round(Math.min(p.step, S.total) / S.total * 100));
         var stale = !p.done && (now() - (p.last || 0)) > 60000;
         var st = p.done ? (p.won ? '✅ حرّرت فارس' : '🏁 خلّصت') : (stale ? '💤 مش متصلة' : '🎮 ' + Math.min(p.step, S.total) + '/' + S.total);
-        return '<div class="gml-row' + (p.id === S.pid ? ' me' : '') + '" style="--c:' + p.c + '"><span class="r">' + (S.mode === 'race' ? (i + 1) : '•') + '</span><span class="e">' + esc(p.av) + '</span>' +
+        return '<div class="gml-row' + (p.id === S.pid ? ' me' : '') + '" style="--c:' + p.c + '"><span class="r">' + (S.mode === 'race' ? (i + 1) : '•') + '</span><span class="e">' + avHTML(p.av) + '</span>' +
           '<div><b>' + esc(p.n) + '</b><div class="gml-pb"><i style="width:' + pct + '%"></i></div></div>' +
           '<span class="s">' + st + '<br>💚' + (p.pts || 0) + ' · ❌' + (p.mis || 0) + (p.runs ? ' · 🔄' + p.runs : '') + '</span></div>';
       }).join('') + '</div>';
