@@ -94,6 +94,12 @@
     s.textContent = [
       '.gml-ov{position:fixed;inset:0;z-index:2147482600;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(5,0,16,.94);font-family:Tajawal,Arial,sans-serif;direction:rtl}',
       '.gml-ov.on{display:flex}',
+      '#gmlHelpOv{z-index:2147482700}',
+      '.gml-box{position:relative}',
+      '.gml-q{position:absolute;top:10px;left:10px;border:1.5px solid #4fc3f7;background:rgba(41,182,246,.15);color:#4fc3f7;border-radius:30px;padding:5px 12px;font-family:inherit;font-weight:800;font-size:.82rem;cursor:pointer;z-index:2}',
+      '.gml-hl{text-align:right;list-style:none;margin:8px 0 4px;padding:0}',
+      '.gml-hl li{background:rgba(255,255,255,.05);border:1px solid rgba(79,195,247,.25);border-radius:12px;padding:8px 11px;margin-bottom:7px;font-size:.9rem;line-height:1.7}',
+      '.gml-hl b{color:#ffd54f}',
       '.gml-box{width:100%;max-width:520px;max-height:94vh;overflow:auto;background:linear-gradient(160deg,#10233a,#070d1c);border:2px solid #29b6f6;border-radius:20px;padding:18px 16px;color:#fff;box-shadow:0 0 40px rgba(41,182,246,.25);text-align:center}',
       '.gml-h{font-family:Amiri,serif;font-size:clamp(1.25rem,5vw,1.7rem);color:#4fc3f7;margin-bottom:6px;text-shadow:0 0 16px rgba(79,195,247,.5)}',
       '.gml-sub{font-size:.92rem;color:rgba(220,240,255,.85);margin:4px 0 10px;line-height:1.7}',
@@ -177,7 +183,7 @@
   }
 
   /* ---------------- UI helpers ---------------- */
-  var ov, box, cd, chip, toastEl, fullOv;
+  var ov, box, cd, chip, toastEl, fullOv, helpOv;
   function build() {
     if (ov) return;
     css();
@@ -190,6 +196,11 @@
     fullOv = document.createElement('div'); fullOv.className = 'gml-ov'; fullOv.id = 'gmlFull';
     fullOv.innerHTML = '<div class="gml-box"><div class="gml-h" id="gmlFT">🏁 لوحة الغرفة</div><div class="gml-sub" id="gmlFS"></div><div id="gmlFB"></div><button class="gml-btn alt" id="gmlFC">رجوع للعبة ←</button><button class="gml-btn alt" id="gmlFH" style="display:none">🏠 إنهاء المتابعة والرجوع للرئيسية</button></div>';
     document.body.appendChild(fullOv);
+    helpOv = document.createElement('div'); helpOv.className = 'gml-ov'; helpOv.id = 'gmlHelpOv';
+    helpOv.onclick = function (e) { if (e.target === helpOv) helpOv.classList.remove('on'); };
+    document.body.appendChild(helpOv);
+    fullOv.querySelector('.gml-box').insertAdjacentHTML('afterbegin', '<button class="gml-q" id="gmlFQ">❓ الشرح</button>');
+    $('gmlFQ').onclick = function () { openHelp(); };
     $('gmlFC').onclick = function () { fullOv.classList.remove('on'); };
     $('gmlFH').onclick = function () { if (confirm('أكيد بدك تطلعي من المتابعة؟')) { leave(); location.href = S.cfg.home || 'index.html'; } };
   }
@@ -198,7 +209,34 @@
     toastEl.textContent = msg; toastEl.classList.add('on');
     clearTimeout(toastEl._t); toastEl._t = setTimeout(function () { toastEl.classList.remove('on'); }, 2600);
   }
-  function show(html) { box.innerHTML = html; ov.classList.add('on'); box.scrollTop = 0; }
+  function show(html) {
+    box.innerHTML = '<button class="gml-q" id="gmlQ">❓ كيف بنلعب؟</button>' + html; ov.classList.add('on'); box.scrollTop = 0;
+    $('gmlQ').onclick = function () { openHelp(); };
+  }
+
+  /* ---------------- شرح اللعب الأونلاين ---------------- */
+  function openHelp() {
+    build();
+    helpOv.innerHTML = '<div class="gml-box">' +
+      '<div class="gml-h">❓ كيف بنلعب أونلاين؟</div>' +
+      '<div class="gml-sub">كل وحدة من تلفونها، وكلكم بنفس الغرفة وبتشوفوا بعض 👀</div>' +
+      '<ul class="gml-hl">' +
+      '<li>🎭 <b>١. اسمك وشخصيتك:</b> اكتبي اسمك واختاري شخصية — هيك بتعرفك صاحباتك على المسار.</li>' +
+      '<li>➕ <b>٢. وحدة بس بتعمل الغرفة:</b> بتضغط «أنشئي غرفة جديدة»، بتختار 🤝 تعاون أو 🏁 تنافس، وبيطلعلها <b>كود من 5 أرقام</b>.</li>' +
+      '<li>🔑 <b>٣. الباقي بيدخلوا بالكود:</b> بيضغطوا «ادخلي بكود غرفة» وبيكتبوا نفس الكود.</li>' +
+      '<li>⏳ <b>٤. غرفة الانتظار:</b> بتشوفوا صور وأسماء بعض. صاحبة الغرفة بتضغط «▶️ يلا نبلّش كلنا!» وبتبلّشوا مع بعض بعد العدّ 3، 2، 1.</li>' +
+      '<li>🤝 <b>تعاون:</b> كلكم فريق واحد — كل إجابة صح من أي وحدة ' + esc(W('build')) + ' ' + esc(W('bridge')) + '، والفوز لما الكل ' + esc(W('all')) + '.</li>' +
+      '<li>🏁 <b>تنافس:</b> سباق — كل وحدة بتجاوب أسئلتها، والأسرع ' + esc(W('goN')) + ' هي الفائزة.</li>' +
+      '<li>👀 <b>مسار السباق:</b> فوق الأسئلة بتشوفي كل وحدة بصورتها وين واصلة، ومركزك من الكل. اضغطي على المسار أو الشارة فوق عشان تشوفي الترتيب الكامل.</li>' +
+      '<li>🔔 <b>تنبيهات:</b> بتطلعلك رسالة لما وحدة تسبقك، أو تجاوب صح، أو ترجع من البداية.</li>' +
+      '<li>👩‍🏫 <b>للمعلمة:</b> وهي بتعمل الغرفة بتعلّم على «أنا المعلمة، بتابع بس وما بلعب» — بتفتحلها لوحة «متابعة الغرفة مباشرة» بالترتيب والنقاط والأخطاء، وبتقدر تعرضها على شاشة الصف.</li>' +
+      '<li>🏆 <b>بالآخر:</b> شاشة نتيجتك فيها ترتيب الغرفة كلها.</li>' +
+      '<li>📶 <b>انتبهي:</b> اللعب الأونلاين بدّه إنترنت عند كل وحدة.</li>' +
+      '</ul>' +
+      '<button class="gml-btn gold" id="gmlHX">فهمت ✅</button></div>';
+    helpOv.classList.add('on');
+    $('gmlHX').onclick = function () { helpOv.classList.remove('on'); };
+  }
   function hide() { ov.classList.remove('on'); }
   function err(m) { var e = $('gmlErr'); if (e) e.textContent = m || ''; }
   function modeName(m) { return m === 'race' ? '🏁 تنافس' : '🤝 تعاون'; }
@@ -527,7 +565,7 @@
         }, 1500);
       }
     },
-    mountBoard: function (el) {
+    help: openHelp, mountBoard: function (el) {
       if (!el) return; build();
       el.classList.add('gml-board'); el.onclick = function () { openFull(); };
       if (S.boards.indexOf(el) === -1) S.boards.push(el);
