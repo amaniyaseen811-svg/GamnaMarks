@@ -3377,3 +3377,93 @@ go = function(n) {
   })();
 })();
 </script>
+<!-- ===== GamnaMarks: اللعب الأونلاين الجماعي (السنافر) ===== -->
+<script src="gm-live.js"></script>
+<script src="gm-report.js"></script>
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  if(!window.GMLive||!$('gmxMode'))return;
+
+  /* 1) بطاقة "أونلاين مع صاحباتي" بشاشة طرق اللعب */
+  var grid=document.querySelector('#gmxMode .gmx-grid');
+  if(grid&&!$('gmlCard')){
+    var c=document.createElement('button');
+    c.className='gmx-card';c.id='gmlCard';
+    c.style.cssText='grid-column:1/-1;border-color:#4fc3f7;background:rgba(41,182,246,.12)';
+    c.innerHTML='<div class="e">🌐</div><b style="color:#4fc3f7">أونلاين مع صاحباتي</b><span>كل وحدة من تلفونها وبشخصيتها، بنفس الوقت: 🤝 تعاون أو 🏁 تنافس</span>';
+    c.onclick=function(){
+      var s=document.querySelector('#gmxLvl .gmx-card.sel');
+      var lvl=s?s.getAttribute('data-l'):'normal';
+      $('gmxMode').classList.remove('on');
+      GMLive.open({game:'smurfs',total:10,lvl:lvl,private:true,
+        words:{go:'بتوصل للبيت',goN:'بالوصول للبيت',did:'وصلت للبيت',you:'وصلتي للبيت',all:'يوصل للبيت',team:'وصل للبيت',bridge:'طريق الفريق',bicon:'🛤️',build:'بتبني',built:'بنت',start:'🍄',step:'🌲',boss:'👹'},
+        onBack:function(){$('gmxMode').classList.add('on');},
+        onStart:startOnline});
+    };
+    grid.appendChild(c);
+  }
+
+  /* 2) لما تبلّش الغرفة: نفس طريق اللعب الفردي بمستوى الغرفة واسم البنت */
+  var hl=document.querySelector('#p4 .hlbl');
+  function startOnline(cfg){
+    var l=document.querySelector('#gmxLvl .gmx-card[data-l="'+cfg.lvl+'"]');if(l)l.click();
+    var solo=document.querySelector('#gmxMode .gmx-card[data-m="solo"]');if(solo)solo.click();
+    var n=$('gmxN0');if(n)n.value=cfg.name;
+    $('gmxGo').click();
+    if(window.GMX)GMX.live=true;
+    if(hl){if(!hl.dataset.orig)hl.dataset.orig=hl.textContent;hl.textContent=(cfg.char?'':cfg.av+' ')+cfg.name;}
+    doneSeen=false;GMLive.refresh();
+  }
+
+  /* 3) لوحة السباق/الفريق فوق الأسئلة — كل البنات بيشوفوا بعض */
+  var bb=$('bbody');
+  if(bb){var bd=document.createElement('div');bd.id='gmlSmf';bd.style.display='none';bb.insertBefore(bd,bb.firstChild);GMLive.mountBoard(bd);}
+
+  /* 4) كل ثانية: بنبعث وين وصلت البنت */
+  var doneSeen=false;
+  setInterval(function(){
+    if(!GMLive.active()||!window.GMX)return;
+    var G=window.GMX,p5=$('p5');
+    if(G.won||(p5&&p5.classList.contains('on')))doneSeen=true;
+    var c=0;for(var i=0;i<10;i++){var g=$('g'+i);if(g&&g.textContent==='💙')c++;}
+    var pts=window.score||0;
+    GMLive.report({step:c,pts:pts,mis:G.mis||0,done:doneSeen,won:!!G.won});
+  },1000);
+
+  /* 5) الرجوع للبداية = خروج من الغرفة */
+  var _go=window.go;
+  window.go=function(n){
+    if(n===0&&GMLive.active()){GMLive.leave();if(window.GMX)GMX.live=false;GMLive.refresh();
+      if(hl&&hl.dataset.orig)hl.textContent=hl.dataset.orig;}
+    _go(n);
+  };
+
+  /* 6) شاشة النتيجة: ترتيب الغرفة + اسم الوضع */
+  var _R=window.gmxResults;
+  window.gmxResults=function(){
+    _R();
+    if(GMLive.mode()){
+      var rn=$('gmxRName');if(rn)rn.textContent=rn.textContent.replace('وضع فردي','وضع أونلاين '+(GMLive.mode()==='race'?'🏁 تنافس':'🤝 تعاون'));
+      var rp=$('gmxRPl');if(rp){var d=document.createElement('div');d.innerHTML=GMLive.resultHTML();rp.appendChild(d);}
+    }
+    sendReport();
+  };
+
+  /* 7) علامة كل طالبة بتنحفظ بقائمة المعلمة (reports.html) — والطالبة بتشوف علامتها بس */
+  var sent=false;
+  var _g2=window.go;
+  window.go=function(n){if(n===0||n===1)sent=false;_g2(n);};
+  function sendReport(){
+    if(!window.GMReport||sent||!window.GMX)return;sent=true;
+    var G=window.GMX,ok=0,bad=0;G.pl.forEach(function(p){ok+=p.ok||0;bad+=p.bad||0;});
+    GMReport.score(window.score||0);
+    GMReport.add('أسئلة الرحلة (صح)',ok,10);
+    if(G.ws1!=null)GMReport.add('ورقة العمل الأساسية',G.ws1,10);
+    if(G.ws2!=null)GMReport.add('ورقة العمل المتقدمة',G.ws2,10);
+    GMReport.correct(ok);GMReport.wrong(G.mis||0);
+    setTimeout(function(){GMReport.finish();},1200);
+  }
+})();
+</script>
+
