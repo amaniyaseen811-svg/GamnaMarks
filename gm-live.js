@@ -43,9 +43,7 @@
 
   function $(id) { return document.getElementById(id); }
   /* كلمات القصة: كل لعبة بتقدر تغيّرها عبر cfg.words (الافتراضي: الجزيرة المسحورة) */
-  var WD = { go: 'بتحرّر فارس', goN: 'بتحرير فارس', did: 'حرّرت فارس', you: 'حرّرتي فارس', all: 'يحرّر فارس', team: 'حرّر فارس', bridge: 'جسر الفريق', bicon: '🌉', build: 'بتبني', built: 'بنت', start: '🏝️', step: '🐊', boss: '👹' };
-  /* private:true = العلامات مخفية عن الطالبات، كل وحدة بتشوف علامتها بس، والمعلمة بتشوف الكل */
-  function hidePts(p) { return !!(S.cfg && S.cfg.private) && !S.host && !S.spec && p.id !== S.pid; }
+  var WD = { go: 'بتحرّر فارس', goN: 'بتحرير فارس', did: 'حرّرت فارس', you: 'حرّرتي فارس', all: 'يحرّر فارس', team: 'حرّر فارس', bridge: 'جسر الفريق', bicon: '🌉', build: 'بتبني', built: 'بنت', i0: '🏝️', im: '🐊', ig: '👹' };
   function W(k) { var w = (S.cfg && S.cfg.words) || {}; return w[k] != null ? w[k] : WD[k]; }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function lsGet(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
@@ -164,6 +162,9 @@
       '.gml-ch.pic img{width:100%;max-width:60px;aspect-ratio:1;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.25)}',
       '.gml-ch.pic.sel img{border-color:#ffc107;box-shadow:0 0 10px #ffc107}',
       '.gml-chars.pics{grid-template-columns:repeat(4,1fr)}',
+      '.gml-ch.lock{opacity:.35;filter:grayscale(1);cursor:not-allowed;position:relative}',
+      '.gml-ch.lock::after{content:"🔒";position:absolute;top:-4px;left:-4px;font-size:.95rem;filter:none}',
+      '.gml-note{font-size:.8rem;color:#ffe082;margin:2px 0 4px}',
       '.gml-pc .e .gml-img{width:46px;height:46px}',
       '.gml-row .e .gml-img{width:30px;height:30px}',
       '.gml-cell .who .gml-img{width:24px;height:24px;border-width:2px}',
@@ -364,6 +365,24 @@
     if (S.started) return;
     var pl = playersArr();
     var players = pl.filter(function (p) { return !p.spec; });
+    /* كل شخصية لبنت وحدة بس: المأخوذة بتنقفل، واللي دخلت بعدين بتنعطى شخصية فاضية */
+    var me = S.players[S.pid], taken = {};
+    players.forEach(function (p) { if (p.id !== S.pid) taken[p.av] = p; });
+    if (me && !S.spec) {
+      var cl = taken[S.av];
+      if (cl && ((cl.j || 0) < (me.j || 0) || ((cl.j || 0) === (me.j || 0) && cl.id < S.pid))) {
+        var free = charList().filter(function (c) { return !taken[c.id]; });
+        if (free.length) { S.av = free[0].id; me.av = S.av; lsSet('gml_av', S.av); S.avMoved = true; writeMe(false); }
+      }
+    }
+    var pick = (me && !S.spec) ?
+      '<div class="gml-sub" style="margin:8px 0 2px">🎭 شخصيتك (المقفولة 🔒 أخدتها صاحبتك):</div>' +
+      (S.avMoved ? '<div class="gml-note">شخصيتك كانت مأخوذة، فاخترنالك وحدة ثانية — بتقدري تغيّريها 👇</div>' : '') +
+      '<div class="gml-chars' + (S.cfg.chars ? ' pics' : '') + '" id="gmlLChars">' + charList().map(function (c) {
+        var t = taken[c.id];
+        return '<button class="gml-ch' + (c.id === S.av ? ' sel' : '') + (c.av ? ' pic' : '') + (t ? ' lock' : '') + '" data-e="' + esc(c.id) + '" title="' + esc(t ? t.n : c.n) + '"' + (t ? ' disabled' : '') + '>' +
+          (c.av ? '<img src="' + c.av + '" alt=""><span>' + esc(c.n) + '</span>' : esc(c.id)) + '</button>';
+      }).join('') + '</div>' : '';
     show(
       '<div class="gml-h">🏠 غرفة اللعب</div>' +
       '<div class="gml-sub">' + (S.host ? 'خلّي صاحباتك يدخلوا بهاد الكود:' : 'إنتِ جوّا الغرفة 🎉') + '</div>' +
@@ -372,7 +391,7 @@
       '<div class="gml-pl">' + pl.map(function (p) {
         return '<div class="gml-pc" style="--c:' + p.c + '"><div class="e">' + (p.spec ? '👩‍🏫' : avHTML(p.av)) + '</div><div class="n">' + esc(p.n) + (p.id === S.pid ? ' (أنا)' : '') + '</div>' +
           (p.host ? '<div style="font-size:.65rem;color:#ffc107">👑 صاحبة الغرفة</div>' : '') + '</div>';
-      }).join('') + '</div>' +
+      }).join('') + '</div>' + pick +
       '<div class="gml-sub" style="font-size:.82rem">' + (S.mode === 'race'
         ? '🏁 كل وحدة بتجاوب على أسئلتها، والأسرع ' + W('goN') + ' هي الفائزة. بتشوفوا بعض على مسار السباق!'
         : '🤝 كلكم فريق واحد: كل إجابة صح من أي وحدة ' + W('build') + ' ' + W('bridge') + '، والفوز لما الكل ' + W('all') + '!') + '</div>' +
@@ -388,6 +407,14 @@
       try { await S.fb.updateDoc(roomDoc(), { state: 'play', startAt: now() }); }
       catch (e) { this.disabled = false; err('ما زبط، جربي كمان مرة'); }
     };
+    box.querySelectorAll('#gmlLChars .gml-ch').forEach(function (b) {
+      b.onclick = function () {
+        if (b.disabled) return;
+        S.av = b.getAttribute('data-e'); S.avMoved = false; lsSet('gml_av', S.av);
+        if (S.players[S.pid]) S.players[S.pid].av = S.av;
+        writeMe(false); viewLobby();
+      };
+    });
     $('gmlLeave').onclick = function () { leave(); viewMe(); };
   }
 
@@ -424,7 +451,7 @@
     var f = S.fb, code = S.code, pid = S.pid;
     stopListen();
     if (f && code && !S.started) { try { f.deleteDoc(plDoc(pid)); } catch (e) { } }
-    S.code = ''; S.players = {}; S.started = false; S.room = null; S.toasts = {};
+    S.code = ''; S.players = {}; S.started = false; S.room = null; S.toasts = {}; S.avMoved = false;
     if (chip) chip.style.display = 'none';
   }
 
@@ -482,7 +509,7 @@
     var meRank = 0; r.forEach(function (p, i) { if (p.id === S.pid) meRank = i + 1; });
     var tp = teamPct(pl), sumPts = 0; pl.forEach(function (p) { sumPts += p.pts || 0; });
     var head = S.mode === 'coop'
-      ? '<span>🤝 تعاون · ' + pl.length + ' لاعبات</span><span>' + (S.cfg.private && !S.host && !S.spec ? '' : '💚 قوة الفريق ' + sumPts) + '</span>'
+      ? '<span>🤝 تعاون · ' + pl.length + ' لاعبات</span><span>💚 قوة الفريق ' + sumPts + '</span>'
       : '<span>🏁 تنافس · ' + pl.length + ' لاعبات</span><span>' + (meRank ? '🎯 مركزك ' + meRank + ' من ' + r.length : '') + '</span>';
     /* النهر: كل بنت إلها حارة فيها تماسيحها، والكل بنفس المشهد */
     S.prev = S.prev || {};
@@ -493,7 +520,7 @@
         var hop = S.prev[p.id] != null && st > S.prev[p.id];
         var cells = '';
         for (var k = 0; k <= S.total; k++) {
-          var thing = k === 0 ? W('start') : (k === S.total ? (p.done && p.won ? '🏆' : W('boss')) : W('step'));
+          var thing = k === 0 ? W('i0') : (k === S.total ? (p.done && p.won ? '🏆' : W('ig')) : W('im'));
           var cls = 'gml-cell' + (k < st ? ' past' : '') + (k === 0 ? ' shore' : '') + (k === S.total ? ' goal' : '');
           cells += '<span class="' + cls + '"><span class="t">' + thing + '</span>' +
             (k === st ? '<span class="who' + (hop ? ' hop' : '') + '" style="--c:' + p.c + '">' + avHTML(p.av) + '</span>' : '') + '</span>';
@@ -513,7 +540,7 @@
         var st = p.done ? (p.won ? '✅ ' + W('did') : '🏁 خلّصت') : (stale ? '💤 مش متصلة' : '🎮 ' + Math.min(p.step, S.total) + '/' + S.total);
         return '<div class="gml-row' + (p.id === S.pid ? ' me' : '') + '" style="--c:' + p.c + '"><span class="r">' + (S.mode === 'race' ? (i + 1) : '•') + '</span><span class="e">' + avHTML(p.av) + '</span>' +
           '<div><b>' + esc(p.n) + '</b><div class="gml-pb"><i style="width:' + pct + '%"></i></div></div>' +
-          '<span class="s">' + st + '<br>' + (hidePts(p) ? '🔒 العلامة مخفية' : '💚' + (p.pts || 0) + ' · ❌' + (p.mis || 0)) + (p.runs ? ' · 🔄' + p.runs : '') + '</span></div>';
+          '<span class="s">' + st + '<br>💚' + (p.pts || 0) + ' · ❌' + (p.mis || 0) + (p.runs ? ' · 🔄' + p.runs : '') + '</span></div>';
       }).join('') + '</div>';
     }
     return '<div class="gml-bh">' + head + '</div>' + track + (full ? rows : foot);
