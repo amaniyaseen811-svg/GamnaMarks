@@ -44,6 +44,8 @@
   function $(id) { return document.getElementById(id); }
   /* كلمات القصة: كل لعبة بتقدر تغيّرها عبر cfg.words (الافتراضي: الجزيرة المسحورة) */
   var WD = { go: 'بتحرّر فارس', goN: 'بتحرير فارس', did: 'حرّرت فارس', you: 'حرّرتي فارس', all: 'يحرّر فارس', team: 'حرّر فارس', bridge: 'جسر الفريق', bicon: '🌉', build: 'بتبني', built: 'بنت', i0: '🏝️', im: '🐊', ig: '👹' };
+  /* private:true = العلامات مخفية عن الطالبات، كل وحدة بتشوف علامتها بس، والمعلمة بتشوف الكل */
+  function hidePts(p) { return !!(S.cfg && S.cfg.private) && !S.host && !S.spec && p.id !== S.pid; }
   function W(k) { var w = (S.cfg && S.cfg.words) || {}; return w[k] != null ? w[k] : WD[k]; }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function lsGet(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
@@ -509,7 +511,7 @@
     var meRank = 0; r.forEach(function (p, i) { if (p.id === S.pid) meRank = i + 1; });
     var tp = teamPct(pl), sumPts = 0; pl.forEach(function (p) { sumPts += p.pts || 0; });
     var head = S.mode === 'coop'
-      ? '<span>🤝 تعاون · ' + pl.length + ' لاعبات</span><span>💚 قوة الفريق ' + sumPts + '</span>'
+      ? '<span>🤝 تعاون · ' + pl.length + ' لاعبات</span><span>' + (S.cfg.private && !S.host && !S.spec ? '' : '💚 قوة الفريق ' + sumPts) + '</span>'
       : '<span>🏁 تنافس · ' + pl.length + ' لاعبات</span><span>' + (meRank ? '🎯 مركزك ' + meRank + ' من ' + r.length : '') + '</span>';
     /* النهر: كل بنت إلها حارة فيها تماسيحها، والكل بنفس المشهد */
     S.prev = S.prev || {};
@@ -540,7 +542,7 @@
         var st = p.done ? (p.won ? '✅ ' + W('did') : '🏁 خلّصت') : (stale ? '💤 مش متصلة' : '🎮 ' + Math.min(p.step, S.total) + '/' + S.total);
         return '<div class="gml-row' + (p.id === S.pid ? ' me' : '') + '" style="--c:' + p.c + '"><span class="r">' + (S.mode === 'race' ? (i + 1) : '•') + '</span><span class="e">' + avHTML(p.av) + '</span>' +
           '<div><b>' + esc(p.n) + '</b><div class="gml-pb"><i style="width:' + pct + '%"></i></div></div>' +
-          '<span class="s">' + st + '<br>💚' + (p.pts || 0) + ' · ❌' + (p.mis || 0) + (p.runs ? ' · 🔄' + p.runs : '') + '</span></div>';
+          '<span class="s">' + st + '<br>' + (hidePts(p) ? '🔒 العلامة مخفية' : '💚' + (p.pts || 0) + ' · ❌' + (p.mis || 0)) + (p.runs ? ' · 🔄' + p.runs : '') + '</span></div>';
       }).join('') + '</div>';
     }
     return '<div class="gml-bh">' + head + '</div>' + track + (full ? rows : foot);

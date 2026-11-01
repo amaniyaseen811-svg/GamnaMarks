@@ -3378,6 +3378,8 @@ go = function(n) {
 })();
 </script>
 <!-- ===== GamnaMarks: اللعب الأونلاين الجماعي (السنافر) ===== -->
+<style>/* زر الشات 💬 كان تحت زر الاستراحة ⏸ بالضبط، فبنرفعه فوق زر المايك */
+.pvc-fab{bottom:214px!important}</style>
 <script src="gm-live.js"></script>
 <script src="gm-report.js"></script>
 <script>
@@ -3397,7 +3399,7 @@ go = function(n) {
       var lvl=s?s.getAttribute('data-l'):'normal';
       $('gmxMode').classList.remove('on');
       GMLive.open({game:'smurfs',total:10,lvl:lvl,private:true,
-        words:{go:'بتوصل للبيت',goN:'بالوصول للبيت',did:'وصلت للبيت',you:'وصلتي للبيت',all:'يوصل للبيت',team:'وصل للبيت',bridge:'طريق الفريق',bicon:'🛤️',build:'بتبني',built:'بنت',start:'🍄',step:'🌲',boss:'👹'},
+        words:{go:'بتوصل للبيت',goN:'بالوصول للبيت',did:'وصلت للبيت',you:'وصلتي للبيت',all:'يوصل للبيت',team:'وصل للبيت',bridge:'طريق الفريق',bicon:'🛤️',build:'بتبني',built:'بنت',start:'🍄',step:'🌲',boss:'👹',i0:'🍄',im:'🌲',ig:'👹'},
         onBack:function(){$('gmxMode').classList.add('on');},
         onStart:startOnline});
     };
