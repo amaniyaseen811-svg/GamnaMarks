@@ -3065,3 +3065,84 @@ window.addEventListener('load',function(){
   try{window.bgMusic=document.getElementById('bgm');}catch(e){}
 })();
 </script>
+
+<style>/* زر الدردشة كان تحت زر الاستراحة — رفعناه فوق المايك */
+.pvc-fab{bottom:214px !important}</style>
+<!-- ===== GamnaMarks: اللعب الأونلاين الجماعي (علاء الدين) ===== -->
+<script src="gm-live.js"></script>
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  if(!window.GMLive||!$('gmxMode'))return;
+  var WORDS={go:'بتلاقي الكنز',goN:'بإيجاد الكنز',did:'لاقت الكنز',you:'لاقيتي الكنز',all:'يلاقي الكنز',team:'لاقى الكنز',bridge:'كنز الفريق',bicon:'💎',build:'بتجمع',built:'جمعت'};
+
+  /* 1) بطاقة "أونلاين" بشاشة طرق اللعب */
+  var grid=document.querySelector('#gmxMode .gmx-grid');
+  if(grid&&!$('gmlCard')){
+    var c=document.createElement('button');
+    c.className='gmx-card';c.id='gmlCard';
+    c.style.cssText='grid-column:1/-1;border-color:#4fc3f7;background:rgba(41,182,246,.12)';
+    c.innerHTML='<div class="e">🌐</div><b style="color:#4fc3f7">أونلاين مع صاحباتي</b><span>كل وحدة من تلفونها وبشخصيتها، بنفس الوقت وبنفس الغرفة: 🤝 تعاون أو 🏁 تنافس</span>';
+    c.onclick=function(){
+      var s=document.querySelector('#gmxLvl .gmx-card.sel');
+      var lvl=s?s.getAttribute('data-l'):'normal';
+      $('gmxMode').classList.remove('on');
+      GMLive.open({game:'aladdin',total:12,lvl:lvl,words:WORDS,
+        onBack:function(){$('gmxMode').classList.add('on');},
+        onStart:startOnline});
+    };
+    grid.appendChild(c);
+  }
+
+  /* 2) لما تبلّش الغرفة: نفس طريق اللعب الفردي بمستوى الغرفة واسم البنت */
+  function startOnline(cfg){
+    var l=document.querySelector('#gmxLvl .gmx-card[data-l="'+cfg.lvl+'"]');if(l)l.click();
+    var solo=document.querySelector('#gmxMode .gmx-card[data-m="solo"]');if(solo)solo.click();
+    var n=$('gmxN0');if(n)n.value=cfg.name;
+    $('gmxGo').click();
+    if(window.GMX)GMX.live=true;
+    doneSeen=false;GMLive.refresh();
+  }
+
+  /* 3) لوحة الغرفة: فوق الخريطة وفوق السؤال — الكل بيشوف بعض */
+  function mount(id,parentSel,before){
+    var p=document.querySelector(parentSel);if(!p||$(id))return;
+    var d=document.createElement('div');d.id=id;d.style.display='none';d.style.margin='6px auto';d.style.maxWidth='520px';
+    if(before)p.insertBefore(d,p.firstChild);else p.appendChild(d);
+    GMLive.mountBoard(d);
+  }
+  mount('gmlAlMap','#s-map .map-hdr',false);
+  mount('gmlAlQ','#s-question .cb-mid',true);
+
+  /* 4) كل ثانية: بنبعث وين وصلت البنت (10 أحجار + شيفرة المدينة + الشارع) */
+  var doneSeen=false;
+  function on(id){var e=$(id);return e&&e.classList.contains('active');}
+  setInterval(function(){
+    if(!GMLive.active()||!window.GMX)return;
+    var G=window.GMX,st=collGems.length;
+    if(on('s-path'))st=11;
+    if(on('s-win')||on('s-res')||on('s-prize'))doneSeen=true;
+    if(doneSeen)st=12;
+    GMLive.report({step:st,pts:doneSeen?(G.final!=null?G.final:score):score,mis:G.mis||0,done:doneSeen,won:doneSeen});
+  },1000);
+
+  /* 5) شاشة النتيجة: ترتيب الغرفة + اسم الوضع */
+  var _res=window.gmxResults;
+  window.gmxResults=function(){
+    _res();
+    if(GMLive.mode()){
+      var rn=$('gmxRName');if(rn)rn.textContent=rn.textContent.replace('وضع فردي','وضع أونلاين '+(GMLive.mode()==='race'?'🏁 تنافس':'🤝 تعاون'));
+      var rp=$('gmxRPl');if(rp&&!rp.querySelector('.gml-final')){var d=document.createElement('div');d.innerHTML=GMLive.resultHTML();rp.appendChild(d);}
+    }
+  };
+
+  /* 6) مغامرة جديدة = طلعة من الغرفة */
+  var _ra=window.restartAll;
+  window.restartAll=function(){
+    var lo=$('lampOv');
+    if(GMLive.active()&&lo&&lo.classList.contains('show')){lo.className='lamp-ov';$('cageOv').className='cage-ov';window.startAdventure();return;}
+    if(GMLive.active()){GMLive.leave();if(window.GMX)GMX.live=false;GMLive.refresh();doneSeen=false;}
+    _ra();
+  };
+})();
+</script>
