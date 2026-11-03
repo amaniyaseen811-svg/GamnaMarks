@@ -23,6 +23,27 @@
   /* قوائم الطالبات (gm-roster.js بنفس مجلد هاد الملف) */
   var ROSTER_SRC = (sc && sc.src) ? sc.src.replace(/gm-report\.js(\?.*)?$/i, 'gm-roster.js') : 'gm-roster.js';
   var ROSTER_KEY = /\/palace\//i.test(location.pathname) ? 'palace' : page;
+  /* القوائم نفسها محفوظة بقاعدة البيانات (صفحة roster.html) مش بملفات اللعبة */
+  var LS_ROSTER = 'gm_roster_cache';
+  var ROSTER_DOC = 'https://firestore.googleapis.com/v1/projects/' + PROJECT + '/databases/(default)/documents/gm_roster/current?key=' + API_KEY;
+  function applyRoster(pub) {
+    if (!pub || !pub.sections || !window.GM_ROSTER) return;
+    if (!(window.GM_ROSTER.sections || []).length) { window.GM_ROSTER.sections = pub.sections; window.GM_ROSTER.salt = pub.salt; }
+  }
+  function loadRosterDb(cb) {
+    var done = false, fin = function () { if (!done) { done = true; cb(); } };
+    try { applyRoster(JSON.parse(ls(LS_ROSTER) || 'null')); } catch (e) {}
+    if (!window.fetch) return fin();
+    setTimeout(fin, 5000);
+    fetch(ROSTER_DOC).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (j && j.fields && j.fields.data) {
+        var txt = j.fields.data.stringValue; ls(LS_ROSTER, txt);
+        if (window.GM_ROSTER) window.GM_ROSTER.sections = [];
+        applyRoster(JSON.parse(txt));
+      }
+      fin();
+    }).catch(fin);
+  }
   function rosterSections() {
     var R = window.GM_ROSTER;
     if (!R || !R.games || !R.games[ROSTER_KEY]) return null;
@@ -444,10 +465,10 @@
   function init() {
     watch(); addButton(); hookHome();
     if (!S.started) {
-      if (window.GM_ROSTER) askName();
+      if (window.GM_ROSTER) loadRosterDb(function () { if (!S.started) askName(); });
       else {
         var rs = document.createElement('script'), done = false;
-        var go = function () { if (done) return; done = true; if (!S.started) askName(); };
+        var go = function () { if (done) return; done = true; loadRosterDb(function () { if (!S.started) askName(); }); };
         rs.src = ROSTER_SRC; rs.onload = go; rs.onerror = go;
         setTimeout(go, 4000);
         (document.head || document.documentElement).appendChild(rs);

@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>قوائم طالباتي — GamnaMarks</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1330;--card:#1b2150;--line:rgba(255,255,255,.14);--tx:#fff;--mut:rgba(255,255,255,.7);--acc:#ff8a3d;--acc2:#ff4f8b;--ok:#5fe0a8;--no:#ff7a7a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Tajawal,system-ui,sans-serif;padding:16px}
+h1{font-size:23px;margin:4px 0 2px}
+.sub{color:var(--mut);font-size:14px;margin-bottom:12px;line-height:1.6}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+input,select,textarea{font:inherit;color:var(--tx);background:rgba(255,255,255,.08);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+select option{color:#000}
+textarea{min-height:200px;line-height:1.7;resize:vertical}
+button{font:800 15px Tajawal,system-ui,sans-serif;cursor:pointer;border:0;border-radius:999px;padding:11px 16px;color:#fff;background:linear-gradient(90deg,var(--acc),var(--acc2));margin:3px 0}
+button.ghost{background:rgba(255,255,255,.1);border:1px solid var(--line)}
+button.del{background:rgba(255,90,90,.18);border:1px solid rgba(255,120,120,.5)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.bar{display:flex;gap:6px;flex-wrap:wrap}
+.note{color:var(--mut);font-size:13px;margin-top:6px;min-height:18px}
+.ok{color:var(--ok)} .no{color:var(--no)}
+.codes{font-size:14px;line-height:1.9;margin-top:8px}
+.codes b{font-family:monospace;letter-spacing:3px;font-size:16px;color:#ffd34d}
+#lock{max-width:360px;margin:60px auto;text-align:center}
+#sheet{display:none}
+@media print{
+  body{background:#fff;color:#000;padding:0}
+  #lock,#app{display:none!important}
+  #sheet{display:block}
+  @page{size:A4;margin:10mm}
+  .pg{page-break-after:always}.pg:last-child{page-break-after:auto}
+  .pg h2{font-size:17px;text-align:center;margin:0 0 2px}
+  .pg .n2{font-size:11px;text-align:center;margin-bottom:6px;color:#444}
+  .grid{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px dashed #888;border-right:1px dashed #888}
+  .slip{border-left:1px dashed #888;border-bottom:1px dashed #888;padding:5px 6px;height:24mm;text-align:center;break-inside:avoid}
+  .slip .a{font-size:11.5px;font-weight:700;min-height:30px}.slip .b{font-size:9px;color:#555}
+  .slip .c{font-size:21px;font-weight:800;letter-spacing:5px;font-family:monospace}
+}
+</style>
+</head>
+<body>
+<div id="lock" class="card">
+  <div style="font-size:46px">🔐</div>
+  <h1>قوائم طالباتي</h1>
+  <div class="sub">صفحة المعلمة — اكتبي كلمة السر</div>
+  <input id="pw" type="password" placeholder="كلمة السر">
+  <div style="margin-top:10px"><button id="enter" style="width:100%">دخول</button></div>
+  <div class="note" id="pwNote"></div>
+</div>
+
+<div id="app" style="display:none">
+  <h1>👩‍🎓 قوائم طالباتي</h1>
+  <div class="sub">الأسماء والرموز بتنحفظ بقاعدة بيانات GamnaMarks، مش على GitHub.<br>
+    كل سنة: امسحي الأسماء القديمة، الصقي الجديدة (اسم بكل سطر)، اضغطي «حفظ»، واطبعي كشف الرموز.</div>
+
+  <div class="card">
+    <div class="bar">
+      <button id="save">💾 حفظ</button>
+      <button class="ghost" id="printBtn">🖨 طباعة كشف الرموز</button>
+      <button class="ghost" id="addSec">➕ شعبة جديدة</button>
+      <button class="ghost" id="importBtn">📂 استيراد ملف</button>
+      <button class="ghost" onclick="location.href='reports.html'">📊 التقارير</button>
+    </div>
+    <input id="importFile" type="file" accept=".json,application/json" style="display:none">
+    <div class="note" id="status"></div>
+  </div>
+
+  <div id="secs"></div>
+</div>
+
+<div id="sheet"></div>
+
+<script>
+(function(){
+  var PROJECT='cursed-castle-bb43b', KEY='AIzaSyADxQ7-3UDxYD3VTOoVrn7d6516_5bqd5Y';
+  var DOC='https://firestore.googleapis.com/v1/projects/'+PROJECT+'/databases/(default)/documents/gm_roster/current?key='+KEY;
+  var PASS='amani2026', pass='';
+  var D={salt:'',sections:[]};   /* sections: {grade,name,students:[],codes:[]} */
+  function $(id){return document.getElementById(id)}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function st(t,cls){$('status').innerHTML='<span class="'+(cls||'')+'">'+esc(t)+'</span>'}
+
+  function pinHash(str){var a=0x811c9dc5,b=0x01000193;for(var i=0;i<str.length;i++){var c=str.codePointAt(i);if(c>0xffff)i++;
+    a=Math.imul(a^c,16777619)>>>0;b=Math.imul(b^c,2246822519)>>>0;}return a.toString(36)+b.toString(36)}
+  function rnd4(){var u=new Uint32Array(1);crypto.getRandomValues(u);return String(1000+u[0]%9000)}
+  function b64(buf){var s='',a=new Uint8Array(buf);for(var i=0;i<a.length;i++)s+=String.fromCharCode(a[i]);return btoa(s)}
+  function unb64(s){var r=atob(s),a=new Uint8Array(r.length);for(var i=0;i<r.length;i++)a[i]=r.charCodeAt(i);return a}
+  function aesKey(p,salt){var enc=new TextEncoder();
+    return crypto.subtle.importKey('raw',enc.encode(p),'PBKDF2',false,['deriveKey']).then(function(k){
+      return crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:150000,hash:'SHA-256'},k,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])})}
+  function encrypt(obj){var salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+    return aesKey(pass,salt).then(function(k){return crypto.subtle.encrypt({name:'AES-GCM',iv:iv},k,new TextEncoder().encode(JSON.stringify(obj)))})
+      .then(function(ct){return b64(salt)+'.'+b64(iv)+'.'+b64(ct)})}
+  function decrypt(str){var p=str.split('.');
+    return aesKey(pass,unb64(p[0])).then(function(k){return crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(p[1])},k,unb64(p[2]))})
+      .then(function(pt){return JSON.parse(new TextDecoder().decode(pt))})}
+
+  /* ---------- الواجهة ---------- */
+  function readUI(){
+    Array.prototype.forEach.call(document.querySelectorAll('.sec'),function(el,i){
+      var s=D.sections[i], names=el.querySelector('textarea').value.split(/\n+/).map(function(x){return x.replace(/^\s*\d+[\.\-\)]?\s*/,'').replace(/\s+/g,' ').trim()}).filter(Boolean);
+      var old={};s.students.forEach(function(n,j){old[n]=s.codes[j]});
+      var used={};
+      s.name=el.querySelector('.sname').value.trim()||s.name;
+      s.grade=+el.querySelector('.sgrade').value;
+      s.students=names;
+      s.codes=names.map(function(n){var c=old[n];while(!c||used[c])c=rnd4();used[c]=1;return c});
+    });
+  }
+  function render(){
+    $('secs').innerHTML=D.sections.map(function(s,i){
+      return '<div class="card sec"><div class="row">'+
+        '<input class="sname" value="'+esc(s.name)+'" placeholder="اسم الشعبة (مثلاً التاسع ب)">'+
+        '<select class="sgrade"><option value="9"'+(s.grade==9?' selected':'')+'>الصف التاسع</option><option value="10"'+(s.grade==10?' selected':'')+'>الصف العاشر</option></select></div>'+
+        '<textarea placeholder="الصقي الأسماء هون، كل اسم بسطر">'+esc(s.students.join('\n'))+'</textarea>'+
+        '<div class="note">عدد الطالبات: '+s.students.length+'</div>'+
+        '<div class="bar"><button class="ghost" data-a="codes" data-i="'+i+'">👁 عرض الرموز</button>'+
+        '<button class="ghost" data-a="newc" data-i="'+i+'">🔄 رموز جديدة لهاي الشعبة</button>'+
+        '<button class="del" data-a="del" data-i="'+i+'">🗑 حذف الشعبة</button></div>'+
+        '<div class="codes" id="codes'+i+'" style="display:none"></div></div>';
+    }).join('')||'<div class="card">لسا ما في شعب. اضغطي «شعبة جديدة» أو «استيراد ملف».</div>';
+  }
+  $('secs').addEventListener('click',function(e){
+    var b=e.target.closest('button');if(!b)return;var i=+b.getAttribute('data-i'),a=b.getAttribute('data-a');
+    readUI();
+    if(a==='del'){if(confirm('أكيد بدك تحذفي '+D.sections[i].name+'؟')){D.sections.splice(i,1);render();st('انحذفت — اضغطي حفظ')}return}
+    if(a==='newc'){if(!confirm('رح تتغير رموز كل طالبات '+D.sections[i].name+' والكشف القديم ما بيعود يشتغل. متأكدة؟'))return;
+      var used={};D.sections[i].codes=D.sections[i].students.map(function(){var c;do{c=rnd4()}while(used[c]);used[c]=1;return c});render();st('تغيرت الرموز — اضغطي حفظ واطبعي الكشف الجديد');return}
+    if(a==='codes'){render();var s=D.sections[i],el=$('codes'+i);el.style.display='block';
+      el.innerHTML=s.students.map(function(n,j){return (j+1)+'. '+esc(n)+' — <b>'+s.codes[j]+'</b>'}).join('<br>')}
+  });
+  $('addSec').onclick=function(){readUI();D.sections.push({grade:9,name:'',students:[],codes:[]});render();
+    var t=document.querySelectorAll('.sec .sname');t[t.length-1].focus()};
+
+  /* ---------- استيراد ---------- */
+  $('importBtn').onclick=function(){$('importFile').click()};
+  $('importFile').onchange=function(){
+    var f=this.files[0];if(!f)return;var r=new FileReader();
+    r.onload=function(){try{var o=JSON.parse(r.result);
+      if(!o.sections||!o.sections.length)throw 0;
+      if(D.sections.length&&!confirm('الملف رح يحلّ محل القوائم الموجودة. متأكدة؟'))return;
+      D.sections=o.sections.map(function(s){return{grade:+s.grade,name:s.name,students:s.students.slice(),codes:(s.codes||[]).slice()}});
+      if(o.salt)D.salt=o.salt; render(); st('✔ انقرأ الملف — اضغطي «حفظ»','ok');
+    }catch(e){st('الملف مش صحيح','no')}};
+    r.readAsText(f,'utf-8');this.value='';
+  };
+
+  /* ---------- حفظ وتحميل ---------- */
+  function save(){
+    readUI();
+    var bad=D.sections.filter(function(s){return !s.name});if(bad.length){st('في شعبة بدون اسم','no');return}
+    if(!D.salt)D.salt='gm-amani-'+rnd4()+rnd4();
+    var pub={salt:D.salt,updated:new Date().toISOString(),sections:D.sections.map(function(s){
+      return{grade:s.grade,name:s.name,students:s.students,pins:s.students.map(function(n,j){return pinHash(D.salt+'|'+s.name+'|'+n+'|'+s.codes[j])})}})};
+    st('⏳ جاري الحفظ...');
+    encrypt(D.sections.map(function(s){return{name:s.name,students:s.students,codes:s.codes}})).then(function(enc){
+      return fetch(DOC,{method:'PATCH',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({fields:{data:{stringValue:JSON.stringify(pub)},enc:{stringValue:enc}}})});
+    }).then(function(r){if(!r.ok)throw r.status;render();st('✔ انحفظت القوائم — الألعاب صارت تعرضها','ok')})
+      .catch(function(e){st('ما انحفظ ('+e+') — تأكدي من النت وجربي كمان','no')});
+  }
+  $('save').onclick=save;
+  function load(){
+    st('⏳ جاري التحميل...');
+    fetch(DOC).then(function(r){if(r.status===404)return null;if(!r.ok)throw r.status;return r.json()}).then(function(j){
+      if(!j||!j.fields){render();st('لسا ما في قوائم محفوظة — استوردي الملف أو أضيفي شعبة');return}
+      var pub=JSON.parse(j.fields.data.stringValue);D.salt=pub.salt;
+      return decrypt(j.fields.enc.stringValue).then(function(sec){
+        D.sections=pub.sections.map(function(s){var m=sec.filter(function(x){return x.name===s.name})[0]||{students:[],codes:[]};
+          return{grade:s.grade,name:s.name,students:s.students.slice(),codes:s.students.map(function(n){var k=m.students.indexOf(n);return k>-1?m.codes[k]:rnd4()})}});
+        render();st('✔ آخر تعديل: '+new Date(pub.updated).toLocaleString('ar-EG'),'ok');
+      });
+    }).catch(function(e){render();st('مشكلة بالتحميل ('+e+')','no')});
+  }
+
+  /* ---------- طباعة ---------- */
+  $('printBtn').onclick=function(){
+    readUI();
+    $('sheet').innerHTML=D.sections.map(function(s){
+      return '<div class="pg"><h2>'+esc(s.name)+' — الرموز السرية لألعاب GamnaMarks</h2><div class="n2">قصّي على الخطوط وأعطي كل طالبة ورقتها. لا تشاركي الرمز مع حدا.</div><div class="grid">'+
+        s.students.map(function(n,j){return '<div class="slip"><div class="a">'+(j+1)+'. '+esc(n)+'</div><div class="b">'+esc(s.name)+' — رمزك السري للألعاب</div><div class="c">'+s.codes[j]+'</div></div>'}).join('')+'</div></div>';
+    }).join('');
+    print();
+  };
+
+  /* ---------- الدخول ---------- */
+  function unlock(){var v=$('pw').value.trim();
+    if(v===PASS){pass=v;try{sessionStorage.setItem('gm_ros_ok',v)}catch(e){}$('lock').style.display='none';$('app').style.display='block';load()}
+    else $('pwNote').textContent='كلمة السر غلط'}
+  $('enter').onclick=unlock;
+  $('pw').addEventListener('keydown',function(e){if(e.key==='Enter')unlock()});
+  try{var sv=sessionStorage.getItem('gm_ros_ok');if(sv===PASS){$('pw').value=sv;unlock()}}catch(e){}
+})();
+</script>
+</body>
+</html>
