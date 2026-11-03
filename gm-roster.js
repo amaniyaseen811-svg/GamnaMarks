@@ -5,7 +5,7 @@
 window.GM_ROSTER = {
   games: {
     palace:     [9],   /* حرر آدم */
-    nutrihouse: [9],   /* NutriHouse */
+    nutrihouse: [9],   /* NutriHouse بيت المغذيات */
     island:     [10],  /* الجزيرة المسحورة */
     aladdin:    [10],  /* علاء الدين */
     smurfs:     [10],  /* السنافر */
