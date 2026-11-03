@@ -1,8 +1,10 @@
 /* GamnaMarks — قوائم طالبات د. أماني ياسين داود
    مدرسة عمر بن عبد العزيز الثانوية للبنات — طولكرم
    - لتعديل اسم أو إضافة طالبة: عدّلي الاسم بين علامتي التنصيص "..." بس
+   - الرموز السرية محفوظة مشفّرة (pins) — الرموز نفسها بالكشف المطبوع عند المعلمة بس
    - games: أي لعبة بتعرض أي صفوف (9 = التاسع ، 10 = العاشر) */
 window.GM_ROSTER = {
+  salt: 'gm-amani-dfb370fa',
   games: {
     palace:     [9],   /* حرر آدم */
     nutrihouse: [9],   /* NutriHouse بيت المغذيات */
@@ -20,7 +22,8 @@ window.GM_ROSTER = {
       'ليان سيف الدين محمد ابو عجوة', 'ليليان امجد عدنان ابو خديجة', 'لين بدر شريف فرحانه', 'مايا احمد صبحي جبرين',
       'مريم حازم بديع راشد', 'منيه رائد محمد فتحي خربط', 'نتالي شادي خيري اسماعيل', 'هلا رشاد جمال ابو عيسى',
       'يسرى أيمن صبحي حارون'
-    ]},
+    ],
+      pins: ["1g5oyg317smwu9","pf3ga01erivlq","1is870a1idgpw4","sa6168wdmgam","1pafxsd1woh2uf","npglftnurqk7","1t2ux4w1f3k522","wsbw5u6cvils","bv8697nrbj8p","whdtp91akc9sn","19uumx11mv0pj","m5oxuq14f7brw","19vxm1olphzf6","10pn0g11e7y2xn","1804x7jupt13t","jbu0ow10sq9n2","n7k1l83f5e7m","cqzaevnm78g5","xypmjboc88yt","1drbu8c1a98ji2","93oxqv4a6p3h","1psdzqy1v6oh7w","169a44r1hhar75","pr5hcqnot1xw","1uha8tw6quj0i"] },
     { grade: 9, name: 'التاسع ج', students: [
       'الين أحمد سمير زقلة', 'تاله سامح احمد بلاونه', 'تولين سفيان أحمد بلاونة', 'تولين محمود فتحي ابو خديجة',
       'تيا محمود فتحي ابو خديجة', 'جلنار محمد امين زرعي', 'جنات مالك عايش دار تايه', 'جنى محمد طلال شريم',
@@ -28,7 +31,8 @@ window.GM_ROSTER = {
       'راما رائد عمر حارون', 'رغد حسين صالح عوده', 'روعه عاطف عبد اللطيف أبو سفاقه', 'زينب ثروت ابراهيم بيطار',
       'سما ساهر سمير نوري', 'صبا بشار نعيم الكرمي', 'علا رائد اسامه ساره', 'ليان علاء الدين نظمي جيوسي',
       'ماسة مهند سعادة جلاد', 'ملك أمجد خالد شاهين', 'ميار ايهاب راسم جلاد', 'ميرال رامي زيدان عليان'
-    ]},
+    ],
+      pins: ["14wqmcf1ojshbp","1c3ma1kq5gwy2","3a2cuh9pykaz","dj70pozij6zm","m7bktl1h13rtj","11l3zua1f6q2n0","ane5gow7dsaa","1y5210jnjhdal","vi5cveytvy84","19n2uf51dyr8xn","12y6n6wgruxtm","1n1iesv1s5p9d1","14xp23j1j4qp1h","1v6dfdn18v2qvh","v9teuxatwl67","1x9et881cikvvu","1woturd1ipi96n","15i2ndk1m5f8jq","1d9f1gu1q4ax2c","1w5zsnunyd8us","rjjhw0slqlqm","nsgge13vziir","1t10izgpfhnvu","1ld2bouxv8v1c"] },
     { grade: 9, name: 'التاسع د', students: [
       'أسماء يوسف حسن أبو مريم', 'آية محمد مصطفى عموري', 'ازار عثمان عبد الرحيم حسان', 'بانه محمود أحمد حامد',
       'بتول خالد محمد عودة', 'بتول عباس علي صباح', 'بسيمة حسين نواف جلاد', 'تالا عامر عبد الحليم عامر',
@@ -37,7 +41,8 @@ window.GM_ROSTER = {
       'ضحى مؤمن عمر مبروك', 'فله عدنان محمد عبد ربه', 'كرامة يوسف حسن أبو مريم', 'لجين محمود حسنين عبد الضمايرة',
       'لين عمار داود عوض', 'مسك امجد فخري شلبي', 'ملك شفيق محمد عز الدين اسعيد', 'نور أحمد محمود بروق',
       'نور وليد محمود القب', 'وداد اياد محمد بدران'
-    ]},
+    ],
+      pins: ["11o12i917f76sr","ss34cr1b9qym5","1wa61lr1qabhgp","147hajj1cdcia1","rgk0iq1koszao","hqwdwmqjq0pk","2mcd7hgmhejf","14esabt1xkj2zf","1t8rzd44oju2a","fq77xd4uolf","u7z291ybyb4f","1i0s3wx19grasr","x8nu5hp0vitr","me0w7b1e5nth9","18kem81uty5qa","f1db6o1vaefqu","18r28jbaw016x","my57z0tnpiwy","105i9t71fnzpsx","hn8wtq149teuk","11oreci1ijtu1s","1cgbrh41voctm6","wlthnbeu2bsh","qo8j5a1yu8o8s","sfmx55v4qewz","13ggb1vrhk53x"] },
     { grade: 10, name: 'العاشر أ', students: [
       'إسراء كفاح أحمد علي', 'أسيل زياد محمود ذيب', 'امال احمد محمد برهم', 'بسنت محمد فيصل ابو خاطر',
       'بيان إياد عدنان داود', 'تولين ياسين محمد عودة', 'جنى عامر غسان نجدي', 'جنى فادي محمود جلاد',
@@ -46,7 +51,8 @@ window.GM_ROSTER = {
       'غزل محمد حسين سمير قندح', 'غزل نهاد احمد جلاد', 'ليان زياد محمد ابو الفيه', 'ليان مجدي حسن الجيوسي',
       'ماسة منذر عبد الفتاح نصر الله', 'مرح مهند صبحي عودة', 'مسك محمد ابراهيم سليم', 'ميرا رضوان محمد قطو',
       'ميرنا ماهر ابراهيم فاخوري', 'نور نادر عبد اللطيف طياح', 'هاله محمد علي حمود', 'يارا محمود اديب شريتح'
-    ]},
+    ],
+      pins: ["ihzct013yubie","1q2fhrsd3kihe","4lz3mp1yfe1ff","1635eh6w1ybo0","1mxrft1ku2xab","col6z6x4dc1s","4aq6b1dz052d","1kycl7o12o2rqm","10ppyd2d3dm84","1hgrxqa1whj2rc","ecsswo1objh86","ftqvppwkt7a3","1cp1pjr1i90zh9","qxvq11ggka7","cx2wfql69lh","htoctrqh1vb9","swjf0ne56zlp","1f6pmn41sn0fy6","1kaw88ts5enab","bs4dlh4o0yvb","qsehos16tyqri","j19jlr9plycx","1brizn4v1gu2y","dxrmio1mdn0nm","1gcvymq168owb4","1d1jnxs5cb8fq","n3hotk19gsiou","1kdul1u1fiidog"] },
     { grade: 10, name: 'العاشر ب', students: [
       'أمل فادي عدنان الفار', 'آية هاني رمضان ابو راس', 'بتول سامر امين سروجي', 'تالا امين عصام سروجي',
       'تولين عمار عبد الاله زقله', 'جنى رائد راشد عوض', 'جنى رزق مصطفى التاية', 'جود عبدالناصر محمد حمدان',
@@ -56,7 +62,8 @@ window.GM_ROSTER = {
       'لجين نضال سميح عبدو', 'ليان يعقوب عادل طاحون', 'لين ماجد محمد حالوب', 'مايا مثنى صبحي داود',
       'ملاك محمد يوسف ابو كامل', 'ميار ابراهيم راسم عوده', 'ميرا رامي مخلص عباس', 'نبأ خالد محمود عطا',
       'ندى خالد اكرم ظاهر', 'نور زاده اشرف محمد نعمان قاسم'
-    ]},
+    ],
+      pins: ["1y9mfb41ns2y6u","16yzj1h8drfab","m5nwt0t1tzyy","19ahs111w6fdgb","fc5q7gdwz0y6","1woi3471v4lval","102zpmgsjly2u","1l4ao22kfh9is","1k2e5701aaakx2","1v026g01455dgu","6hu6s9dsqjn","ijv3bw1ghb5ve","xbl5cq1gqnxwk","z4xhhjrodym1","1ozyrb9179ketz","l9ggoi6r7di8","1qwin5x1hpbkkj","kk2jnyha4z20","pzi1vz1a6dct5","5kyieahjdam0","1oza46icvacdc","1oxzfnc1ikz3pu","1ezk54k1wwjpcm","5f7zrfvr5jnd","hj5vtc5mfk1e","3m9ynx1qkdrfn","a3jawg1gda6j6","1uj4ojf1dlirb1","vtmfnyiifky0","1b8yoobdbd1eh"] },
     { grade: 10, name: 'العاشر ج', students: [
       'احلام اياد خالد مجدلاوي', 'اريام أحمد سليمان سروجي', 'امينة محمد عزام القدسي', 'بانه محمد حامد ابو سمره',
       'تالا احمد منصور شريم', 'تولين سعيد علي الطحل', 'تولين ماجد راشد عوض', 'تولين نائل عبد الرحيم سلمان',
@@ -66,6 +73,7 @@ window.GM_ROSTER = {
       'ليليان عمار فارس كنعان', 'لين عمار سليم جلاد', 'ماسة رياض أحمد مغربي', 'منة الله عمار سليم جلاد',
       'ميار اشرف حاتم عراقي', 'ميس حسن عبدالله الدنا', 'ميلاء فادي محمد ابو العيون', 'ناديه ابراهيم هاشم بطران',
       'نور مازن ابراهيم حبايب'
-    ]}
+    ],
+      pins: ["1jbfu981qnrp4e","1nrp6widsxox4","1c6nvgk1wklhi2","w97w7uea2ueo","1u9vca51n4tfqj","15om7bf1ompd0t","k264t56d7jsr","1mwc4lc1lz4022","1m4p1d912i2vy3","1u3ox7dm89ofv","776fvrn6eqz5","1ysi3uxy4fqs3","1vpnq2e1q574h8","birjmwy5yl4i","7msxkg1hlr1z6","d2kmne6opdjk","1ermm2c1wkvezu","10jkezae0f8qs","8dldz31830uop","1v32s9p103bazj","xgdrs2ahd9g4","1pj9q22n0ubxo","xmmyn52tzghj","14j4kntjbbzer","i8nyz1j8z9mr","ppwfb01vctaae","1qp5hagrm2on2","68yp12n46voo","1qnbnoaap9o0c"] }
   ]
 };

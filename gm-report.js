@@ -30,6 +30,14 @@
     var list = (R.sections || []).filter(function (x) { return gr.indexOf(x.grade) > -1; });
     return list.length ? list : null;
   }
+  function pinHash(str) {
+    var a = 0x811c9dc5, b = 0x01000193;
+    for (var i = 0; i < str.length; i++) {
+      var c = str.codePointAt(i); if (c > 0xffff) i++;
+      a = Math.imul(a ^ c, 16777619) >>> 0; b = Math.imul(b ^ c, 2246822519) >>> 0;
+    }
+    return a.toString(36) + b.toString(36);
+  }
   function attemptNo(name, klass) {
     return lsJSON(LS_LOCAL, []).filter(function (x) {
       return x.page === page && x.name === name && (x.klass || '') === (klass || '') && x.id !== S.id;
@@ -234,6 +242,7 @@
   }
 
   function startPlay(name, klass) {
+    if (S.guest) klass = 'زائرة' + (klass ? ' — ' + klass : '');
     S.name = name; S.klass = klass;
     ls(LS_NAME, S.name); ls(LS_CLASS, S.klass);
     S.attempt = attemptNo(S.name, S.klass);
@@ -255,11 +264,11 @@
         '<div class="gmSecs">' + secs.map(function (x, i) {
           return '<button class="gmBtn' + (x.name === lastC ? ' gmOn' : '') + '" data-i="' + i + '">' + esc(x.name) + '</button>';
         }).join('') + '</div>' +
-        '<button class="gmLink" id="gmOther">مش من هاي الشعب؟ اكتبي اسمك</button></div>';
+        '<button class="gmLink" id="gmOther">مش من هاي الشعب؟ (زائرة)</button></div>';
       Array.prototype.forEach.call(box.querySelectorAll('.gmSecs .gmBtn'), function (b) {
         b.onclick = function () { stepName(secs[+b.getAttribute('data-i')]); };
       });
-      box.querySelector('#gmOther').onclick = function () { box.remove(); askName(true); };
+      box.querySelector('#gmOther').onclick = function () { box.remove(); S.guest = true; askName(true); };
     }
     function stepName(sec) {
       box.innerHTML = '<div class="gmCard"><div style="font-size:40px">👩‍🎓</div><h2>' + esc(sec.name) + '</h2>' +
@@ -269,10 +278,43 @@
         }).join('') + '</div>' +
         '<button class="gmBtn" id="gmBackSec">↩ رجوع للشعب</button></div>';
       Array.prototype.forEach.call(box.querySelectorAll('.gmNames .gmBtn'), function (b) {
-        b.onclick = function () { box.remove(); startPlay(sec.students[+b.getAttribute('data-i')], sec.name); };
+        b.onclick = function () {
+          var i = +b.getAttribute('data-i');
+          if (sec.pins && sec.pins[i]) stepPin(sec, i);
+          else { box.remove(); startPlay(sec.students[i], sec.name); }
+        };
       });
       box.querySelector('#gmBackSec').onclick = stepSec;
       var on = box.querySelector('.gmNames .gmOn'); if (on && on.scrollIntoView) on.scrollIntoView({ block: 'center' });
+    }
+    function stepPin(sec, i) {
+      var name = sec.students[i], tries = 0;
+      box.innerHTML = '<div class="gmCard"><div style="font-size:40px">🔐</div><h2>' + esc(name) + '</h2>' +
+        '<div class="gmSub">' + esc(sec.name) + '<br>اكتبي رمزك السري (4 أرقام)</div>' +
+        '<input id="gmPin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" ' +
+        'style="text-align:center;letter-spacing:12px;font-size:26px" placeholder="••••">' +
+        '<button class="gmBtn gmMain gmFull" id="gmPinGo">دخول ▶</button>' +
+        '<div class="gmNote" id="gmPinNote"></div>' +
+        '<button class="gmBtn" id="gmBackName">↩ مش أنا — رجوع</button></div>';
+      var inp = box.querySelector('#gmPin'), note = box.querySelector('#gmPinNote'), go = box.querySelector('#gmPinGo');
+      setTimeout(function () { try { inp.focus(); } catch (e) {} }, 50);
+      inp.addEventListener('input', function () {
+        inp.value = inp.value.replace(/[٠-٩]/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); }).replace(/\D/g, '').slice(0, 4);
+        note.textContent = '';
+      });
+      var check = function () {
+        var v = inp.value;
+        if (v.length !== 4) { note.textContent = 'الرمز 4 أرقام ✍'; return; }
+        if (pinHash((window.GM_ROSTER.salt || '') + '|' + sec.name + '|' + name + '|' + v) === sec.pins[i]) {
+          box.remove(); startPlay(name, sec.name); return;
+        }
+        tries++; inp.value = '';
+        note.textContent = tries >= 3 ? '❌ الرمز غلط. إذا نسيتي رمزك اسألي المعلمة' : '❌ الرمز غلط، جربي مرة كمان';
+        if (tries >= 3) { go.disabled = true; go.style.opacity = '.4'; setTimeout(function () { go.disabled = false; go.style.opacity = ''; tries = 0; }, 30000); }
+      };
+      go.onclick = function () { if (!go.disabled) check(); };
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !go.disabled) check(); });
+      box.querySelector('#gmBackName').onclick = function () { stepName(sec); };
     }
     stepSec();
   }
