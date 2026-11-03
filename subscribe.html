@@ -34,7 +34,14 @@
     transition:transform .15s;
   }
   .btn:active{transform:scale(.97)}
-  .yt{background:#ff0000;box-shadow:0 8px 24px rgba(255,0,0,.4)}
+  .yt{background:#ff0000;box-shadow:0 8px 24px rgba(255,0,0,.4);position:relative;animation:pulse 1.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,0,0,.6)}50%{box-shadow:0 0 0 14px rgba(255,0,0,0)}}
+  .hint{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:6px;height:56px}
+  .finger{font-size:44px;display:inline-block;animation:tap 1s ease-in-out infinite}
+  @keyframes tap{0%,100%{transform:translateY(0)}50%{transform:translateY(12px)}}
+  .bell{font-size:40px;display:inline-block;transform-origin:50% 10%;animation:ring 1.6s ease-in-out infinite}
+  @keyframes ring{0%,40%,100%{transform:rotate(0)}5%{transform:rotate(22deg)}10%{transform:rotate(-20deg)}15%{transform:rotate(16deg)}20%{transform:rotate(-12deg)}25%{transform:rotate(8deg)}30%{transform:rotate(-4deg)}}
+  .bellnote{font-size:15px;opacity:.85;margin-top:10px}
   .enter{
     margin-top:14px;background:linear-gradient(90deg,#3b82f6,#8b5cf6,#ec4899,#f97316);
     box-shadow:0 8px 24px rgba(139,92,246,.45);display:none;
@@ -50,7 +57,9 @@
   <p>قبل ما تبلّشي اللعب 💙<br>اشتركي بقناة GamnaMarks على يوتيوب<br>وبعدها بينفتحلك التطبيق</p>
 
   <div class="step">الخطوة ١</div>
+  <div class="hint"><span class="bell">🔔</span><span class="finger">👇</span></div>
   <a id="ytBtn" class="btn yt" href="https://www.youtube.com/@GamnaMarks?sub_confirmation=1" target="_blank" rel="noopener">▶ اشتركي بالقناة</a>
+  <div class="bellnote">🔔 وفعّلي الجرس عشان يوصلك كل جديد</div>
 
   <div id="wait" class="wait">⏳ اشتركي وارجعي لهون…</div>
   <button id="enterBtn" class="btn enter">الخطوة ٢ — ادخلي للتطبيق 🚀</button>
