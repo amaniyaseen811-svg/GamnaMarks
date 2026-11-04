@@ -4,67 +4,43 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GamnaMarks — اشتركي بالقناة</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@700;800&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{
-    min-height:100vh;display:flex;align-items:center;justify-content:center;
-    font-family:'Baloo Bhaijaan 2',sans-serif;color:#fff;padding:16px;
-    background:radial-gradient(circle at 20% 20%,#3b1d6e,#140a2e 70%);
-  }
-  .card{
-    width:100%;max-width:420px;text-align:center;padding:32px 22px;border-radius:28px;
-    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);
-    box-shadow:0 20px 60px rgba(0,0,0,.4);backdrop-filter:blur(8px);
-  }
-  .logo{
-    width:110px;height:110px;margin:0 auto 18px;border-radius:50%;
-    background:conic-gradient(#3b82f6,#8b5cf6,#ec4899,#f97316,#3b82f6);
-    display:flex;align-items:center;justify-content:center;font-size:52px;
-    animation:spin 6s linear infinite;box-shadow:0 0 40px rgba(236,72,153,.5);
-  }
-  .logo span{animation:spin 6s linear infinite reverse}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  h1{font-size:30px;font-weight:800;margin-bottom:6px}
-  p{font-size:17px;line-height:1.7;opacity:.9;margin-bottom:22px}
-  .step{font-size:15px;opacity:.75;margin-bottom:10px}
-  .btn{
-    display:block;width:100%;padding:16px;border:none;border-radius:18px;cursor:pointer;
-    font-family:inherit;font-size:20px;font-weight:800;color:#fff;text-decoration:none;
-    transition:transform .15s;
-  }
-  .btn:active{transform:scale(.97)}
-  .yt{background:#ff0000;box-shadow:0 8px 24px rgba(255,0,0,.4);position:relative;animation:pulse 1.4s ease-in-out infinite}
-  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,0,0,.6)}50%{box-shadow:0 0 0 14px rgba(255,0,0,0)}}
-  .hint{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:6px;height:56px}
-  .finger{font-size:44px;display:inline-block;animation:tap 1s ease-in-out infinite}
-  @keyframes tap{0%,100%{transform:translateY(0)}50%{transform:translateY(12px)}}
-  .bell{font-size:40px;display:inline-block;transform-origin:50% 10%;animation:ring 1.6s ease-in-out infinite}
-  @keyframes ring{0%,40%,100%{transform:rotate(0)}5%{transform:rotate(22deg)}10%{transform:rotate(-20deg)}15%{transform:rotate(16deg)}20%{transform:rotate(-12deg)}25%{transform:rotate(8deg)}30%{transform:rotate(-4deg)}}
-  .bellnote{font-size:15px;opacity:.85;margin-top:10px}
-  .enter{
-    margin-top:14px;background:linear-gradient(90deg,#3b82f6,#8b5cf6,#ec4899,#f97316);
-    box-shadow:0 8px 24px rgba(139,92,246,.45);display:none;
-  }
-  .wait{margin-top:14px;font-size:15px;opacity:.8;display:none}
-  .credit{margin-top:24px;font-size:13px;opacity:.55}
+  html,body{background:#0d0820}
+  body{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+       font-family:'Baloo Bhaijaan 2',sans-serif;color:#fff;padding:12px}
+  .wrap{position:relative;width:100%;max-width:460px;max-height:calc(100vh - 24px);aspect-ratio:1083/1452}
+  .wrap img{display:block;width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none}
+  /* مناطق الضغط فوق الصورة (بالنسبة المئوية عشان تزبط على كل الشاشات) */
+  .hot{position:absolute;display:block;border-radius:60px;-webkit-tap-highlight-color:transparent;cursor:pointer}
+  .hot:active{background:rgba(255,255,255,.12)}
+  #ytBtn{left:18.5%;right:18.5%;top:66.6%;height:8.8%}
+  #bellBtn{left:40%;right:40%;top:59.2%;height:6.4%}
+  #bellNote{left:22%;right:22%;top:77.3%;height:4.2%}
+  .pulse{position:absolute;left:18.5%;right:18.5%;top:66.6%;height:8.8%;border-radius:60px;pointer-events:none;
+         box-shadow:0 0 0 0 rgba(255,60,60,.7);animation:pulse 1.8s infinite}
+  @keyframes pulse{70%{box-shadow:0 0 0 14px rgba(255,60,60,0)}100%{box-shadow:0 0 0 0 rgba(255,60,60,0)}}
+  .bottom{position:absolute;left:12%;right:12%;top:83.2%;text-align:center}
+  .wait{display:none;font-size:15px;opacity:.9}
+  .enter{display:none;width:100%;padding:12px;border:none;border-radius:18px;cursor:pointer;
+         font-family:inherit;font-size:18px;font-weight:800;color:#fff;
+         background:linear-gradient(90deg,#3b82f6,#8b5cf6,#ec4899,#f97316);
+         box-shadow:0 8px 24px rgba(139,92,246,.5);animation:pop .4s ease}
+  @keyframes pop{from{transform:scale(.8);opacity:0}}
 </style>
 </head>
 <body>
-<div class="card">
-  <div class="logo"><span>🎮</span></div>
-  <h1>GamnaMarks</h1>
-  <p>قبل ما تبلّشي اللعب 💙<br>اشتركي بقناة GamnaMarks على يوتيوب<br>وبعدها بينفتحلك التطبيق</p>
-
-  <div class="step">الخطوة ١</div>
-  <div class="hint"><span class="bell">🔔</span><span class="finger">👇</span></div>
-  <a id="ytBtn" class="btn yt" href="https://www.youtube.com/@GamnaMarks?sub_confirmation=1" target="_blank" rel="noopener">▶ اشتركي بالقناة</a>
-  <div class="bellnote">🔔 وفعّلي الجرس عشان يوصلك كل جديد</div>
-
-  <div id="wait" class="wait">⏳ اشتركي وارجعي لهون…</div>
-  <button id="enterBtn" class="btn enter">الخطوة ٢ — ادخلي للتطبيق 🚀</button>
-
-  <div class="credit">تصميم وإعداد د. أماني ياسين داود</div>
+<div class="wrap">
+  <img src="subscribe-card.jpg" alt="اشتركي بقناة GamnaMarks على يوتيوب وفعّلي الجرس">
+  <div class="pulse"></div>
+  <a id="ytBtn"   class="hot sub" href="https://www.youtube.com/@GamnaMarks?sub_confirmation=1" target="_blank" rel="noopener" aria-label="اشتركي بالقناة"></a>
+  <a id="bellBtn" class="hot sub" href="https://www.youtube.com/@GamnaMarks?sub_confirmation=1" target="_blank" rel="noopener" aria-label="فعّلي الجرس"></a>
+  <a id="bellNote" class="hot sub" href="https://www.youtube.com/@GamnaMarks?sub_confirmation=1" target="_blank" rel="noopener" aria-label="فعّلي الجرس"></a>
+  <div class="bottom">
+    <div id="wait" class="wait">⏳ اشتركي وفعّلي الجرس 🔔 وارجعي لهون…</div>
+    <button id="enterBtn" class="enter">الخطوة ٢ — ادخلي للتطبيق 🚀</button>
+  </div>
 </div>
 
 <script>
@@ -84,11 +60,14 @@
 
   function unlock(){ wait.style.display = "none"; enterBtn.style.display = "block"; }
 
-  document.getElementById("ytBtn").addEventListener("click", function(){
-    clicked = true; leftAt = Date.now();
-    wait.style.display = "block";
-    setTimeout(unlock, 10000); // احتياط: بعد ١٠ ثواني
-  });
+  var subs = document.querySelectorAll(".sub");
+  for (var i = 0; i < subs.length; i++){
+    subs[i].addEventListener("click", function(){
+      clicked = true; leftAt = Date.now();
+      if (enterBtn.style.display !== "block") wait.style.display = "block";
+      setTimeout(unlock, 10000); // احتياط: بعد ١٠ ثواني
+    });
+  }
 
   // لما ترجع من يوتيوب للصفحة
   document.addEventListener("visibilitychange", function(){
