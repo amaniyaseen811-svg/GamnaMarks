@@ -32,6 +32,16 @@
          background:linear-gradient(90deg,#3b82f6,#8b5cf6,#ec4899,#f97316);
          box-shadow:0 8px 24px rgba(139,92,246,.5);animation:pop .4s ease}
   @keyframes pop{from{transform:scale(.8);opacity:0}}
+  .codeBox{display:none;flex-direction:column;gap:7px;width:100%;max-width:400px;margin-top:10px;text-align:center;animation:pop .4s ease}
+  body.coding .wrap{max-height:calc(100vh - 200px)}
+  .codeBox .lbl{font-size:14px;line-height:1.4}
+  .codeBox input{width:100%;padding:10px;border-radius:14px;border:2px solid #8b5cf6;background:#1b1238;color:#fff;
+       font-family:inherit;font-size:18px;text-align:center;outline:none}
+  .codeBox button{padding:10px;border:none;border-radius:14px;font-family:inherit;font-size:16px;font-weight:800;color:#fff;cursor:pointer;
+       background:linear-gradient(90deg,#3b82f6,#8b5cf6,#ec4899)}
+  .codeBox .err{display:none;color:#ffb4b4;font-size:13px}
+  .shake{animation:shake .4s}
+  @keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 </style>
 </head>
 <body>
@@ -49,40 +59,74 @@
     </div>
   </div>
 </div>
+<div id="codeBox" class="codeBox">
+      <div class="lbl">🔑 اكتبي الكود السري الموجود بآخر منشور على القناة</div>
+      <input id="codeIn" type="text" autocomplete="off" placeholder="الكود السري">
+      <button id="codeBtn">تأكيد ✅</button>
+      <div id="codeErr" class="err">❌ الكود غلط أو قديم… شوفي آخر منشور بالقناة</div>
+    </div>
 
 <script>
   var APP_URL = "index.html";           // رابط التطبيق
   var KEY = "gm_subscribed";
-
-  function store(get, val){
-    try{ return get ? localStorage.getItem(KEY) : localStorage.setItem(KEY, val); }catch(e){ return null; }
+  // ===== الكود السري: بيتغير لحاله كل ٣ أيام =====
+  var CODES = ["نجمة","قمر","شمس","زيتونة","فراشة","غيمة","وردة","نحلة","بحر","جبل",
+               "قوس قزح","سنبلة","نخلة","لؤلؤة","كوكب","برتقالة","حمامة","ياسمين","شجرة","مطر",
+               "دلفين","بركان","مجرة","صقر","ليمونة","خلية","ذرة","مغناطيس","بوصلة","شلال"];
+  var START = Date.UTC(2026, 10, 5);    // أول دورة: ٥ تشرين الثاني ٢٠٢٦
+  var DAYS = 3, TEACHER = "amani2026";
+  function period(){
+    var n = new Date();
+    var d = Math.floor((Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) - START) / 86400000);
+    return Math.floor(d / DAYS);
   }
-
-
+  function codeFor(p){ var L = CODES.length; return CODES[(((p * 7 + 3) % L) + L) % L]; }
+  function norm(t){
+    return String(t||"").replace(/[ً-ْـ]/g,"").replace(/[أإآ]/g,"ا")
+      .replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/\s+/g,"").toLowerCase();
+  }
+  function store(get, val, k){
+    k = k || KEY;
+    try{ return get ? localStorage.getItem(k) : localStorage.setItem(k, val); }catch(e){ return null; }
+  }
   var clicked = false, leftAt = 0;
   var enterBtn = document.getElementById("enterBtn");
   var wait = document.getElementById("wait");
-
   var enterRow = document.getElementById("enterRow");
-  function unlock(){ wait.style.display = "none"; enterRow.style.display = "flex"; }
-
-  // الصورة بتظل تطلع كل مرة؛ إذا اشتركت قبل هيك بيطلعلها زر الدخول مع الإصبع على طول
+  var codeBox = document.getElementById("codeBox");
+  var codeIn = document.getElementById("codeIn");
+  var codeErr = document.getElementById("codeErr");
+  function showEnter(){ wait.style.display = "none"; codeBox.style.display = "none"; document.body.classList.remove("coding"); enterRow.style.display = "flex"; }
+  function unlock(){
+    // إذا كتبت كود هالدورة قبل هيك، ما بنسألها مرة ثانية لحد ما يتغير
+    if (store(true, null, "gm_code_ok") === String(period())) { showEnter(); return; }
+    wait.style.display = "none"; enterRow.style.display = "none"; codeBox.style.display = "flex"; document.body.classList.add("coding"); setTimeout(function(){codeIn.focus();},300);
+  }
   if (store(true) === "1") { unlock(); }
-
   var subs = document.querySelectorAll(".sub");
   for (var i = 0; i < subs.length; i++){
     subs[i].addEventListener("click", function(){
       clicked = true; leftAt = Date.now();
-      if (enterRow.style.display !== "flex") wait.style.display = "block";
-      setTimeout(unlock, 10000); // احتياط: بعد ١٠ ثواني
+      if (codeBox.style.display !== "flex" && enterRow.style.display !== "flex") wait.style.display = "block";
+      setTimeout(function(){ if (enterRow.style.display !== "flex") unlock(); }, 10000);
     });
   }
-
-  // لما ترجع من يوتيوب للصفحة
   document.addEventListener("visibilitychange", function(){
-    if (clicked && document.visibilityState === "visible" && Date.now() - leftAt > 3000) unlock();
+    if (clicked && document.visibilityState === "visible" && Date.now() - leftAt > 3000 && enterRow.style.display !== "flex") unlock();
   });
-
+  function checkCode(){
+    var v = norm(codeIn.value);
+    if (v && (v === norm(codeFor(period())) || v === TEACHER)) {
+      store(false, String(period()), "gm_code_ok");
+      store(false, "1");
+      showEnter();
+    } else {
+      codeErr.style.display = "block";
+      codeBox.classList.remove("shake"); void codeBox.offsetWidth; codeBox.classList.add("shake");
+    }
+  }
+  document.getElementById("codeBtn").addEventListener("click", checkCode);
+  codeIn.addEventListener("keydown", function(e){ if (e.key === "Enter") checkCode(); });
   enterBtn.addEventListener("click", function(){
     store(false, "1");
     try{ sessionStorage.setItem("gm_entered","1"); }catch(e){}
