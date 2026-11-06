@@ -97,12 +97,13 @@
   var codeIn = document.getElementById("codeIn");
   var codeErr = document.getElementById("codeErr");
   function showEnter(){ wait.style.display = "none"; codeBox.style.display = "none"; document.body.classList.remove("coding"); enterRow.style.display = "flex"; }
-  function unlock(){
+  function unlock(noFocus){
     // إذا كتبت كود هالدورة قبل هيك، ما بنسألها مرة ثانية لحد ما يتغير
     if (store(true, null, "gm_code_ok") === String(period())) { showEnter(); return; }
-    wait.style.display = "none"; enterRow.style.display = "none"; codeBox.style.display = "flex"; document.body.classList.add("coding"); setTimeout(function(){codeIn.focus();},300);
+    wait.style.display = "none"; enterRow.style.display = "none"; codeBox.style.display = "flex"; document.body.classList.add("coding"); if (!noFocus) setTimeout(function(){codeIn.focus();},300);
   }
-  if (store(true) === "1") { unlock(); }
+  // مكان الكود بيطلع على طول أول ما تفتح الرابط (البنت بتاخذ الكود من القناة قبل)
+  unlock(true);
   var subs = document.querySelectorAll(".sub");
   for (var i = 0; i < subs.length; i++){
     subs[i].addEventListener("click", function(){
