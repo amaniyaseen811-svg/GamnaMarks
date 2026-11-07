@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>لغز السمّ الصامت | GamnaMarks</title>
+<link rel="icon" href="../icon-192.png">
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#05060c;font-family:Tahoma,Arial,sans-serif}
+#unity-canvas{position:fixed;left:0;top:0;width:100vw;height:100vh;display:block;background:#05060c}
+/* الغلاف المتحرك */
+#gm-cover{position:fixed;inset:0;z-index:50;overflow:hidden;background:#05060c;transition:opacity .8s}
+#gm-cover.hide{opacity:0;pointer-events:none}
+#gm-cover video{position:absolute;inset:0;width:100%;height:100%}
+#gm-bg{object-fit:cover;filter:blur(28px) brightness(.45);transform:scale(1.15)}
+#gm-fg{object-fit:contain}
+#gm-ui{position:absolute;left:0;right:0;bottom:0;padding:18px 16px max(22px,env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:12px;background:linear-gradient(transparent,rgba(5,6,12,.92) 45%)}
+#gm-title{font-size:clamp(26px,5vw,44px);font-weight:900;color:#ffc74d;text-shadow:0 2px 12px #000}
+#gm-sub{font-size:clamp(14px,2.4vw,18px);color:#dfe6f2;margin-top:-6px}
+.gm-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.gm-btn{font:bold clamp(17px,2.6vw,22px) Tahoma,Arial,sans-serif;color:#fff;border:0;border-radius:14px;padding:13px 26px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+#gm-play{background:linear-gradient(135deg,#d1384d,#a51f35);font-size:clamp(20px,3.2vw,26px);padding:15px 40px;animation:gm-pulse 1.8s infinite}
+#gm-sound{background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.35)}
+#gm-home{position:absolute;top:max(12px,env(safe-area-inset-top));right:14px;z-index:3;background:rgba(0,0,0,.45);border:2px solid rgba(255,199,77,.7);color:#ffc74d;font-size:20px;border-radius:12px;padding:8px 14px;text-decoration:none}
+@keyframes gm-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+#gm-load{display:none;width:min(420px,86vw);text-align:center;color:#fff}
+#gm-bar{height:14px;border-radius:8px;background:rgba(255,255,255,.16);overflow:hidden;direction:ltr}
+#gm-fill{height:100%;width:0;background:linear-gradient(90deg,#ffc74d,#d1384d);transition:width .3s}
+#gm-msg{font-size:15px;margin-bottom:8px;line-height:1.7}
+#gm-pct{font-size:20px;font-weight:bold;margin-top:6px}
+#gm-rotate{display:none;position:fixed;inset:0;z-index:40;background:#05060c;color:#ffc74d;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:22px;line-height:1.8;padding:30px}
+#gm-rotate b{font-size:70px;animation:gm-turn 2s infinite}
+@keyframes gm-turn{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
+body.playing #gm-rotate{display:none}
+@media (pointer:coarse) and (orientation:portrait){body.playing #gm-rotate{display:flex}}
+</style>
+</head>
+<body>
+<canvas id="unity-canvas" tabindex="-1"></canvas>
+
+<div id="gm-rotate"><b>📱</b><div>لفّي الموبايل بالعرض<br>عشان تلعبي</div></div>
+
+<div id="gm-cover">
+  <video id="gm-bg" src="cover.mp4" muted loop playsinline webkit-playsinline autoplay preload="auto"></video>
+  <video id="gm-fg" src="cover.mp4" muted loop playsinline webkit-playsinline autoplay preload="auto"></video>
+  <a id="gm-home" href="../index.html" title="الألعاب">🏠</a>
+  <div id="gm-ui">
+    <div id="gm-title">لغز السمّ الصامت</div>
+    <div id="gm-sub">الجهاز الهضمي • تحقيق ثلاثي الأبعاد • الصف التاسع</div>
+    <div class="gm-row" id="gm-btns">
+      <button class="gm-btn" id="gm-play">▶ ابدئي التحقيق</button>
+      <button class="gm-btn" id="gm-sound">🔊 شاهدي الفيديو بالصوت</button>
+    </div>
+    <div id="gm-load">
+      <div id="gm-msg">جاري تحميل اللعبة...<br>أول مرة بتاخد شوية وقت، استنّي وما تسكّري الصفحة</div>
+      <div id="gm-bar"><div id="gm-fill"></div></div>
+      <div id="gm-pct">0%</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ملفات اللعبة (ملف البيانات مقسوم لأجزاء صغيرة عشان GitHub)
+var GM_PARTS = ["poison.data.unityweb.part1", "poison.data.unityweb.part2", "poison.data.unityweb.part3", "poison.data.unityweb.part4", "poison.data.unityweb.part5", "poison.data.unityweb.part6", "poison.data.unityweb.part7", "poison.data.unityweb.part8", "poison.data.unityweb.part9", "poison.data.unityweb.part10"];
+var GM_NAME = "poison";
+
+var bg = document.getElementById('gm-bg'), fg = document.getElementById('gm-fg');
+// الفيديو الخلفي يمشي مع الأمامي
+setInterval(function () { if (Math.abs(bg.currentTime - fg.currentTime) > 0.3) bg.currentTime = fg.currentTime; }, 1000);
+document.getElementById('gm-sound').onclick = function () {
+  fg.muted = false; fg.currentTime = 0; bg.currentTime = 0; fg.play(); bg.play();
+  this.style.display = 'none';
+};
+
+function setP(p, msg) {
+  p = Math.max(0, Math.min(100, Math.round(p)));
+  document.getElementById('gm-fill').style.width = p + '%';
+  document.getElementById('gm-pct').textContent = p + '%';
+  if (msg) document.getElementById('gm-msg').innerHTML = msg;
+}
+function fail(e) {
+  setP(0, 'تعذّر تحميل اللعبة 😔<br>تأكدي من الإنترنت، وحدّثي الصفحة وجرّبي مرة ثانية');
+  console.error(e);
+}
+function fitCanvas() {
+  var c = document.getElementById('unity-canvas');
+  c.style.width = window.innerWidth + 'px'; c.style.height = window.innerHeight + 'px';
+}
+window.addEventListener('resize', fitCanvas); fitCanvas();
+function resumeAudio() { try { var w = window.WEBAudio; if (w && w.audioContext && w.audioContext.state !== 'running') w.audioContext.resume(); } catch (e) {} }
+['touchstart', 'mousedown', 'keydown', 'click'].forEach(function (ev) { document.addEventListener(ev, resumeAudio, true); });
+
+var started = false;
+document.getElementById('gm-play').onclick = function () {
+  if (started) return; started = true;
+  document.getElementById('gm-btns').style.display = 'none';
+  document.getElementById('gm-load').style.display = 'block';
+  fg.muted = true;
+  try { var el = document.documentElement; if (/iPhone|iPad|Android/i.test(navigator.userAgent) && el.requestFullscreen) el.requestFullscreen().catch(function(){}); } catch (e) {}
+  start();
+};
+
+function start() {
+  var config = {
+    arguments: [],
+    dataUrl: "Build/" + GM_NAME + ".data.unityweb",
+    frameworkUrl: "Build/" + GM_NAME + ".framework.js.unityweb",
+    codeUrl: "Build/" + GM_NAME + ".wasm.unityweb",
+    streamingAssetsUrl: "StreamingAssets",
+    companyName: "GamnaMarks", productName: "لغز السمّ الصامت", productVersion: "1.0",
+  };
+  if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) config.devicePixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+  var chain = Promise.resolve(), bufs = [], done = 0, total = GM_PARTS.length, base = total ? 85 : 0;
+  GM_PARTS.forEach(function (p) {
+    chain = chain.then(function () {
+      return fetch('Build/' + p).then(function (r) { if (!r.ok) throw new Error('missing ' + p); return r.arrayBuffer(); })
+        .then(function (b) { bufs.push(b); done++; setP(base * done / total); });
+    });
+  });
+  chain.then(function () {
+    if (total) { config.dataUrl = URL.createObjectURL(new Blob(bufs)); bufs = null;
+      config.cacheControl = function (url) { return url.indexOf('blob:') === 0 ? 'no-store' : 'must-revalidate'; }; }
+    setP(base, 'خلص التحميل تقريبًا... عم نجهّز مسرح الجريمة 🔍');
+    var s = document.createElement('script');
+    s.src = "Build/" + GM_NAME + ".loader.js";
+    s.onload = function () {
+      createUnityInstance(document.getElementById('unity-canvas'), config, function (p) { setP(base + (100 - base) * p); })
+        .then(function (u) {
+          window.gmUnity = u;
+          document.body.classList.add('playing');
+          var c = document.getElementById('gm-cover'); c.classList.add('hide');
+          setTimeout(function () { fg.pause(); bg.pause(); c.style.display = 'none'; }, 900);
+          resumeAudio();
+        }).catch(fail);
+    };
+    s.onerror = fail;
+    document.body.appendChild(s);
+  }).catch(fail);
+}
+</script>
+</body>
+</html>
