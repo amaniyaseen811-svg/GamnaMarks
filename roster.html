@@ -166,7 +166,13 @@ button.del{background:rgba(255,90,90,.18);border:1px solid rgba(255,120,120,.5)}
   function load(){
     st('⏳ جاري التحميل...');
     fetch(DOC).then(function(r){if(r.status===404)return null;if(!r.ok)throw r.status;return r.json()}).then(function(j){
-      if(!j||!j.fields){render();st('لسا ما في قوائم محفوظة — استوردي الملف أو أضيفي شعبة');return}
+      if(!j||!j.fields){
+        /* استرجاع لمرة وحدة: القوائم والرموز اللي انوزعت على البنات (ملف مشفّر بكلمة السر) */
+        return fetch('roster-restore.enc?v='+Date.now()).then(function(r){if(!r.ok)throw 0;return r.text()}).then(decrypt).then(function(o){
+          D.salt=o.salt;D.sections=o.sections.map(function(s){return{grade:+s.grade,name:s.name,students:s.students.slice(),codes:s.codes.slice()}});
+          render();save();
+        }).catch(function(){render();st('لسا ما في قوائم محفوظة — استوردي الملف أو أضيفي شعبة')});
+      }
       var pub=JSON.parse(j.fields.data.stringValue);D.salt=pub.salt;
       return decrypt(j.fields.enc.stringValue).then(function(sec){
         D.sections=pub.sections.map(function(s){var m=sec.filter(function(x){return x.name===s.name})[0]||{students:[],codes:[]};
