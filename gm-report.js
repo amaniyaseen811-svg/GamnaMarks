@@ -22,7 +22,7 @@
   var GAME = (sc && sc.getAttribute('data-game')) || '';
   /* قوائم الطالبات (gm-roster.js بنفس مجلد هاد الملف) */
   var ROSTER_SRC = (sc && sc.src) ? sc.src.replace(/gm-report\.js(\?.*)?$/i, 'gm-roster.js') : 'gm-roster.js';
-  var ROSTER_KEY = /\/palace\//i.test(location.pathname) ? 'palace' : page;
+  var ROSTER_KEY = /\/palace\//i.test(location.pathname) ? 'palace' : /\/poison\//i.test(location.pathname) ? 'poison' : page;
   /* القوائم نفسها محفوظة بقاعدة البيانات (صفحة roster.html) مش بملفات اللعبة */
   var LS_ROSTER = 'gm_roster_cache';
   var ROSTER_DOC = 'https://firestore.googleapis.com/v1/projects/' + PROJECT + '/databases/(default)/documents/gm_roster/current?key=' + API_KEY;
