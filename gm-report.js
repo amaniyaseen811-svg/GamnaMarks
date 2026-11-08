@@ -302,11 +302,17 @@
         b.onclick = function () {
           var i = +b.getAttribute('data-i');
           if (sec.pins && sec.pins[i]) stepPin(sec, i);
-          else { box.remove(); startPlay(sec.students[i], sec.name); }
+          else stepNoPin(sec, i); /* ما في رمز محفوظ لهالبنت: ما بتدخل */
         };
       });
       box.querySelector('#gmBackSec').onclick = stepSec;
       var on = box.querySelector('.gmNames .gmOn'); if (on && on.scrollIntoView) on.scrollIntoView({ block: 'center' });
+    }
+    function stepNoPin(sec, i) {
+      box.innerHTML = '<div class="gmCard"><div style="font-size:40px">🔒</div><h2>' + esc(sec.students[i]) + '</h2>' +
+        '<div class="gmSub">' + esc(sec.name) + '<br>ما إلك رمز سري لسا<br>اسألي المعلمة عن رمزك عشان تدخلي</div>' +
+        '<button class="gmBtn" id="gmBackName">↩ رجوع</button></div>';
+      box.querySelector('#gmBackName').onclick = function () { stepName(sec); };
     }
     function stepPin(sec, i) {
       var name = sec.students[i], tries = 0;
