@@ -166,7 +166,8 @@ button.del{background:rgba(255,90,90,.18);border:1px solid rgba(255,120,120,.5)}
   function load(){
     st('⏳ جاري التحميل...');
     fetch(DOC).then(function(r){if(r.status===404)return null;if(!r.ok)throw r.status;return r.json()}).then(function(j){
-      if(!j||!j.fields){
+      var empty=true;try{empty=!(JSON.parse(j.fields.data.stringValue).sections||[]).length}catch(e){}
+      if(empty){
         /* استرجاع لمرة وحدة: القوائم والرموز اللي انوزعت على البنات (ملف مشفّر بكلمة السر) */
         return fetch('roster-restore.enc?v='+Date.now()).then(function(r){if(!r.ok)throw 0;return r.text()}).then(decrypt).then(function(o){
           D.salt=o.salt;D.sections=o.sections.map(function(s){return{grade:+s.grade,name:s.name,students:s.students.slice(),codes:s.codes.slice()}});
