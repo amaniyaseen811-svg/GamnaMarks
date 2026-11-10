@@ -543,6 +543,7 @@
                     gameState.currentLevel++;
                     setTimeout(() => showLevel(), 500);
                 } else {
+                    if (window.GMReport && GMReport.trophy) GMReport.trophy();
                     alert('🎉 تهانينا! أتممت اللعبة بنجاح!\nحصلت على ' + gameState.score + ' نقطة');
                     gameState.currentLevel = 0;
                     gameState.score = 0;

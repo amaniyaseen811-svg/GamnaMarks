@@ -2205,7 +2205,7 @@ function finishLevel(){
     const p=G.total/TOTAL_Q;
     $('eRank').textContent=p>=.92?'فنّي أول':p>=.78?'فنّي معتمد':p>=.6?'متدرّب متقدّم':'يحتاج مراجعة';
     if(MUS.on&&MUS.started)fade(Math.min(1,MUS.base*1.5),1200);
-    show('s-end');
+    show('s-end');if(window.GMReport&&GMReport.trophy)GMReport.trophy();
   }
 }
 

@@ -2849,11 +2849,14 @@ function wsNext(){
   WSS.i++;
   if(WSS.i < L.length){ renderWS(); return; }
   if(WSS.sheet === 1){
+    WSS.s1 = WSS.score; WSS.t1 = WSS.total;
+    if(window.GMReport) GMReport.add('ورقة العمل 1', WSS.score, WSS.total);
     WSS.sheet = 2; WSS.i = 0;
     showPrize('genie', 'أَحْسَنْتَ! 🪔',
       'أَنْهَيْتَ الوَرَقَةَ الأولى. الوَرَقَةُ الثّانِيَةُ أَصْعَبُ — فَكِّرْ بِهُدوءٍ.');
     renderWS(); return;
   }
+  if(window.GMReport) GMReport.add('ورقة العمل 2', WSS.score-(WSS.s1||0), WSS.total-(WSS.t1||0));
   S.score = (S.score||0) + WSS.score;
   showEnd();
 }

@@ -1858,6 +1858,7 @@ function finish(){
   stopTimer(); detachRoomListenersOnly();
   const max = S.level === 1 ? 100 : 240;
   const pct = Math.round(S.score / max * 100);
+  if(pct>=60){if(window.GMReport&&GMReport.trophy)GMReport.trophy();}
   $("trophyBox").innerHTML = pct >= 60 ? TROPHY : "";
   $("rScore").textContent = AR(S.score);
   $("rOutOf").textContent = "من أصل " + AR(max) + " نقطة · إجاباتٌ صحيحة: " + AR(S.correct) + " من ٢٠";

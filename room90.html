@@ -3656,7 +3656,7 @@ G.gLose=function(){
 };
 
 /* ================= الكأس ================= */
-G.trophy=function(){
+G.trophy=function(){if(window.GMReport&&GMReport.trophy)GMReport.trophy();
  AU.sfx('win');
  const rank = this.pct>=85?t('rank1'):this.pct>=65?t('rank2'):t('rank3');
  this.setBg('cover');

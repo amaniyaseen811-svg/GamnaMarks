@@ -2107,7 +2107,7 @@ function endStage(){
 
 
 /* ===== الكأس وأوراق العمل ===== */
-function openCup(){
+function openCup(){if(window.GMReport&&GMReport.trophy)GMReport.trophy();
   document.getElementById('cupImg').src = CUP_IMG;
   const total=players.reduce((a,b)=>a+b.score,0);
   document.getElementById('cupSub').innerHTML =

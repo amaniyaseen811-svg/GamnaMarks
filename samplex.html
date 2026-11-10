@@ -4551,6 +4551,7 @@ $('sheet').onclick=e=>{if(e.target.id==='sheet')$('sheet').classList.add('hidden
 function endLevel(){
   const total=QS(st.level).length;
   $('stScore').textContent=st.score;
+if(window.GMReport&&GMReport.trophy)GMReport.trophy();
   const cb=$('cupBox'); cb.style.animation='none'; void cb.offsetWidth; cb.style.animation='';
   $('stFirst').textContent=st.first+"/"+total;
   $('stEv').textContent=st.ev.length;
