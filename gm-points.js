@@ -473,19 +473,31 @@
     var p = profile();
     var box = document.createElement('div'); box.className = 'gmp';
     box.innerHTML = '<h3>🎯 كيف بدك تشاركي بالمسابقة؟</h3><div class="gmpSub">اختاري وحدة — وبتقدري تغيّريها بعدين</div>' +
-      '<button class="gmpBtn main gmpBig" data-c="student">🏫 طالبة (العمرية)<small>باسمك وكودك السري — نقاطك باسمك من أي جهاز، وإلك كل الجوائز</small></button>' +
+      '<button class="gmpBtn main gmpBig" data-c="student">🏫 طالبة (العمرية)<small>نقاطك بتنحسب باسمك من أي جهاز، وإلك كل الجوائز</small></button>' +
       '<button class="gmpBtn gmpBig" data-c="google">✅ حساب Google<small>نقاطك محفوظة من أي جهاز، وبتظهري بلقب</small></button>' +
       '<button class="gmpBtn gmpBig" data-c="guest">👤 زائرة<small>بلقب جاهز، ونقاطك محفوظة على هاد الجهاز بس</small></button>' +
       (p.chosen ? '<div class="gmpNote">طريقتك الحالية: ' + (p.type === 'student' ? '🏫 طالبة — ' + esc(p.name) : p.type === 'google' ? '✅ Google' : '👤 زائرة') + '</div>' : '') +
       '<div class="gmpBtns"><button class="gmpBtn" id="gmpX">إغلاق</button></div>';
     openModal(box);
-    box.querySelector('[data-c="student"]').onclick = studentLogin;
+    box.querySelector('[data-c="student"]').onclick = studentInfo;
     box.querySelector('[data-c="google"]').onclick = function () { closeModal(); googleSignIn(); };
     box.querySelector('[data-c="guest"]').onclick = function () {
       var q = profile(); if (q.type !== 'guest') q = guestProfile();
       q.chosen = true; saveProfile(q); scheduleSync(0); pickNick();
     };
     box.querySelector('#gmpX').onclick = closeModal;
+  }
+  /* الرمز الشخصي بيضل جوّا الألعاب بس: هون بس بنشرحلها كيف تربط نقاطها */
+  function studentInfo() {
+    var q = profile(); q.chosen = true; saveProfile(q);
+    var box = document.createElement('div'); box.className = 'gmp';
+    box.innerHTML = '<h3>🏫 أهلاً يا طالبة العمرية!</h3>' +
+      '<div class="gmpHow" style="font-size:15px">1️⃣ ادخلي أي لعبة من ألعاب صفّك<br>2️⃣ اختاري شعبتك واسمك<br>3️⃣ اكتبي رمزك السري اللي من المعلمة<br>' +
+      '✨ وهيك نقاطك بتنحسب باسمك تلقائياً، وبيظهر جنب اسمك 🏫</div>' +
+      (q.type === 'student' ? '<div class="gmpNote">✔ إنتِ مسجّلة: ' + esc(q.name) + ' — ' + esc(q.klass) + '</div>' : '') +
+      '<div class="gmpBtns"><button class="gmpBtn main" id="gmpOk">تمام 👍</button></div>';
+    openModal(box);
+    box.querySelector('#gmpOk').onclick = closeModal;
   }
   function studentLogin() {
     var box = document.createElement('div'); box.className = 'gmp';
