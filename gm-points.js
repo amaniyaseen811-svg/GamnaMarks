@@ -292,6 +292,21 @@
       '.gmpPick{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}' +
       '#gmpCert{position:fixed;inset:0;z-index:2147483550;background:#fff;color:#2d1b69;display:flex;align-items:center;justify-content:center;direction:rtl;padding:20px}' +
       '#gmpCert .box{border:8px double #8b5cf6;border-radius:24px;padding:30px;max-width:620px;width:100%;text-align:center;font-family:"Baloo Bhaijaan 2",Tahoma,sans-serif}' +
+      '#gmpPromo{position:fixed;inset:0;z-index:2147483450;background:rgba(5,3,15,.82);display:flex;align-items:center;justify-content:center;padding:16px;animation:gmpFade .35s ease}' +
+      '@keyframes gmpFade{from{opacity:0}}' +
+      '#gmpPromo .pc{position:relative;overflow:hidden;width:100%;max-width:400px;text-align:center;direction:rtl;color:#fff;border-radius:26px;padding:22px 16px 16px;background:linear-gradient(160deg,#2a1660,#160c35 60%,#3a0f3f);border:2px solid rgba(252,211,77,.6);box-shadow:0 0 40px rgba(252,211,77,.35);animation:gmpPop .5s cubic-bezier(.2,1.4,.4,1)}' +
+      '@keyframes gmpPop{from{transform:scale(.6);opacity:0}}' +
+      '#gmpPromo .cup{font-size:86px;line-height:1;display:inline-block;filter:drop-shadow(0 0 18px rgba(252,211,77,.8));animation:gmpCup 2.2s ease-in-out infinite}' +
+      '@keyframes gmpCup{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}' +
+      '#gmpPromo h2{font-size:24px;margin:6px 0 2px;background:linear-gradient(90deg,#fcd34d,#f472b6,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}' +
+      '#gmpPromo .t{font-size:16px;opacity:.92;margin-bottom:12px;line-height:1.6}' +
+      '#gmpPromo .pz{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}' +
+      '#gmpPromo .pz div{background:rgba(255,255,255,.08);border-radius:16px;padding:9px 4px;font-size:13px;animation:gmpPop .6s backwards}' +
+      '#gmpPromo .pz div:nth-child(2){animation-delay:.15s}#gmpPromo .pz div:nth-child(3){animation-delay:.3s}' +
+      '#gmpPromo .pz i{font-style:normal;font-size:30px;display:block}#gmpPromo .pz b{display:block;font-size:17px;color:#fcd34d}' +
+      '#gmpPromo .crown{background:linear-gradient(90deg,rgba(252,211,77,.2),rgba(244,114,182,.2));border-radius:14px;padding:9px;font-size:15px;margin-bottom:12px}' +
+      '#gmpPromo .st{position:absolute;color:#fcd34d;animation:gmpTw 2s ease-in-out infinite;pointer-events:none}' +
+      '@keyframes gmpTw{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.2)}}' +
       '@media print{body>*:not(#gmpCert){display:none!important}#gmpCert .noPrint{display:none}}';
     document.head.appendChild(s);
   }
@@ -433,7 +448,38 @@
     document.body.appendChild(b);
   }
 
+  /* إعلان المسابقة أول ما تفتح الصفحة (مرة باليوم) */
+  function promo(force) {
+    if (!force && ls('gm_pts_promo') === dayKey()) return;
+    ls('gm_pts_promo', dayKey());
+    css();
+    var m = document.createElement('div'); m.id = 'gmpPromo';
+    var stars = ''; for (var i = 0; i < 10; i++) stars += '<span class="st" style="top:' + Math.round(Math.random() * 90) + '%;left:' + Math.round(Math.random() * 92) + '%;animation-delay:' + (Math.random() * 2).toFixed(1) + 's;font-size:' + (10 + Math.round(Math.random() * 12)) + 'px">✦</span>';
+    m.innerHTML = '<div class="pc">' + stars +
+      '<div class="cup">🏆</div><h2>مسابقة GamnaMarks الشهرية</h2>' +
+      '<div class="t">العبي، حلّي أوراق العمل، واجمعي نقاط<br>وكل ما تجمعي أكثر بتربحي أكثر! ✨</div>' +
+      '<div class="pz"><div><i>📜</i><b>100</b>شهادة تقدير</div><div><i>🎁</i><b>300</b>هدية</div><div><i>⭐</i><b>500</b>علامة إضافية</div></div>' +
+      '<div class="crown" id="gmpPromoWin">👑 فائزة جديدة كل شهر — ليش ما تكوني إنتِ؟</div>' +
+      '<div class="gmpBtns"><button class="gmpBtn" id="gmpPromoMore">📋 التفاصيل</button><button class="gmpBtn main" id="gmpPromoGo">يلا نبلّش! 🚀</button></div>' +
+      '<div class="gmpNote">🎁 الهدية والعلامة الإضافية لطالبات د. أماني</div></div>';
+    m.onclick = function (e) { if (e.target === m) m.remove(); };
+    document.body.appendChild(m);
+    m.querySelector('#gmpPromoGo').onclick = function () { m.remove(); };
+    m.querySelector('#gmpPromoMore').onclick = function () {
+      m.remove();
+      var b = document.querySelector('[data-gmp-board]');
+      if (b && b.scrollIntoView) b.scrollIntoView({ behavior: 'smooth' }); else openBoardModal();
+    };
+    loadBoards().then(function (c) {
+      var w = (c.prev || []).filter(function (x) { return x.verified; })[0], lead = (c.cur || [])[0];
+      var el = document.getElementById('gmpPromoWin'); if (!el) return;
+      if (w) el.innerHTML = '👑 فائزة ' + esc(monthName(prevMonthKey())) + ': <b>' + esc(w.display) + '</b> — ' + w.pts + ' نقطة';
+      else if (lead) el.innerHTML = '🔥 المتصدرة هالشهر: <b>' + esc(lead.display) + '</b> — ' + lead.pts + ' نقطة<br>بتقدري تسبقيها؟';
+    });
+  }
+
   window.GMPoints = {
+    promo: promo,
     award: award, onPlayer: onPlayer, profile: profile, monthPoints: monthPoints,
     mount: mountBoard, open: openBoardModal, badge: addBadge, sync: sync, google: googleSignIn,
     _calc: calc, _totals: monthTotals, _code: claimCode, RULES: RULES, TIERS: TIERS
@@ -443,6 +489,7 @@
   function init() {
     Array.prototype.forEach.call(document.querySelectorAll('[data-gmp-board]'), mountBoard);
     if (me && me.getAttribute('data-badge')) addBadge();
+    if (me && me.getAttribute('data-promo')) setTimeout(function () { promo(); }, 700);
     scheduleSync(1500);
     window.addEventListener('online', function () { scheduleSync(500); });
   }
