@@ -2,8 +2,8 @@
    تصميم وإعداد د. أماني ياسين داود
    - النقاط بتنحسب تلقائياً من تقرير كل لعبة (gm-report.js) — ما في داعي تعديل الألعاب
    - كل شهر في فائزة وحدة للتطبيق كله، والنقاط الشهرية بتبلش من صفر أول كل شهر
-   - الجوائز: 100 شهادة تقدير (للكل) · 300 هدية · 500 علامة إضافية (لطالبات د. أماني بس)
-   - الزائرة بتاخذ لقب جاهز (ما في كتابة أسماء)، وطالبات د. أماني بيظهروا باسمهن الأول
+   - الجوائز: 100 شهادة تقدير (للكل) · 300 هدية · 500 علامة إضافية (لطالبات العمرية بس)
+   - الزائرة بتاخذ لقب جاهز (ما في كتابة أسماء)، وطالبات العمرية بيظهروا باسمهن الأول
    سطر الإضافة بأي صفحة:  <script src="gm-points.js" defer></script>
    لوحة المسابقة جوّا عنصر:  <div data-gmp-board></div>
    شارة النقاط العائمة:      <script src="gm-points.js" data-badge="1" defer></script> */
@@ -61,6 +61,23 @@
   function firstName(s) { return String(s || '').trim().split(/\s+/)[0] || ''; }
   function claimCode(pid, mk, key) { var h = hash(pid + '|' + mk + '|' + key), n = 0; for (var i = 0; i < h.length; i++) n = (n * 31 + h.charCodeAt(i)) % 9000; return 'GM-' + (1000 + n); }
 
+  /* نفس طريقة gm-report.js بالتحقق من الرمز السري */
+  function pinHash(str) {
+    var a = 0x811c9dc5, b = 0x01000193;
+    for (var i = 0; i < str.length; i++) {
+      var c = str.codePointAt(i); if (c > 0xffff) i++;
+      a = Math.imul(a ^ c, 16777619) >>> 0; b = Math.imul(b ^ c, 2246822519) >>> 0;
+    }
+    return a.toString(36) + b.toString(36);
+  }
+  function loadRoster() {
+    var cached = null; try { cached = JSON.parse(ls('gm_roster_cache') || 'null'); } catch (e) {}
+    if (!window.fetch) return Promise.resolve(cached);
+    return fetch(DOCS + '/gm_roster/current?key=' + API_KEY).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (j && j.fields && j.fields.data) { ls('gm_roster_cache', j.fields.data.stringValue); return JSON.parse(j.fields.data.stringValue); }
+      return cached;
+    }).catch(function () { return cached; });
+  }
   function deviceId() {
     var id = ls(LS_DEV);
     if (!id) { id = Date.now().toString(36) + Math.random().toString(36).slice(2, 10); ls(LS_DEV, id); }
@@ -200,7 +217,7 @@
   function onPlayer(name, klass, isRoster) {
     var p = lsJ(LS_PROF, null);
     if (isRoster) {
-      var np = { pid: 'st_' + hash(klass + '|' + name), type: 'student', name: name, klass: klass, nick: p && p.nick };
+      var np = { pid: 'st_' + hash(klass + '|' + name), type: 'student', name: name, klass: klass, nick: p && p.nick, chosen: true };
       if (!p || p.pid !== np.pid) saveProfile(np);
       return;
     }
@@ -246,7 +263,7 @@
       loadScript('https://www.gstatic.com/firebasejs/' + FB_VER + '/firebase-app-compat.js').then(function () { return loadScript('https://www.gstatic.com/firebasejs/' + FB_VER + '/firebase-auth-compat.js'); });
     return ready.then(go).then(function (res) {
       var old = profile();
-      var np = { pid: 'go_' + res.user.uid, type: 'google', nick: old.nick || randomNick(), name: '', klass: '' };
+      var np = { pid: 'go_' + res.user.uid, type: 'google', nick: old.nick || randomNick(), name: '', klass: '', chosen: true };
       /* نقاط الزائرة على هاد الجهاز بتنتقل للحساب (الإيميل نفسه ما بينحفظ) */
       if (old.type === 'guest') ls(logKey(np.pid), JSON.stringify(mergeLogs(lsJ(logKey(np.pid), []), lsJ(logKey(old.pid), []))));
       saveProfile(np); scheduleSync(0);
@@ -289,6 +306,8 @@
       '#gmpBadge{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:2147483300;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;color:#fff;font-weight:800;font-size:14px;background:linear-gradient(90deg,#8b5cf6,#ec4899);box-shadow:0 4px 14px rgba(0,0,0,.35);font-family:"Baloo Bhaijaan 2",Tahoma,sans-serif}' +
       '#gmpModal{position:fixed;inset:0;z-index:2147483500;background:rgba(5,3,15,.75);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:16px}' +
       '#gmpModal .gmp{margin-top:20px}' +
+      '.gmpBig{display:block;width:100%;text-align:right;padding:12px 14px;margin-bottom:8px;font-size:17px}' +
+      '.gmpBig small{display:block;font-size:12px;font-weight:500;opacity:.85;margin-top:2px}' +
       '.gmpPick{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}' +
       '#gmpCert{position:fixed;inset:0;z-index:2147483550;background:#fff;color:#2d1b69;display:flex;align-items:center;justify-content:center;direction:rtl;padding:20px}' +
       '#gmpCert .box{border:8px double #8b5cf6;border-radius:24px;padding:30px;max-width:620px;width:100%;text-align:center;font-family:"Baloo Bhaijaan 2",Tahoma,sans-serif}' +
@@ -346,7 +365,7 @@
     h += '<div class="gmpTiers">' + TIERS.map(function (t) {
       var ok = tierOk(t, p), got = ok && mine >= t.pts && !banned;
       return '<div class="gmpTier' + (got ? ' got' : '') + '"><span class="i">' + t.icon + '</span><b>' + t.pts + '</b>' + t.label +
-        (t.who === 'student' ? '<br><span style="font-size:11px;opacity:.7">لطالبات د. أماني</span>' : '') +
+        (t.who === 'student' ? '<br><span style="font-size:11px;opacity:.7">لطالبات العمرية</span>' : '') +
         (got ? '<span class="c">' + claimCode(p.pid, mk, t.key) + '</span>' : '') + '</div>';
     }).join('') + '</div>';
     if (TIERS.some(function (t) { return mine >= t.pts && tierOk(t, p); }) && !banned)
@@ -363,11 +382,11 @@
       '✅ كل إجابة صحيحة: ' + RULES.perCorrect + ' · ⏱ كل دقيقتين لعب: ' + RULES.perTwoMin + '<br>' +
       '<span style="font-size:12px;opacity:.75">أعلى نقاط من نفس اللعبة باليوم: ' + RULES.gameDayMax + ' · النقاط الشهرية بتبلش من جديد أول كل شهر</span></div>';
     h += '<div class="gmpBtns">' +
-      (p.type === 'guest' ? '<button class="gmpBtn" data-gmp="nick">🎭 غيّري لقبك</button><button class="gmpBtn main" data-gmp="google">✅ تأكيد بحساب Google</button>' : '') +
-      (p.type === 'google' ? '<button class="gmpBtn" data-gmp="nick">🎭 غيّري لقبك</button>' : '') +
+      '<button class="gmpBtn' + (p.chosen ? '' : ' main') + '" data-gmp="choose">' + (p.chosen ? '🔄 طريقة المشاركة' : '🎯 اختاري طريقة مشاركتك') + '</button>' +
+      (p.type !== 'student' ? '<button class="gmpBtn" data-gmp="nick">🎭 غيّري لقبك</button>' : '') +
       (mine >= TIERS[0].pts && !banned ? '<button class="gmpBtn" data-gmp="cert">📜 شهادتي</button>' : '') +
       '</div>';
-    h += '<div class="gmpNote">🏫 طالبات د. أماني: ادخلي أي لعبة من ألعاب صفّك بكودك السري، وبتنربط نقاطك باسمك تلقائياً.<br>' +
+    h += '<div class="gmpNote">🏫 طالبة العمرية: بتدخلي باسمك وكودك السري، وبتنربط نقاطك باسمك من أي جهاز.<br>' +
       '✅ فائزة الشهر لازم تكون طالبة أو حساب مأكّد · 👤 الزائرات بيظهروا بلقب، والإيميل ما بينحفظ ولا بيظهر لحدا.</div>';
     return h;
   }
@@ -377,6 +396,7 @@
         e.stopPropagation();
         var a = b.getAttribute('data-gmp');
         if (a === 'google') googleSignIn();
+        else if (a === 'choose') chooser();
         else if (a === 'nick') pickNick();
         else if (a === 'cert') showCert();
         else if (a === 'close') closeModal();
@@ -448,6 +468,79 @@
     document.body.appendChild(b);
   }
 
+  /* ---------- اختيار طريقة المشاركة ---------- */
+  function chooser() {
+    var p = profile();
+    var box = document.createElement('div'); box.className = 'gmp';
+    box.innerHTML = '<h3>🎯 كيف بدك تشاركي بالمسابقة؟</h3><div class="gmpSub">اختاري وحدة — وبتقدري تغيّريها بعدين</div>' +
+      '<button class="gmpBtn main gmpBig" data-c="student">🏫 طالبة (العمرية)<small>باسمك وكودك السري — نقاطك باسمك من أي جهاز، وإلك كل الجوائز</small></button>' +
+      '<button class="gmpBtn gmpBig" data-c="google">✅ حساب Google<small>نقاطك محفوظة من أي جهاز، وبتظهري بلقب</small></button>' +
+      '<button class="gmpBtn gmpBig" data-c="guest">👤 زائرة<small>بلقب جاهز، ونقاطك محفوظة على هاد الجهاز بس</small></button>' +
+      (p.chosen ? '<div class="gmpNote">طريقتك الحالية: ' + (p.type === 'student' ? '🏫 طالبة — ' + esc(p.name) : p.type === 'google' ? '✅ Google' : '👤 زائرة') + '</div>' : '') +
+      '<div class="gmpBtns"><button class="gmpBtn" id="gmpX">إغلاق</button></div>';
+    openModal(box);
+    box.querySelector('[data-c="student"]').onclick = studentLogin;
+    box.querySelector('[data-c="google"]').onclick = function () { closeModal(); googleSignIn(); };
+    box.querySelector('[data-c="guest"]').onclick = function () {
+      var q = profile(); if (q.type !== 'guest') q = guestProfile();
+      q.chosen = true; saveProfile(q); scheduleSync(0); pickNick();
+    };
+    box.querySelector('#gmpX').onclick = closeModal;
+  }
+  function studentLogin() {
+    var box = document.createElement('div'); box.className = 'gmp';
+    box.innerHTML = '<h3>🏫 طالبة (العمرية)</h3><div class="gmpSub">⏳ جاري تحميل الشعب...</div>';
+    openModal(box);
+    loadRoster().then(function (R) {
+      var secs = (R && R.sections || []).filter(function (x) { return x.students && x.students.length; });
+      if (!secs.length) {
+        box.innerHTML = '<h3>🏫 طالبة (العمرية)</h3><div class="gmpSub">ما قدرت أحمّل قوائم الشعب — تأكدي من النت وجربي مرة ثانية</div><div class="gmpBtns"><button class="gmpBtn" id="gmpBk">↩ رجوع</button></div>';
+        box.querySelector('#gmpBk').onclick = chooser; return;
+      }
+      function stepSec() {
+        box.innerHTML = '<h3>🏫 اختاري شعبتك</h3><div class="gmpPick">' + secs.map(function (x, i) { return '<button class="gmpBtn" data-i="' + i + '">' + esc(x.name) + '</button>'; }).join('') + '</div>' +
+          '<div class="gmpNote">شعبتك مش موجودة؟ اسألي معلمتك</div><div class="gmpBtns"><button class="gmpBtn" id="gmpBk">↩ رجوع</button></div>';
+        Array.prototype.forEach.call(box.querySelectorAll('[data-i]'), function (b) { b.onclick = function () { stepName(secs[+b.getAttribute('data-i')]); }; });
+        box.querySelector('#gmpBk').onclick = chooser;
+      }
+      function stepName(sec) {
+        box.innerHTML = '<h3>' + esc(sec.name) + '</h3><div class="gmpSub">اضغطي على اسمك</div><div style="max-height:50vh;overflow:auto">' +
+          sec.students.map(function (n, i) { return '<button class="gmpBtn" style="display:block;width:100%;margin-bottom:5px" data-i="' + i + '">' + (i + 1) + '. ' + esc(n) + '</button>'; }).join('') +
+          '</div><div class="gmpBtns"><button class="gmpBtn" id="gmpBk">↩ رجوع للشعب</button></div>';
+        Array.prototype.forEach.call(box.querySelectorAll('[data-i]'), function (b) { b.onclick = function () { stepPin(sec, +b.getAttribute('data-i')); }; });
+        box.querySelector('#gmpBk').onclick = stepSec;
+      }
+      function stepPin(sec, i) {
+        var name = sec.students[i], tries = 0;
+        if (!sec.pins || !sec.pins[i]) {
+          box.innerHTML = '<h3>🔒 ' + esc(name) + '</h3><div class="gmpSub">ما إلك رمز سري لسا — اسألي المعلمة عن رمزك</div><div class="gmpBtns"><button class="gmpBtn" id="gmpBk">↩ رجوع</button></div>';
+          box.querySelector('#gmpBk').onclick = function () { stepName(sec); }; return;
+        }
+        box.innerHTML = '<h3>🔐 ' + esc(name) + '</h3><div class="gmpSub">' + esc(sec.name) + ' — اكتبي رمزك السري (4 أرقام)</div>' +
+          '<input id="gmpPin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••" style="width:100%;padding:10px;border-radius:14px;border:2px solid #8b5cf6;background:#1b1238;color:#fff;font-size:26px;text-align:center;letter-spacing:12px">' +
+          '<div class="gmpNote" id="gmpPinNote"></div><div class="gmpBtns"><button class="gmpBtn" id="gmpBk">↩ مش أنا</button><button class="gmpBtn main" id="gmpGo">دخول ▶</button></div>';
+        var inp = box.querySelector('#gmpPin'), note = box.querySelector('#gmpPinNote'), go = box.querySelector('#gmpGo');
+        setTimeout(function () { try { inp.focus(); } catch (e) {} }, 50);
+        inp.oninput = function () { inp.value = inp.value.replace(/[٠-٩]/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); }).replace(/\D/g, '').slice(0, 4); note.textContent = ''; };
+        var check = function () {
+          if (go.disabled) return;
+          if (inp.value.length !== 4) { note.textContent = 'الرمز 4 أرقام ✍'; return; }
+          if (pinHash((R.salt || '') + '|' + sec.name + '|' + name + '|' + inp.value) === sec.pins[i]) {
+            onPlayer(name, sec.name, true); scheduleSync(0); closeModal();
+            toast('🏫 أهلاً ' + firstName(name) + '! نقاطك صارت باسمك'); return;
+          }
+          tries++; inp.value = '';
+          note.textContent = tries >= 3 ? '❌ الرمز غلط. إذا نسيتيه اسألي المعلمة' : '❌ الرمز غلط، جربي مرة كمان';
+          if (tries >= 3) { go.disabled = true; go.style.opacity = '.4'; setTimeout(function () { go.disabled = false; go.style.opacity = ''; tries = 0; }, 30000); }
+        };
+        go.onclick = check;
+        inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') check(); });
+        box.querySelector('#gmpBk').onclick = function () { stepName(sec); };
+      }
+      stepSec();
+    });
+  }
+
   /* إعلان المسابقة أول ما تفتح الصفحة (مرة باليوم) */
   function promo(force) {
     if (!force && ls('gm_pts_promo') === dayKey()) return;
@@ -461,10 +554,10 @@
       '<div class="pz"><div><i>📜</i><b>100</b>شهادة تقدير</div><div><i>🎁</i><b>300</b>هدية</div><div><i>⭐</i><b>500</b>علامة إضافية</div></div>' +
       '<div class="crown" id="gmpPromoWin">👑 فائزة جديدة كل شهر — ليش ما تكوني إنتِ؟</div>' +
       '<div class="gmpBtns"><button class="gmpBtn" id="gmpPromoMore">📋 التفاصيل</button><button class="gmpBtn main" id="gmpPromoGo">يلا نبلّش! 🚀</button></div>' +
-      '<div class="gmpNote">🎁 الهدية والعلامة الإضافية لطالبات د. أماني</div></div>';
+      '<div class="gmpNote">🎁 الهدية والعلامة الإضافية لطالبات العمرية</div></div>';
     m.onclick = function (e) { if (e.target === m) m.remove(); };
     document.body.appendChild(m);
-    m.querySelector('#gmpPromoGo').onclick = function () { m.remove(); };
+    m.querySelector('#gmpPromoGo').onclick = function () { m.remove(); if (!profile().chosen) chooser(); };
     m.querySelector('#gmpPromoMore').onclick = function () {
       m.remove();
       var b = document.querySelector('[data-gmp-board]');
@@ -481,7 +574,7 @@
   window.GMPoints = {
     promo: promo,
     award: award, onPlayer: onPlayer, profile: profile, monthPoints: monthPoints,
-    mount: mountBoard, open: openBoardModal, badge: addBadge, sync: sync, google: googleSignIn,
+    mount: mountBoard, open: openBoardModal, choose: chooser, badge: addBadge, sync: sync, google: googleSignIn,
     _calc: calc, _totals: monthTotals, _code: claimCode, RULES: RULES, TIERS: TIERS
   };
 
