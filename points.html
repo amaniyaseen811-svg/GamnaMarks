@@ -185,7 +185,7 @@
   $('search').oninput=render;
   $('reload').onclick=load;
   function enter(){
-    if($('pw').value===PASS){try{sessionStorage.setItem('gm_pts_t','1')}catch(e){}$('login').style.display='none';$('app').style.display='block';load()}
+    if($('pw').value===PASS){try{sessionStorage.setItem('gm_pts_t','1');localStorage.setItem('gm_teacher','1')}catch(e){}$('login').style.display='none';$('app').style.display='block';load()}
     else $('pwNote').textContent='كلمة السر غلط';
   }
   $('pwGo').onclick=enter;$('pw').onkeydown=function(e){if(e.key==='Enter')enter()};
