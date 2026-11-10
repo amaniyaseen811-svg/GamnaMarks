@@ -1588,7 +1588,7 @@ function selectBossAnswer(i, el){
 }
 
 /* ================= END ================= */
-function showCup(){
+function showCup(){if(window.GMReport&&GMReport.trophy)GMReport.trophy();
   stopTimer();
   const best = Math.max.apply(null, teams.map(t=>t.score));
   document.getElementById('cupScore').textContent = best;

@@ -3912,7 +3912,7 @@ function finishGame() {
     } else {
       trophyScoreText.textContent = `🎖️ أنهيتِ المرحلة الثالثة! عندك ${soulsF} روح (تحتاجين 50 روح للطائرة الحربية)`;
     }
-    trophyScreen.classList.remove('hidden');
+    trophyScreen.classList.remove('hidden');if(window.GMReport&&GMReport.trophy)GMReport.trophy();
   } else if (currentStage === 2) {
     trophyScoreText.textContent = `🎖️ خلصتي المرحلة الثانية! عندك ${getSouls()} روح`;
     trophyScreen.classList.remove('hidden');
@@ -5009,6 +5009,7 @@ function wsSubmit(kind) {
   document.getElementById(kind === 'easy' ? 'worksheetEasySubmitBtn' : 'worksheetHardSubmitBtn').classList.add('hidden');
   (kind === 'easy' ? worksheetEasyNextBtn : worksheetHardNextBtn).classList.remove('hidden');
   if (kind === 'easy') wsEasyScore = score; else wsHardScore = score;
+  if (window.GMReport) GMReport.add(kind === 'easy' ? 'ورقة العمل 1' : 'ورقة العمل 2', score, list.length);
   resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 

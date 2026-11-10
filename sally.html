@@ -2325,7 +2325,7 @@ const CUP_SVG=`
     <circle cx="38" cy="18" r="5"/><circle cx="168" cy="30" r="4"/><circle cx="26" cy="96" r="3.5"/><circle cx="176" cy="104" r="5"/>
   </g>
 </svg>`;
-function openTrophy(fromMenu){
+function openTrophy(fromMenu){if(window.GMReport&&GMReport.trophy)GMReport.trophy();
   document.getElementById('cupWrap').innerHTML=CUP_SVG;
   const stars=progress.stars.reduce((a,b)=>a+b,0);
   document.getElementById('trophyScore').textContent=
@@ -2401,6 +2401,7 @@ function checkWS(n){
     else { inp.classList.add('no'); mk.textContent='✖️ '+it.a; }
   });
   const total=wsData[n].length;
+  if(window.GMReport)GMReport.add('ورقة العمل '+n,right,total);
   document.getElementById('ws'+n+'Score').textContent=
     `النتيجة: ${right} من ${total} ${right===total?'— ممتاز! 🌟':''}`;
   if(right===total) sndWin(); else sndRight();

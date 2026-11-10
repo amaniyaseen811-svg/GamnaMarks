@@ -1890,7 +1890,7 @@ $('seMap').onclick=()=>{SFX.click();renderMap();jump('s-map')};
 /* ============ END ============ */
 function endGame(win,reason){
   clearInterval(S.qTimer);stopGlobal();pushMe(true);syncRoomBtns();
-  if(win){
+  if(win){if(window.GMReport&&GMReport.trophy)GMReport.trophy();
     SFX.win();confetti();setTimeout(confetti,700);
     const totalQ=STAGES.length*QPS;
     const stars=prog.stars[S.level].reduce((a,b)=>a+b,0);
@@ -2134,6 +2134,7 @@ function checkWS(list,box,key,resEl){
     fix.style.display='block';fix.innerHTML=(good?'✅ ':'📌 ')+w.e;
   });
   const pct=Math.round(ok/list.length*100);
+  if(window.GMReport)GMReport.add(key==='ws2'?'ورقة العمل 2':'ورقة العمل 1',ok,list.length);
   resEl.innerHTML='<div class="wsres"><div style="font-size:2rem">'+(pct>=75?'🌟':pct>=50?'👍':'💪')+'</div>'+
     '<b style="color:var(--gold);font-size:1.3rem">'+ok+' / '+list.length+'</b><div style="color:#cdd3f0;font-size:.9rem">نسبة الإتقان '+pct+'%</div></div>';
   if(pct>=75){SFX.star();confetti();}else SFX.click();

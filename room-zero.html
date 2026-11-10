@@ -848,7 +848,7 @@ function nextQ(){if(S.teams)S.turn=1-S.turn;
   const prevCh=QS[S.idx].ch;S.idx++;if(QS[S.idx].ch!==prevCh){S.errors=0;hearts();}
   renderQ();window.scrollTo({top:0,behavior:'smooth'});}
 function confetti(n){const C=['#F2B84B','#7FE3E0','#E0524F','#fff','#8fd18a'];for(let i=0;i<(n||70);i++){const d=document.createElement('i');d.className='conf';d.style.left=Math.random()*100+'vw';d.style.background=C[i%C.length];d.style.animationDuration=(2.2+Math.random()*2)+'s';d.style.animationDelay=Math.random()*.8+'s';d.style.borderRadius=Math.random()<.4?'50%':'2px';document.body.appendChild(d);setTimeout(()=>d.remove(),5200);}}
-function toTrophy(){S.running=false;S.elapsed=Math.round((Date.now()-S.start)/1000);sfx.win();add(30);
+function toTrophy(){if(window.GMReport&&GMReport.trophy)GMReport.trophy();S.running=false;S.elapsed=Math.round((Date.now()-S.start)/1000);sfx.win();add(30);
   $('#trSub').textContent=S.teams?`نقاط حل القضية لـ ${S.teams[S.turn].n}`:'نقاط حل القضية';
   $('#trTitle').textContent='أُغلقت القضية';show('trophy');confetti(90);}
 
@@ -896,10 +896,10 @@ const WS2=[
 ['المعدة عضو لأنها:',['خلية كبيرة الحجم','تتكوّن من أنسجة مختلفة تعمل معاً','مجموعة من الأجهزة','نسيج واحد متشابه الخلايا'],1],
 ['مسار الضوء في المجهر الضوئي من الأسفل إلى العين:',['مصدر الضوء ← المكثّف ← العينة ← العدسة الشيئية ← العدسة العينية','العدسة العينية ← العينة ← المكثّف ← مصدر الضوء','المكثّف ← مصدر الضوء ← العدسة العينية ← العينة','العينة ← مصدر الضوء ← العدسة الشيئية ← المكثّف'],0]];
 let W=null;
-function startWs(n){W={n,list:n===1?WS1:WS2,i:0,pts:n===1?2:3};$('#wsTitle').textContent=n===1?'ورقة العمل الأولى — عادية':'ورقة العمل الثانية — صعبة';$('#wsSub').textContent=(n===1?`${WS1.length} سؤالاً — مستوى عادي`:`${WS2.length} سؤالاً — مستوى صعب`)+` · ${W.pts} نقاط لكل إجابة`;show('ws');wsQ();}
+function startWs(n){W={n,list:n===1?WS1:WS2,i:0,pts:n===1?2:3,ok:0};$('#wsTitle').textContent=n===1?'ورقة العمل الأولى — عادية':'ورقة العمل الثانية — صعبة';$('#wsSub').textContent=(n===1?`${WS1.length} سؤالاً — مستوى عادي`:`${WS2.length} سؤالاً — مستوى صعب`)+` · ${W.pts} نقاط لكل إجابة`;show('ws');wsQ();}
 function wsQ(){const[q,o,a]=W.list[W.i];$('#wsBar').style.width=(W.i/W.list.length*100)+'%';
   $('#wsq').innerHTML=`<div class="muted" style="font-size:14px">سؤال ${W.i+1} من ${W.list.length}${S.teams?` · <span class="turn">الدور: ${S.teams[S.turn].n}</span>`:''}</div><div class="qq" style="font-weight:800;margin:6px 0 12px">${q}</div><div class="opts">${o.map((x,i)=>`<button class="opt" data-i="${i}">${x}</button>`).join('')}</div><div id="wsN"></div>`;
-  $('#wsq').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;$('#wsq').querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(+x.dataset.i===a)x.classList.add('ok');});if(i===a){sfx.ok();add(W.pts);}else{sfx.no();b.classList.add('no');}
+  $('#wsq').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;$('#wsq').querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(+x.dataset.i===a)x.classList.add('ok');});if(i===a){sfx.ok();add(W.pts);W.ok++;}else{sfx.no();b.classList.add('no');}if(window.GMReport)GMReport.add('ورقة العمل '+W.n,W.ok,W.list.length);
     $('#wsN').innerHTML=`<button class="btn next">${W.i<W.list.length-1?'السؤال التالي':(W.n===1?'ورقة العمل الثانية':'تقرير المحقق')}</button>`;
     $('#wsN').firstChild.onclick=()=>{if(S.teams)S.turn=1-S.turn;W.i++;if(W.i<W.list.length)wsQ();else if(W.n===1)startWs(2);else results();};});}
 $('#toWs1').onclick=()=>startWs(1);

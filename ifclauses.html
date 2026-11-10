@@ -2021,7 +2021,7 @@ var GIFTS=[
   '\uD83C\uDF1F رح تكوني من نجوم PlayVerse هالأسبوع!'
 ];
 
-function screenVictory(){
+function screenVictory(){if(window.GMReport&&GMReport.trophy)GMReport.trophy();
   var p=el('div','panel');
   p.appendChild(el('div','narr','طارت عصا <strong>ڤيلمار</strong> من إيده وانطفى الشعاع الأخضر.<br><br>\uD83E\uDDDE\u200D\u2642\uFE0F المارد بيمنحك جائزة… اختاري صندوق واحد لتكشفيه!'));
 

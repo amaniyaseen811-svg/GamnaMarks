@@ -2225,7 +2225,7 @@ function partFind(B,p){
 }
 
 /* ================= النهاية ================= */
-function endGame(){
+function endGame(){if(window.GMReport&&GMReport.trophy)GMReport.trophy();
   const t=total(), pct=Math.round(t/(LEVELS.length)*1);
   $('endStory').innerHTML = dlgHTML([
    {w:'ghas', t:'وصلتِ… حسناً، أعرض عليك مليون دينار وأنهي الأمر. البرج لي والموظفون إلى الشارع.'},
@@ -2269,7 +2269,7 @@ function openSheet(){
       opts[q.a].classList.add('ok');
       if(q._p===q.a) g++; else if(q._p!=null) opts[q._p].classList.add('no');
     });
-    G.sheetScore=g; saveState(); pushResult();
+    G.sheetScore=g; saveState(); pushResult(); if(window.GMReport)GMReport.add('ورقة العمل 1',g,SHEET.length);
     go.remove();
     const r=el('div','card center',`<div style="font-size:40px">${g>=10?'🏆':g>=7?'👏':'📖'}</div>
       <h2 class="gold">${J('j_grade',{a:ar(g),b:ar(SHEET.length)})}</h2>

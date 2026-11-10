@@ -143,6 +143,30 @@
     }).observe(document.body, { attributes: true, attributeFilter: ['class'], attributeOldValue: true, subtree: true });
   }
 
+  /* ---------- كاشف الكأس العام: لما تظهر شاشة كأس بأي لعبة ---------- */
+  var RX_CUP = /(^|[\s_-])(trophy|trophies|cup|cupimg|pv-cup)([\s_-]|$)|trophy|كأس/i;
+  function visibleBig(el) {
+    if (!el.getBoundingClientRect) return false;
+    var r = el.getBoundingClientRect();
+    if (r.width < 70 || r.height < 70 || r.bottom < 0 || r.top > innerHeight) return false;
+    var st = getComputedStyle(el);
+    if (st.visibility === 'hidden' || +st.opacity < 0.3) return false;
+    for (var p = el; p && p !== document.body; p = p.parentElement) { if (getComputedStyle(p).display === 'none') return false; }
+    return true;
+  }
+  function scanTrophy() {
+    if (S.trophy || !S.started || S.active < 60000) return;
+    var els = document.querySelectorAll('[id*="troph" i],[class*="troph" i],[id*="cup" i],[class*="cup" i],img[alt*="كأس"],img[alt*="trophy" i]');
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      if (el.closest && el.closest('#gmRep,#gmRepName,#gmpModal,#gmpPromo,[class*="instr" i],[id*="instr" i],[id*="help" i],[class*="help" i],[id*="howto" i]')) continue;
+      var tag = el.tagName, txt = (el.textContent || '').trim();
+      var pic = tag === 'IMG' || tag === 'svg' || tag === 'CANVAS' || el.querySelector('img,svg,canvas') || /^🏆$/.test(txt);
+      if (!pic || /\d+\s*\/\s*\d+/.test(txt)) continue;  /* عدّاد كؤوس مثل 0 / 6 مش شاشة كأس */
+      if (visibleBig(el)) { S.trophy = true; save(); return; }
+    }
+  }
+
   /* ---------- الحساب النهائي ---------- */
   function totals() {
     tick(); scanScore();
@@ -491,6 +515,7 @@
     }
     nativeInterval(tick, 1000);
     nativeInterval(scanScore, 1500);
+    nativeInterval(scanTrophy, 2000);
     nativeInterval(function () { if (S.started && !S.finished) save(); }, 60000);
     flushQueue();
     window.addEventListener('online', flushQueue);

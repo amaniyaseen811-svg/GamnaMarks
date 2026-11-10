@@ -1968,7 +1968,7 @@ function win(){
   $('winBoard').style.display=(S.mode==='chal')?'none':'block';
   paintReward();
   go('s-win');sfx('win');confetti();
-  if(S.mode==='chal'||S.mode==='solo')saveResult(pct,secs);
+  if(S.mode==='chal'||S.mode==='solo')saveResult(pct,secs);if(window.GMReport&&GMReport.trophy)GMReport.trophy();
 }
 function confetti(){
   var box=$('spark'),cols=['#ffd98a','#54e0ef','#3fd39b','#f5b433','#fff'];

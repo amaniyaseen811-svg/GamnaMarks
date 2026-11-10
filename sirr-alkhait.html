@@ -1442,7 +1442,7 @@ function drawGenieQ(){
  window.scrollTo({top:0,behavior:'smooth'});}
 
 /* ============ الكأس ============ */
-function showTrophy(){
+function showTrophy(){if(window.GMReport&&GMReport.trophy)GMReport.trophy();
  setBg(BG.win);if(sndOn)fadeTo(.32,1200);
  const conf=Array.from({length:26},(_,i)=>{
   const c=['#e6b85c','#e2789a','#5fc9b8','#f5dea6'][i%4];

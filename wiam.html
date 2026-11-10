@@ -2424,7 +2424,7 @@ function closeFb(){ const fb=$('fb'); if(!fb.classList.contains('on'))return;
   fb.classList.remove('on'); const cb=fb._cb; fb._cb=null; cb&&cb(); }
 
 /* ---------- 11) النهاية ---------- */
-function showEnd(){
+function showEnd(){if(window.GMReport&&GMReport.trophy)GMReport.trophy();
   stopTimer(); $('hud').classList.add('hidden');
   const c=$('cName').parentElement;
   if(!document.getElementById('endTrophy')){

@@ -2492,7 +2492,7 @@ function handleWrong() {
   }
 }
 
-function finishGame() {
+function finishGame() {if(window.GMReport&&GMReport.trophy)GMReport.trophy();
   stopBgMusic();
   setTimeout(()=> { ensureAudio(); sfxGoal(); setTimeout(sfxWhistle, 400); }, 50);
   const s = state.score;

@@ -2103,6 +2103,7 @@ function ansWS1(i,val,btn){
   fb.className='ws-fb show '+(correct?'ok':'no');
   // update score
   var sc=Object.values(ws1Answered).filter(Boolean).length;
+  if(window.GMReport)GMReport.add('ورقة العمل 1',sc,WS1.length);
   document.getElementById('wsScore').textContent=sc;
   // all answered?
   if(Object.keys(ws1Answered).length===WS1.length){
@@ -2117,7 +2118,7 @@ function showWS2(){ renderWS2(); showS('s-ws2'); window.scrollTo(0,0); }
 
 
 /* ==== CUP + GENIE ==== */
-function showCup(){
+function showCup(){if(window.GMReport&&GMReport.trophy)GMReport.trophy();
   document.getElementById('cupScore').textContent = score;
   showS('s-cup'); window.scrollTo(0,0);
 }
@@ -2278,6 +2279,7 @@ function ansWS2(i,val,btn){
 function updateWS2Score(){
   var sc=Object.values(ws2Answered).filter(Boolean).length;
   document.getElementById('ws2Score').textContent=sc;
+  if(window.GMReport)GMReport.add('ورقة العمل 2',sc,WS2.length);
   if(Object.keys(ws2Answered).length===WS2.length){
     document.getElementById('ws2Final').textContent=sc;
     document.getElementById('ws2Done').style.display='block';

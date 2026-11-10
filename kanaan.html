@@ -1519,7 +1519,7 @@ function bossEnd(){
 /* ==========================================================
    شاشة الكأس
    ========================================================== */
-function scrTrophy(){
+function scrTrophy(){if(window.GMReport&&GMReport.trophy)GMReport.trophy();
   const mins = Math.max(1, Math.round((Date.now()-G.started)/60000));
   const rank = G.players.slice().sort((a,b)=> b.score-a.score || b.letters-a.letters);
   const p = P();
@@ -1769,6 +1769,7 @@ function scrWS(n){
   const draw = ()=>{
     const done = state.filter(Boolean).length;
     const right = state.filter(s=>s==='ok').length;
+    if (done && window.GMReport) GMReport.add('ورقة العمل '+n, right, list.length);
     show(`
       <div class="eyebrow mt">${n===1?'ورقة عمل ١':'ورقة عمل ٢'}</div>
       <h2 style="font-size:26px">${title}</h2>

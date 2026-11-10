@@ -1509,7 +1509,7 @@ function aftStg(){
 
 var quizScore=0,quizIdx=0,quizBusy=false;
 
-function buildWin(){
+function buildWin(){if(window.GMReport&&GMReport.trophy)GMReport.trophy();
   stopGameTimer();
   var wc=document.getElementById('winContent');
   wc.innerHTML='<div class="result-card" style="border-color:#10B981">'
@@ -1571,6 +1571,7 @@ function pickQuiz(el,picked,ans){
 }
 
 function showQuizResult(){
+  if(window.GMReport)GMReport.add('ورقة العمل 1',quizScore,10);
   var qs=document.getElementById('quizSection');
   var pct=quizScore*10;
   var msg=pct>=80?'🌟 ممتاز!':pct>=60?'👏 جيد جداً!':pct>=40?'💪 جيد!':'📚 راجع القواعد!';

@@ -2130,7 +2130,7 @@ function levelComplete(){
   sndWin(); burst(60); showScreen('scLevelDone');
 }
 function nextLevel(){ state.level<LEVELS.length-1 ? startLevel(state.level+1) : victory(); }
-function victory(){
+function victory(){if(window.GMReport&&GMReport.trophy)GMReport.trophy();
   setBG('victory');
   document.getElementById('genieHolder').innerHTML=GENIE;
   document.getElementById('vScore').textContent='⭐ '+ar(state.totalScore)+' نقطة إجمالية';
