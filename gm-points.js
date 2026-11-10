@@ -303,6 +303,7 @@
       '.gmpTag{font-size:11px;padding:1px 6px;border-radius:8px;background:rgba(255,255,255,.12);margin-inline-start:4px}' +
       '.gmpNote{font-size:12px;opacity:.75;text-align:center;margin-top:8px;line-height:1.6}' +
       '#gmpToast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:2147483600;background:#1d1342;color:#fff;border:1px solid #a78bfa;border-radius:16px;padding:10px 16px;font-size:15px;direction:rtl;box-shadow:0 8px 24px rgba(0,0,0,.4);transition:opacity .4s;max-width:90vw;text-align:center;font-family:"Baloo Bhaijaan 2",Tahoma,sans-serif}' +
+      '#gmpTeach{position:fixed;top:10px;left:50%;transform:translateX(calc(-50% + 74px));z-index:2147483300;border:none;border-radius:20px;padding:6px 10px;cursor:pointer;color:#fff;font-weight:800;font-size:14px;background:#0f766e;box-shadow:0 4px 14px rgba(0,0,0,.35)}' +
       '#gmpBadge{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:2147483300;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;color:#fff;font-weight:800;font-size:14px;background:linear-gradient(90deg,#8b5cf6,#ec4899);box-shadow:0 4px 14px rgba(0,0,0,.35);font-family:"Baloo Bhaijaan 2",Tahoma,sans-serif}' +
       '#gmpModal{position:fixed;inset:0;z-index:2147483500;background:rgba(5,3,15,.75);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:16px}' +
       '#gmpModal .gmp{margin-top:20px}' +
@@ -583,6 +584,26 @@
     });
   }
 
+  /* ---------- زر المعلمة (بيظهر بس على الجهاز اللي انكتبت فيه كلمة سر المعلمة بصفحة الكود) ---------- */
+  function addTeacher() {
+    if (ls('gm_teacher') !== '1' || document.getElementById('gmpTeach')) return;
+    css();
+    var b = document.createElement('button'); b.id = 'gmpTeach'; b.title = 'صفحات المعلمة'; b.textContent = '👩‍🏫';
+    ['click', 'pointerdown', 'touchstart', 'mousedown'].forEach(function (ev) { b.addEventListener(ev, function (e) { e.stopPropagation(); }); });
+    b.onclick = function () {
+      var box = document.createElement('div'); box.className = 'gmp';
+      box.innerHTML = '<h3>👩‍🏫 صفحات المعلمة</h3><div class="gmpSub">بتظهر بس على جهازك</div>' +
+        '<a class="gmpBtn main gmpBig" style="text-decoration:none" href="points.html">🏆 مسابقة النقاط<small>الترتيب، الجوائز، أكواد التسليم، الحظر</small></a>' +
+        '<a class="gmpBtn gmpBig" style="text-decoration:none" href="reports.html">📊 تقارير الطالبات<small>علامات ووقت كل طالبة بكل لعبة</small></a>' +
+        '<a class="gmpBtn gmpBig" style="text-decoration:none" href="roster.html">👩‍🎓 قوائم طالباتي<small>الشعب والأسماء والرموز السرية</small></a>' +
+        '<div class="gmpBtns"><button class="gmpBtn" id="gmpTHide">🙈 إخفاء الزر من هاد الجهاز</button><button class="gmpBtn" id="gmpX">إغلاق</button></div>';
+      openModal(box);
+      box.querySelector('#gmpX').onclick = closeModal;
+      box.querySelector('#gmpTHide').onclick = function () { ls('gm_teacher', null); closeModal(); b.remove(); toast('تم إخفاء زر المعلمة — بيرجع لما تكتبي كلمة السر بصفحة الكود'); };
+    };
+    document.body.appendChild(b);
+  }
+
   window.GMPoints = {
     promo: promo,
     award: award, onPlayer: onPlayer, profile: profile, monthPoints: monthPoints,
@@ -593,7 +614,7 @@
   var me = document.currentScript;
   function init() {
     Array.prototype.forEach.call(document.querySelectorAll('[data-gmp-board]'), mountBoard);
-    if (me && me.getAttribute('data-badge')) addBadge();
+    if (me && me.getAttribute('data-badge')) { addBadge(); addTeacher(); }
     if (me && me.getAttribute('data-promo')) setTimeout(function () { promo(); }, 700);
     scheduleSync(1500);
     window.addEventListener('online', function () { scheduleSync(500); });

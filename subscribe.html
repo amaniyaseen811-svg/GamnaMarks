@@ -127,6 +127,7 @@
   function checkCode(){
     var v = norm(codeIn.value);
     if (v && (v === norm(codeFor(period())) || v === TEACHER)) {
+      if (v === TEACHER) store(false, "1", "gm_teacher");   // جهاز المعلمة: بيظهر زر 👩‍🏫 بشاشة الألعاب
       store(false, String(period()), "gm_code_ok");
       store(false, "1");
       showEnter();
