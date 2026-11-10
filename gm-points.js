@@ -226,7 +226,8 @@
       saveProfile(guestProfile()); toast('🎮 لقبك بالمسابقة: ' + profile().nick);
     } else if (!p) { profile(); toast('🎮 لقبك بالمسابقة: ' + profile().nick); }
   }
-  function award(rec) {
+  /* important = ورقة عمل / كأس / نهاية اللعبة ⬅️ حفظ بالقاعدة. غير هيك بينحفظ على الجهاز، وبيتزامن أول ما تفتح صفحة ثانية */
+  function award(rec, important) {
     if (!rec || !rec.id || (rec.timeMs || 0) < RULES.minPlayMs) return;
     if (rec.wsOnly) return;   /* أوراق عمل مباشرة بدون لعب = بدون نقاط */
     var p = profile();
@@ -244,7 +245,7 @@
       toast('⭐ +' + (after - before) + ' نقطة · مجموعك هالشهر ' + after);
       TIERS.forEach(function (t) { if (before < t.pts && after >= t.pts && tierOk(t, p)) setTimeout(function () { toast(t.icon + ' مبروك! وصلتي ' + t.pts + ' نقطة: ' + t.label); }, 2600); });
     }
-    renderAll(); scheduleSync();
+    renderAll(); if (important) scheduleSync(1500);
   }
   function monthPoints(mk) {
     var p = profile();
@@ -348,8 +349,11 @@
   function loadBoards(force) {
     if (!window.fetch) return Promise.resolve(cache);
     if (!force && cache.cur && Date.now() - cache.at < 60000) return Promise.resolve(cache);
-    return Promise.all([topOf(monthKey(), 60), topOf(prevMonthKey(), 30)]).then(function (r) {
-      cache = { cur: r[0], prev: r[1], at: Date.now() }; return cache;
+    try { var sc = JSON.parse(sessionStorage.getItem('gm_pts_boards') || 'null'); if (!force && sc && Date.now() - sc.at < 300000) { cache = sc; return Promise.resolve(cache); } } catch (e) {}
+    return Promise.all([topOf(monthKey(), 15), topOf(prevMonthKey(), 10)]).then(function (r) {
+      cache = { cur: r[0], prev: r[1], at: Date.now() };
+      try { sessionStorage.setItem('gm_pts_boards', JSON.stringify(cache)); } catch (e) {}
+      return cache;
     }).catch(function () { return cache; });
   }
 
@@ -445,7 +449,7 @@
     var x = document.createElement('button'); x.className = 'gmpBtn'; x.textContent = '✖ إغلاق'; x.style.cssText = 'display:block;margin:0 auto 20px;max-width:200px';
     x.onclick = closeModal;
     openModal(wrap); mountBoard(el); wrap.appendChild(x);
-    loadBoards(true).then(renderAll);
+    loadBoards().then(renderAll);
   }
   function showCert() {
     css();

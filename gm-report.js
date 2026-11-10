@@ -234,11 +234,16 @@
       }).catch(function () {});
     });
   }
-  function save(keepalive) {
+  /* key = لحظة مهمة (ورقة عمل، كأس، نهاية اللعبة، طلوع من الصفحة): بتنحفظ بقاعدة البيانات فوراً.
+     الحفظ الدوري كل دقيقة بيضل على الجهاز، وبينبعت للقاعدة كل 5 دقائق بس — توفير لحدود Firebase المجانية */
+  var lastPush = 0;
+  function save(keepalive, periodic) {
     if (!S.started) return Promise.resolve(false);
     var r = record();
     saveLocal(r);
-    points(function (P) { P.award(r); });
+    points(function (P) { P.award(r, !periodic && !keepalive); });
+    if (periodic && Date.now() - lastPush < 5 * 60000) return Promise.resolve(false);
+    lastPush = Date.now();
     return pushRemote(r, keepalive).then(function () { S.saved = true; return true; })
       .catch(function () { queue(r); return false; });
   }
@@ -523,7 +528,7 @@
     nativeInterval(tick, 1000);
     nativeInterval(scanScore, 1500);
     nativeInterval(scanTrophy, 2000);
-    nativeInterval(function () { if (S.started && !S.finished) save(); }, 60000);
+    nativeInterval(function () { if (S.started && !S.finished) save(false, true); }, 60000);
     flushQueue();
     window.addEventListener('online', flushQueue);
     window.addEventListener('pagehide', function () { save(true); });
