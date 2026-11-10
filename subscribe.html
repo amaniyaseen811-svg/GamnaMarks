@@ -40,6 +40,11 @@
   .codeBox button{padding:10px;border:none;border-radius:14px;font-family:inherit;font-size:16px;font-weight:800;color:#fff;cursor:pointer;
        background:linear-gradient(90deg,#3b82f6,#8b5cf6,#ec4899)}
   .codeBox .err{display:none;color:#ffb4b4;font-size:13px}
+  #gmpPill{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:50;padding:6px 14px;border-radius:20px;
+       background:linear-gradient(90deg,#f59e0b,#ec4899,#8b5cf6);color:#fff;text-decoration:none;font-size:14px;font-weight:800;
+       box-shadow:0 4px 16px rgba(236,72,153,.45);white-space:nowrap;animation:pop .4s ease}
+  html{scroll-behavior:smooth}
+  #gmpBoard{scroll-margin-top:52px}
   .shake{animation:shake .4s}
   @keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 </style>
@@ -65,6 +70,10 @@
       <button id="codeBtn">تأكيد ✅</button>
       <div id="codeErr" class="err">❌ الكود غلط أو قديم… شوفي آخر منشور بالقناة</div>
     </div>
+
+<!-- مسابقة النقاط الشهرية -->
+<a id="gmpPill" href="#gmpBoard">🏆 مسابقة النقاط والجوائز ⬇</a>
+<div id="gmpBoard" data-gmp-board></div>
 
 <script>
   var APP_URL = "index.html";           // رابط التطبيق
@@ -134,5 +143,6 @@
     location.href = APP_URL;
   });
 </script>
+<script src="gm-points.js" defer></script>
 </body>
 </html>

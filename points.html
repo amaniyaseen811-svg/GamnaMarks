@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GamnaMarks — مسابقة النقاط (صفحة المعلمة)</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0d0820;color:#fff;font-family:'Baloo Bhaijaan 2',Tahoma,sans-serif;padding:14px;min-height:100vh}
+  .card{max-width:900px;margin:0 auto 14px;background:linear-gradient(160deg,#1d1342,#120b2b);border:1px solid rgba(167,139,250,.35);border-radius:20px;padding:14px}
+  h1{font-size:22px;text-align:center;margin-bottom:4px}
+  .sub{text-align:center;opacity:.8;font-size:14px;margin-bottom:10px}
+  input,select{width:100%;padding:10px;border-radius:12px;border:2px solid #8b5cf6;background:#1b1238;color:#fff;font-family:inherit;font-size:16px;outline:none}
+  button{padding:9px 12px;border:none;border-radius:12px;cursor:pointer;color:#fff;font-family:inherit;font-weight:800;font-size:14px;background:rgba(255,255,255,.12)}
+  button.main{background:linear-gradient(90deg,#3b82f6,#8b5cf6,#ec4899)}
+  button.red{background:#b91c1c} button.green{background:#15803d}
+  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .bar>*{flex:1;min-width:150px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+  .stat{background:rgba(255,255,255,.06);border-radius:14px;padding:8px;text-align:center;font-size:13px}
+  .stat b{display:block;font-size:22px;color:#fcd34d}
+  .win{background:linear-gradient(90deg,rgba(252,211,77,.18),rgba(244,114,182,.15));border:1px solid rgba(252,211,77,.45);border-radius:14px;padding:10px;text-align:center;margin-top:10px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:8px 6px;border-bottom:1px solid rgba(255,255,255,.08);text-align:right;vertical-align:top}
+  th{color:#c4b5fd;font-size:13px}
+  tr.banned td{opacity:.45}
+  .tag{font-size:11px;padding:1px 7px;border-radius:8px;background:rgba(255,255,255,.12);white-space:nowrap}
+  .code{direction:ltr;display:inline-block;font-size:12px;padding:2px 6px;border-radius:8px;background:rgba(34,197,94,.18);margin:2px 0;cursor:pointer}
+  .code.done{background:rgba(255,255,255,.1);text-decoration:line-through;opacity:.7}
+  .log{font-size:12px;opacity:.85;line-height:1.7;margin-top:6px;background:rgba(0,0,0,.25);border-radius:10px;padding:6px 8px;max-height:260px;overflow:auto}
+  .note{font-size:13px;opacity:.75;text-align:center;margin-top:8px}
+  .hit{outline:3px solid #22c55e}
+  @media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)} .hideM{display:none}}
+</style>
+</head>
+<body>
+
+<div class="card" id="login">
+  <h1>🏆 مسابقة النقاط</h1>
+  <div class="sub">صفحة المعلمة — اكتبي كلمة السر</div>
+  <input id="pw" type="password" placeholder="كلمة السر">
+  <div style="margin-top:8px"><button class="main" id="pwGo" style="width:100%">دخول</button></div>
+  <div class="note" id="pwNote"></div>
+</div>
+
+<div id="app" style="display:none">
+  <div class="card">
+    <h1>🏆 مسابقة نقاط GamnaMarks</h1>
+    <div class="sub">ترتيب اللاعبات، الجوائز، والتأكد من الأكواد</div>
+    <div class="bar">
+      <select id="month"></select>
+      <select id="who">
+        <option value="all">الكل</option>
+        <option value="verified">طالباتي + المأكّدين بس</option>
+        <option value="student">طالباتي بس 🏫</option>
+        <option value="guest">الزوار بس 👤</option>
+      </select>
+      <input id="search" placeholder="🔍 كود جائزة (GM-1234) أو اسم">
+      <button id="reload">🔄 تحديث</button>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="win" id="winner"></div>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead><tr><th>#</th><th>اللاعبة</th><th>نقاط الشهر</th><th class="hideM">المجموع الكلي</th><th>الجوائز (اضغطي الكود لما تسلّميها)</th><th></th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="note" id="loading">⏳ جاري التحميل...</div>
+    <div class="note">🏫 طالبة (بالكود الشخصي) · ✅ مأكّدة بـ Google · 👤 زائرة بلقب<br>
+      الهدية والعلامة الإضافية لطالباتك بس · فائزة الشهر لازم تكون 🏫 أو ✅</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var PASS='amani2026';
+  var PROJECT='cursed-castle-bb43b', API_KEY='AIzaSyADxQ7-3UDxYD3VTOoVrn7d6516_5bqd5Y';
+  var DOCS='https://firestore.googleapis.com/v1/projects/'+PROJECT+'/databases/(default)/documents';
+  var COLL='gm_points';
+  var TIERS=[{pts:100,key:'cert',icon:'📜',label:'شهادة',who:'all'},{pts:300,key:'gift',icon:'🎁',label:'هدية',who:'student'},{pts:500,key:'mark',icon:'⭐',label:'علامة إضافية',who:'student'}];
+  var MONTHS=['كانون الثاني','شباط','آذار','نيسان','أيار','حزيران','تموز','آب','أيلول','تشرين الأول','تشرين الثاني','كانون الأول'];
+  var $=function(id){return document.getElementById(id)};
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function pad(n){return(n<10?'0':'')+n}
+  function mkOf(d){return d.getFullYear()+pad(d.getMonth()+1)}
+  function mName(mk){return MONTHS[+mk.slice(4)-1]+' '+mk.slice(0,4)}
+  function hash(str){var a=0x811c9dc5,b=0x01000193;for(var i=0;i<str.length;i++){var c=str.charCodeAt(i);a=Math.imul(a^c,16777619)>>>0;b=Math.imul(b^c,2246822519)>>>0}return a.toString(36)+b.toString(36)}
+  function code(pid,mk,key){var h=hash(pid+'|'+mk+'|'+key),n=0;for(var i=0;i<h.length;i++)n=(n*31+h.charCodeAt(i))%9000;return 'GM-'+(1000+n)}
+  function unf(f){var o={};Object.keys(f||{}).forEach(function(k){var x=f[k];o[k]='integerValue' in x?+x.integerValue:'doubleValue' in x?+x.doubleValue:'booleanValue' in x?x.booleanValue:'stringValue' in x?x.stringValue:null});return o}
+  function J(s,d){try{return JSON.parse(s||'')||d}catch(e){return d}}
+  function fv(v){if(typeof v==='boolean')return{booleanValue:v};return{stringValue:String(v)}}
+  function patch(pid,obj){
+    var fields={},mask=[];Object.keys(obj).forEach(function(k){fields[k]=fv(obj[k]);mask.push('updateMask.fieldPaths='+k)});
+    return fetch(DOCS+'/'+COLL+'/'+encodeURIComponent(pid)+'?key='+API_KEY+'&'+mask.join('&'),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:fields})})
+      .then(function(r){if(!r.ok)throw new Error(r.status)});
+  }
+  function loadAll(){
+    var out=[];
+    function page(tok){
+      return fetch(DOCS+'/'+COLL+'?pageSize=300&key='+API_KEY+(tok?'&pageToken='+tok:'')).then(function(r){return r.ok?r.json():{}}).then(function(j){
+        (j.documents||[]).forEach(function(d){var o=unf(d.fields);o.pid=d.name.split('/').pop();o.monthsObj=J(o.months,{});o.claimsObj=J(o.claims,{});o.logArr=J(o.log,[]);out.push(o)});
+        if(j.nextPageToken&&out.length<5000)return page(j.nextPageToken);
+        return out;
+      });
+    }
+    return page('');
+  }
+
+  var ALL=[];
+  function months(){
+    var set={};set[mkOf(new Date())]=1;
+    ALL.forEach(function(x){Object.keys(x.monthsObj).forEach(function(k){set[k]=1})});
+    var cur=$('month').value;
+    var ks=Object.keys(set).sort().reverse();
+    $('month').innerHTML=ks.map(function(k){return '<option value="'+k+'">'+mName(k)+(k===mkOf(new Date())?' ⭐':'')+'</option>'}).join('');
+    if(cur&&set[cur])$('month').value=cur;
+  }
+  function icon(x){return x.type==='student'?'🏫':x.type==='google'?'✅':'👤'}
+  function render(){
+    var mk=$('month').value, who=$('who').value, q=$('search').value.trim().toUpperCase();
+    var list=ALL.map(function(x){x.pts=x.monthsObj[mk]||0;return x}).filter(function(x){return x.pts>0});
+    list.sort(function(a,b){return b.pts-a.pts});
+    var winner=list.filter(function(x){return x.verified&&!x.banned})[0];
+    var filtered=list.filter(function(x){
+      if(who==='verified'&&!x.verified)return false;
+      if(who==='student'&&x.type!=='student')return false;
+      if(who==='guest'&&x.type!=='guest')return false;
+      return true;
+    });
+    var hitPid=null;
+    if(q){
+      filtered=filtered.filter(function(x){
+        var m=TIERS.some(function(t){return code(x.pid,mk,t.key)===q||code(x.pid,mk,t.key)==='GM-'+q});
+        if(m)hitPid=x.pid;
+        return m||String(x.display||'').toUpperCase().indexOf(q)>-1;
+      });
+    }
+    var st=list.filter(function(x){return x.type==='student'}).length;
+    $('stats').innerHTML='<div class="stat"><b>'+list.length+'</b>لعبوا هالشهر</div><div class="stat"><b>'+st+'</b>من طالباتي</div>'+
+      '<div class="stat"><b>'+list.filter(function(x){return x.pts>=100}).length+'</b>وصلوا 100+</div><div class="stat"><b>'+list.reduce(function(s,x){return s+x.pts},0)+'</b>مجموع النقاط</div>';
+    $('winner').innerHTML=winner?'👑 '+(mk===mkOf(new Date())?'المتصدرة حالياً':'فائزة الشهر')+': <b>'+esc(winner.display)+'</b> '+icon(winner)+(winner.klass?' — '+esc(winner.klass):'')+' — '+winner.pts+' نقطة':'لسا ما في فائزة لهاد الشهر';
+    var rank=0;
+    $('rows').innerHTML=filtered.map(function(x){
+      rank=list.indexOf(x)+1;
+      var cl=TIERS.filter(function(t){return x.pts>=t.pts&&(t.who==='all'||x.type==='student')}).map(function(t){
+        var k=mk+'-'+t.key, c=code(x.pid,mk,t.key), done=x.claimsObj[k];
+        return '<span class="code'+(done?' done':'')+'" data-pid="'+esc(x.pid)+'" data-k="'+k+'" title="'+(done?'تم التسليم '+esc(done):'اضغطي لما تسلّميها')+'">'+t.icon+' '+c+(done?' ✔':'')+'</span>';
+      }).join('<br>');
+      var log=(x.logArr||[]).filter(function(e){return(e.d||'').slice(0,4)+(e.d||'').slice(5,7)===mk}).slice().reverse().map(function(e){
+        return esc(e.d)+' · '+esc(e.g)+' · <b>'+e.n+'</b> ('+esc(e.b||'')+')';
+      }).join('<br>');
+      return '<tr class="'+(x.banned?'banned':'')+(x.pid===hitPid?' hit':'')+'"><td>'+rank+'</td><td><b>'+esc(x.display)+'</b> <span class="tag">'+icon(x)+'</span>'+(x.klass?'<br><span style="font-size:12px;opacity:.75">'+esc(x.klass)+'</span>':'')+(x.banned?'<br><span class="tag">🚫 محظورة</span>':'')+
+        '<div class="log" style="display:none" id="log_'+esc(x.pid)+'">'+(log||'ما في تفاصيل')+'</div></td>'+
+        '<td><b style="color:#fcd34d;font-size:17px">'+x.pts+'</b></td><td class="hideM">'+(x.total||0)+'</td><td>'+(cl||'—')+'</td>'+
+        '<td><button data-log="'+esc(x.pid)+'">🔍</button> <button class="'+(x.banned?'green':'red')+'" data-ban="'+esc(x.pid)+'">'+(x.banned?'رفع الحظر':'🚫 حظر')+'</button></td></tr>';
+    }).join('');
+    $('loading').textContent=filtered.length?'':'ما في نتائج';
+  }
+  function find(pid){return ALL.filter(function(x){return x.pid===pid})[0]}
+  $('rows').addEventListener('click',function(e){
+    var t=e.target.closest('[data-log],[data-ban],[data-k]');if(!t)return;
+    if(t.hasAttribute('data-log')){var l=document.getElementById('log_'+t.getAttribute('data-log'));if(l)l.style.display=l.style.display==='none'?'block':'none';return}
+    var x=find(t.getAttribute('data-pid')||t.getAttribute('data-ban'));if(!x)return;
+    if(t.hasAttribute('data-ban')){
+      var nb=!x.banned;
+      if(!confirm(nb?'حظر «'+x.display+'»؟ ما رح تقدر تجمع نقاط ولا رح تظهر بالترتيب':'رفع الحظر عن «'+x.display+'»؟'))return;
+      patch(x.pid,{banned:nb}).then(function(){x.banned=nb;render()},function(){alert('ما زبط الحفظ، تأكدي من النت')});
+      return;
+    }
+    var k=t.getAttribute('data-k'), done=x.claimsObj[k];
+    if(!confirm(done?'إلغاء «تم التسليم» لهاي الجائزة؟':'تأكيد إنك سلّمتي هاي الجائزة لـ «'+x.display+'»؟'))return;
+    var c=JSON.parse(JSON.stringify(x.claimsObj));
+    if(done)delete c[k];else c[k]=new Date().toLocaleDateString('ar-EG');
+    patch(x.pid,{claims:JSON.stringify(c)}).then(function(){x.claimsObj=c;render()},function(){alert('ما زبط الحفظ، تأكدي من النت')});
+  });
+  function load(){
+    $('loading').textContent='⏳ جاري التحميل...';
+    loadAll().then(function(a){ALL=a;months();render()},function(){$('loading').textContent='⚠️ ما قدرت أحمّل البيانات، تأكدي من النت'});
+  }
+  ['month','who'].forEach(function(id){$(id).onchange=render});
+  $('search').oninput=render;
+  $('reload').onclick=load;
+  function enter(){
+    if($('pw').value===PASS){try{sessionStorage.setItem('gm_pts_t','1')}catch(e){}$('login').style.display='none';$('app').style.display='block';load()}
+    else $('pwNote').textContent='كلمة السر غلط';
+  }
+  $('pwGo').onclick=enter;$('pw').onkeydown=function(e){if(e.key==='Enter')enter()};
+  try{if(sessionStorage.getItem('gm_pts_t')==='1'){$('login').style.display='none';$('app').style.display='block';load()}}catch(e){}
+})();
+</script>
+</body>
+</html>

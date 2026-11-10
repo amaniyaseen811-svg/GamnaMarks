@@ -22,6 +22,9 @@
   var GAME = (sc && sc.getAttribute('data-game')) || '';
   /* قوائم الطالبات (gm-roster.js بنفس مجلد هاد الملف) */
   var ROSTER_SRC = (sc && sc.src) ? sc.src.replace(/gm-report\.js(\?.*)?$/i, 'gm-roster.js') : 'gm-roster.js';
+  /* مسابقة النقاط (gm-points.js بنفس المجلد) */
+  var POINTS_SRC = (sc && sc.src) ? sc.src.replace(/gm-report\.js(\?.*)?$/i, 'gm-points.js') : 'gm-points.js';
+  function points(fn) { try { if (window.GMPoints) fn(window.GMPoints); } catch (e) {} }
   var ROSTER_KEY = /\/palace\//i.test(location.pathname) ? 'palace' : /\/poison\//i.test(location.pathname) ? 'poison' : page;
   /* القوائم نفسها محفوظة بقاعدة البيانات (صفحة roster.html) مش بملفات اللعبة */
   var LS_ROSTER = 'gm_roster_cache';
@@ -208,6 +211,7 @@
     if (!S.started) return Promise.resolve(false);
     var r = record();
     saveLocal(r);
+    points(function (P) { P.award(r); });
     return pushRemote(r, keepalive).then(function () { S.saved = true; return true; })
       .catch(function () { queue(r); return false; });
   }
@@ -268,6 +272,7 @@
     ls(LS_NAME, S.name); ls(LS_CLASS, S.klass);
     S.attempt = attemptNo(S.name, S.klass);
     S.started = Date.now(); S.lastTick = Date.now();
+    points(function (P) { P.onPlayer(S.name, S.klass, !!S.rosterOk && !S.guest); });
     save();
   }
 
@@ -333,7 +338,7 @@
         var v = inp.value;
         if (v.length !== 4) { note.textContent = 'الرمز 4 أرقام ✍'; return; }
         if (pinHash((window.GM_ROSTER.salt || '') + '|' + sec.name + '|' + name + '|' + v) === sec.pins[i]) {
-          box.remove(); startPlay(name, sec.name); return;
+          box.remove(); S.rosterOk = true; startPlay(name, sec.name); return;
         }
         tries++; inp.value = '';
         note.textContent = tries >= 3 ? '❌ الرمز غلط. إذا نسيتي رمزك اسألي المعلمة' : '❌ الرمز غلط، جربي مرة كمان';
@@ -470,6 +475,7 @@
 
   function init() {
     watch(); addButton(); hookHome();
+    if (!window.GMPoints) { var ps = document.createElement('script'); ps.src = POINTS_SRC; (document.head || document.documentElement).appendChild(ps); }
     if (!S.started) {
       if (window.GM_ROSTER) loadRosterDb(function () { if (!S.started) askName(); });
       else {
