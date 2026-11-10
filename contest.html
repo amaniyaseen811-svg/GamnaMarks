@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GamnaMarks — مسابقة النقاط</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&display=swap" rel="stylesheet">
+<script>/* لازم تمر من صفحة الكود أول */try{if(sessionStorage.getItem("gm_entered")!=="1"){location.replace("subscribe.html");}}catch(e){}</script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#0d0820}
+  body{min-height:100vh;font-family:'Baloo Bhaijaan 2',Tahoma,sans-serif;color:#fff;padding:14px 12px 110px;
+       background:radial-gradient(ellipse at top,#2a1660 0%,#0d0820 60%)}
+  .hero{position:relative;overflow:hidden;max-width:460px;margin:0 auto;text-align:center;border-radius:26px;padding:20px 14px 16px;
+        background:linear-gradient(160deg,#2a1660,#160c35 60%,#3a0f3f);border:2px solid rgba(252,211,77,.6);box-shadow:0 0 40px rgba(252,211,77,.3)}
+  .cup{font-size:84px;line-height:1;display:inline-block;filter:drop-shadow(0 0 18px rgba(252,211,77,.8));animation:cup 2.2s ease-in-out infinite}
+  @keyframes cup{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}
+  h1{font-size:25px;margin:6px 0 4px;background:linear-gradient(90deg,#fcd34d,#f472b6,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .t{font-size:16px;opacity:.92;line-height:1.6}
+  .st{position:absolute;color:#fcd34d;animation:tw 2s ease-in-out infinite;pointer-events:none}
+  @keyframes tw{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.2)}}
+  [data-gmp-board]>h3:first-child,[data-gmp-board]>h3:first-child+.gmpSub{display:none}
+  .go{position:fixed;left:12px;right:12px;bottom:14px;max-width:460px;margin:0 auto;padding:14px;border:none;border-radius:20px;cursor:pointer;
+      font-family:inherit;font-size:19px;font-weight:800;color:#fff;background:linear-gradient(90deg,#3b82f6,#8b5cf6,#ec4899,#f97316);
+      box-shadow:0 8px 24px rgba(139,92,246,.55);z-index:100}
+</style>
+</head>
+<body>
+  <div class="hero" id="hero">
+    <div class="cup">🏆</div>
+    <h1>مسابقة GamnaMarks الشهرية</h1>
+    <div class="t">العبي، حلّي أوراق العمل، واجمعي نقاط<br>وكل ما تجمعي أكثر بتربحي أكثر! ✨</div>
+  </div>
+
+  <div data-gmp-board></div>
+
+  <button class="go" id="go">ادخلي التطبيق 🚀</button>
+
+<script>
+  (function(){
+    var h=document.getElementById('hero');
+    for(var i=0;i<10;i++){var s=document.createElement('span');s.className='st';s.textContent='✦';
+      s.style.cssText='top:'+Math.round(Math.random()*85)+'%;left:'+Math.round(Math.random()*92)+'%;animation-delay:'+(Math.random()*2).toFixed(1)+'s;font-size:'+(10+Math.round(Math.random()*12))+'px';h.appendChild(s);}
+    document.getElementById('go').onclick=function(){
+      try{sessionStorage.setItem('gm_contest_seen','1')}catch(e){}
+      location.href='index.html';
+    };
+    /* أول مرة: اختيار طريقة المشاركة */
+    setTimeout(function(){ try{ if(window.GMPoints && !GMPoints.profile().chosen) GMPoints.choose(); }catch(e){} }, 900);
+  })();
+</script>
+<script src="gm-points.js" defer></script>
+</body>
+</html>
