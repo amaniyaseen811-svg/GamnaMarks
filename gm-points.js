@@ -228,6 +228,7 @@
   }
   function award(rec) {
     if (!rec || !rec.id || (rec.timeMs || 0) < RULES.minPlayMs) return;
+    if (rec.wsOnly) return;   /* أوراق عمل مباشرة بدون لعب = بدون نقاط */
     var p = profile();
     if (ls(LS_BAN) === p.pid) return;
     var c = calc(rec); if (!c.n) return;

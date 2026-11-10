@@ -24,6 +24,9 @@
   var ROSTER_SRC = (sc && sc.src) ? sc.src.replace(/gm-report\.js(\?.*)?$/i, 'gm-roster.js') : 'gm-roster.js';
   /* مسابقة النقاط (gm-points.js بنفس المجلد) */
   var POINTS_SRC = (sc && sc.src) ? sc.src.replace(/gm-report\.js(\?.*)?$/i, 'gm-points.js') : 'gm-points.js';
+  /* صفحة الاختيار: أوراق العمل مباشرة بدون لعب (gm-hub.js) — بتنحفظ العلامة بس بدون نقاط */
+  var HUB_SRC = (sc && sc.src) ? sc.src.replace(/gm-report\.js(\?.*)?$/i, 'gm-hub.js') : 'gm-hub.js';
+  var WS_ONLY = (function () { try { var m = location.search.match(/[?&]gmws=([01])/); if (m) return m[1] === '1'; return sessionStorage.getItem('gm_ws_' + page) === '1'; } catch (e) { return false; } })();
   function points(fn) { try { if (window.GMPoints) fn(window.GMPoints); } catch (e) {} }
   var ROSTER_KEY = /\/palace\//i.test(location.pathname) ? 'palace' : /\/poison\//i.test(location.pathname) ? 'poison' : page;
   /* القوائم نفسها محفوظة بقاعدة البيانات (صفحة roster.html) مش بملفات اللعبة */
@@ -188,7 +191,7 @@
       id: S.id, game: gameName(), page: page, name: S.name || 'بدون اسم', klass: S.klass || '', attempt: S.attempt || 1,
       date: new Date().toISOString(), timeMs: S.active, timeText: fmtTime(S.active),
       score: t.score, correct: S.correct, wrong: S.wrong, pct: t.pct, rating: t.rating,
-      sections: S.sections.slice(), finished: !!(S.finished || S.trophy)
+      sections: S.sections.slice(), finished: !!(S.finished || S.trophy) && !WS_ONLY, wsOnly: WS_ONLY
     };
   }
 
@@ -298,6 +301,7 @@
     S.started = Date.now(); S.lastTick = Date.now();
     points(function (P) { P.onPlayer(S.name, S.klass, !!S.rosterOk && !S.guest); });
     save();
+    try { document.dispatchEvent(new Event('gm-player-ready')); } catch (e) {}
   }
 
   /* اختيار الشعبة ثم الاسم من القائمة */
@@ -497,11 +501,14 @@
     wrong: function (n) { S.wrong += (n == null ? 1 : n); },
     finish: function () { S.finished = true; showReport(); },
     show: function () { showReport(); },
+    started: function () { return !!S.started; },
+    wsOnly: function () { return WS_ONLY; },
     data: record
   };
 
   function init() {
     watch(); addButton(); hookHome();
+    if (!window.GMHub) { var hs = document.createElement('script'); hs.src = HUB_SRC; (document.head || document.documentElement).appendChild(hs); }
     if (!window.GMPoints) { var ps = document.createElement('script'); ps.src = POINTS_SRC; (document.head || document.documentElement).appendChild(ps); }
     if (!S.started) {
       if (window.GM_ROSTER) loadRosterDb(function () { if (!S.started) askName(); });

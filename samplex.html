@@ -706,6 +706,101 @@ table.dash tr.top td{color:var(--signal)}
 <audio id="bgm2" loop preload="none" src="bg_music.mp3"></audio>
 <audio id="bgm" loop preload="none" src="bg_music.mp3"></audio>
 
+<!-- استراحة -->
+<div id="breakOv" class="hidden">
+  <div>
+    <div class="ring" id="ring"><span id="ringNum">20</span></div>
+    <h3 data-i18n="breakTitle">استراحة قصيرة</h3>
+    <p data-i18n="breakText">ارفع نظرك عن الشاشة، خذ نفسًا عميقًا.<br>القضية بانتظارك — لن يضيع أي دليل.</p>
+    <button class="btn ghost" id="breakEnd" data-i18n="breakBtn" style="max-width:260px;margin:0 auto">عد الآن إلى التحقيق</button>
+  </div>
+</div>
+
+<!-- إيموجي -->
+<div id="emojiWrap">
+  <button id="emojiToggle" aria-label="تفاعل">😊</button>
+  <div id="emojiBar">
+    <button data-e="🔍">🔍</button><button data-e="💡">💡</button><button data-e="🧪">🧪</button>
+    <button data-e="👏">👏</button><button data-e="😮">😮</button><button data-e="🔥">🔥</button>
+  </div>
+</div>
+
+<button id="chatBtn" aria-label="غرفة الصف">💬</button>
+<div id="chatSheet" class="hidden">
+  <div class="chat-in">
+    <div class="chat-hd">
+      <h3 data-i18n="chatTitle">💬 غرفة الصف</h3>
+      <span style="display:flex;gap:7px;align-items:center">
+        <span class="rm hidden" id="chatRoomLbl"></span>
+        <button class="icon-btn" id="chatX" data-i18n="close">إغلاق ✕</button>
+      </span>
+    </div>
+
+    <div id="chatJoinBox">
+      <input class="field" id="chatCodeIn" data-i18n-ph="chatCode" placeholder="رمز الصف" maxlength="12" autocomplete="off">
+      <input class="field" id="chatNameIn" data-i18n-ph="chatName" placeholder="اسمك" maxlength="20" autocomplete="off">
+      <div class="two">
+        <button class="btn" id="joinStudent" style="margin:0" data-i18n="chatJoin">دخول</button>
+        <button class="btn ghost" id="joinTeacher" style="margin:0" data-i18n="teacher">دخول المعلّم</button>
+      </div>
+      <div id="chatBodyNote" style="font-size:12.5px;color:var(--muted);line-height:1.9">
+        <span id="chatNote">المحادثة تعمل فقط أثناء الحصة: المعلّمة تفتح الجلسة وتحدّد مدّتها، وتُقفل تلقائيًا عند انتهائها.</span>
+      </div>
+    </div>
+
+    <div id="chatLive" class="hidden" style="flex:1;display:flex;flex-direction:column;min-height:0">
+      <div id="chatEnds"></div>
+      <div id="chatBody"></div>
+      <div id="chatLock"></div>
+      <div id="chatInputRow" class="hidden">
+        <input id="chatInput" data-i18n-ph="chatPlaceholder" placeholder="اكتب رسالة…" maxlength="300" autocomplete="off">
+        <button id="chatSendBtn" title="إرسال">📨</button>
+        <button id="micBtn" title="مايك">🎤</button>
+      </div>
+      <div id="micLbl" data-i18n="chatHold">اضغط مطوّلًا للتحدّث</div>
+      <div id="chatEmoji">
+        <button data-e="🔍">🔍</button><button data-e="💡">💡</button><button data-e="🧪">🧪</button>
+        <button data-e="👏">👏</button><button data-e="🤔">🤔</button><button data-e="😮">😮</button>
+        <button data-e="🔥">🔥</button><button data-e="✅">✅</button>
+      </div>
+      <div id="teacherCtl" class="hidden">
+        <span id="chatMinsLbl" style="font-size:11.5px;color:var(--muted)"></span><input id="chatMins" type="number" min="5" max="180" value="45" title="مدة الحصة">
+        <button class="icon-btn" id="tOpen">افتح الحصة</button>
+        <button class="icon-btn" id="tClear" data-i18n="chatClear">مسح الرسائل</button>
+        <button class="icon-btn" id="chatLeaveBtn" data-i18n="chatLeave">خروج</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="printArea"></div>
+
+
+<!-- زر الرجوع للشاشة الرئيسية -->
+<style>
+  .home-btn {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 999;
+    background: var(--signal);
+    color: #1B1405;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    transition: transform .15s, filter .15s;
+  }
+  .home-btn:hover { filter: brightness(1.1); }
+  .home-btn:active { transform: scale(.95); }
+  #screen-start .home-btn { display: none; }
+  @media (max-width: 600px) {
+    .home-btn { padding: 6px 10px; font-size: 12px; }
+  }
+</style>
+
 <script>
 const BG={
 bottleX:"samplex-bg-bottleX.jpg",
@@ -4611,7 +4706,7 @@ $('endHome').onclick=()=>show('screen-start');
   function finish(){
     if(done) return; done=true;
     guards.forEach(clearTimeout); guards=[];
-    try{ vid.pause(); }catch(e){}
+    try{ if(vid) vid.pause(); }catch(e){}
     box.classList.add('gone');
     setTimeout(()=>{ try{box.remove()}catch(e){} },750);
     if(musicOn) tryPlay();
@@ -4651,6 +4746,7 @@ $('endHome').onclick=()=>show('screen-start');
     box.classList.add('hasvid');
     later(finish, 45000);                // حارس أقصى
   }
+  if(vid){
   vid.addEventListener('playing',videoStarted);
   vid.addEventListener('timeupdate',()=>{ if(vid.currentTime>0.25) videoStarted(); });
   vid.addEventListener('ended',finish);
@@ -4658,6 +4754,7 @@ $('endHome').onclick=()=>show('screen-start');
 
   try{ vid.load(); }catch(e){}
   const pr=vid.play(); if(pr&&pr.catch) pr.catch(()=>{});
+  }
 
   // إن لم يبدأ الفيديو خلال 4 ثوانٍ → المقدمة المرسومة
   later(()=>{ if(!videoOK) drawnIntro(); },4000);
@@ -5204,101 +5301,6 @@ document.addEventListener('keydown',e=>{
   if(e.key==="Enter"&&!$('nextBtn').classList.contains('hidden'))$('nextBtn').click();
 });
 </script>
-
-<!-- استراحة -->
-<div id="breakOv" class="hidden">
-  <div>
-    <div class="ring" id="ring"><span id="ringNum">20</span></div>
-    <h3 data-i18n="breakTitle">استراحة قصيرة</h3>
-    <p data-i18n="breakText">ارفع نظرك عن الشاشة، خذ نفسًا عميقًا.<br>القضية بانتظارك — لن يضيع أي دليل.</p>
-    <button class="btn ghost" id="breakEnd" data-i18n="breakBtn" style="max-width:260px;margin:0 auto">عد الآن إلى التحقيق</button>
-  </div>
-</div>
-
-<!-- إيموجي -->
-<div id="emojiWrap">
-  <button id="emojiToggle" aria-label="تفاعل">😊</button>
-  <div id="emojiBar">
-    <button data-e="🔍">🔍</button><button data-e="💡">💡</button><button data-e="🧪">🧪</button>
-    <button data-e="👏">👏</button><button data-e="😮">😮</button><button data-e="🔥">🔥</button>
-  </div>
-</div>
-
-<button id="chatBtn" aria-label="غرفة الصف">💬</button>
-<div id="chatSheet" class="hidden">
-  <div class="chat-in">
-    <div class="chat-hd">
-      <h3 data-i18n="chatTitle">💬 غرفة الصف</h3>
-      <span style="display:flex;gap:7px;align-items:center">
-        <span class="rm hidden" id="chatRoomLbl"></span>
-        <button class="icon-btn" id="chatX" data-i18n="close">إغلاق ✕</button>
-      </span>
-    </div>
-
-    <div id="chatJoinBox">
-      <input class="field" id="chatCodeIn" data-i18n-ph="chatCode" placeholder="رمز الصف" maxlength="12" autocomplete="off">
-      <input class="field" id="chatNameIn" data-i18n-ph="chatName" placeholder="اسمك" maxlength="20" autocomplete="off">
-      <div class="two">
-        <button class="btn" id="joinStudent" style="margin:0" data-i18n="chatJoin">دخول</button>
-        <button class="btn ghost" id="joinTeacher" style="margin:0" data-i18n="teacher">دخول المعلّم</button>
-      </div>
-      <div id="chatBodyNote" style="font-size:12.5px;color:var(--muted);line-height:1.9">
-        <span id="chatNote">المحادثة تعمل فقط أثناء الحصة: المعلّمة تفتح الجلسة وتحدّد مدّتها، وتُقفل تلقائيًا عند انتهائها.</span>
-      </div>
-    </div>
-
-    <div id="chatLive" class="hidden" style="flex:1;display:flex;flex-direction:column;min-height:0">
-      <div id="chatEnds"></div>
-      <div id="chatBody"></div>
-      <div id="chatLock"></div>
-      <div id="chatInputRow" class="hidden">
-        <input id="chatInput" data-i18n-ph="chatPlaceholder" placeholder="اكتب رسالة…" maxlength="300" autocomplete="off">
-        <button id="chatSendBtn" title="إرسال">📨</button>
-        <button id="micBtn" title="مايك">🎤</button>
-      </div>
-      <div id="micLbl" data-i18n="chatHold">اضغط مطوّلًا للتحدّث</div>
-      <div id="chatEmoji">
-        <button data-e="🔍">🔍</button><button data-e="💡">💡</button><button data-e="🧪">🧪</button>
-        <button data-e="👏">👏</button><button data-e="🤔">🤔</button><button data-e="😮">😮</button>
-        <button data-e="🔥">🔥</button><button data-e="✅">✅</button>
-      </div>
-      <div id="teacherCtl" class="hidden">
-        <span id="chatMinsLbl" style="font-size:11.5px;color:var(--muted)"></span><input id="chatMins" type="number" min="5" max="180" value="45" title="مدة الحصة">
-        <button class="icon-btn" id="tOpen">افتح الحصة</button>
-        <button class="icon-btn" id="tClear" data-i18n="chatClear">مسح الرسائل</button>
-        <button class="icon-btn" id="chatLeaveBtn" data-i18n="chatLeave">خروج</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="printArea"></div>
-
-
-<!-- زر الرجوع للشاشة الرئيسية -->
-<style>
-  .home-btn {
-    position: fixed;
-    top: 16px;
-    left: 16px;
-    z-index: 999;
-    background: var(--signal);
-    color: #1B1405;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 14px;
-    transition: transform .15s, filter .15s;
-  }
-  .home-btn:hover { filter: brightness(1.1); }
-  .home-btn:active { transform: scale(.95); }
-  #screen-start .home-btn { display: none; }
-  @media (max-width: 600px) {
-    .home-btn { padding: 6px 10px; font-size: 12px; }
-  }
-</style>
 
 <script>
 function goHome() {
