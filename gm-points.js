@@ -388,7 +388,7 @@
       (p.type !== 'student' ? '<button class="gmpBtn" data-gmp="nick">🎭 غيّري لقبك</button>' : '') +
       (mine >= TIERS[0].pts && !banned ? '<button class="gmpBtn" data-gmp="cert">📜 شهادتي</button>' : '') +
       '</div>';
-    h += '<div class="gmpNote">🏫 طالبة عمرية: بتدخلي باسمك وكودك السري، وبتنربط نقاطك باسمك من أي جهاز.<br>' +
+    h += '<div class="gmpNote">🏫 طالبات مدرسة عمر بن عبد العزيز الثانوية للبنات: بتدخلي باسمك وكودك السري، وبتنربط نقاطك باسمك من أي جهاز.<br>' +
       '✅ فائزة الشهر لازم تكون طالبة أو حساب مأكّد · 👤 الزائرات بيظهروا بلقب، والإيميل ما بينحفظ ولا بيظهر لحدا.</div>';
     return h;
   }
@@ -475,7 +475,7 @@
     var p = profile();
     var box = document.createElement('div'); box.className = 'gmp';
     box.innerHTML = '<h3>🎯 كيف بدك تشاركي بالمسابقة؟</h3><div class="gmpSub">اختاري وحدة — وبتقدري تغيّريها بعدين</div>' +
-      '<button class="gmpBtn main gmpBig" data-c="student">🏫 طالبة عمرية<small>نقاطك بتنحسب باسمك من أي جهاز، وإلك كل الجوائز</small></button>' +
+      '<button class="gmpBtn main gmpBig" data-c="student">🏫 طالبة (مدرسة عمر بن عبد العزيز الثانوية للبنات)<small>نقاطك بتنحسب باسمك من أي جهاز، وإلك كل الجوائز</small></button>' +
       '<button class="gmpBtn gmpBig" data-c="google">✅ حساب Google<small>نقاطك محفوظة من أي جهاز، وبتظهري بلقب</small></button>' +
       '<button class="gmpBtn gmpBig" data-c="guest">👤 زائرة<small>بلقب جاهز، ونقاطك محفوظة على هاد الجهاز بس</small></button>' +
       (p.chosen ? '<div class="gmpNote">طريقتك الحالية: ' + (p.type === 'student' ? '🏫 طالبة — ' + esc(p.name) : p.type === 'google' ? '✅ Google' : '👤 زائرة') + '</div>' : '') +
@@ -493,7 +493,7 @@
   function studentInfo() {
     var q = profile(); q.chosen = true; saveProfile(q);
     var box = document.createElement('div'); box.className = 'gmp';
-    box.innerHTML = '<h3>🏫 أهلاً يا طالبة عمرية!</h3>' +
+    box.innerHTML = '<h3>🏫 أهلاً فيكِ يا طالبة مدرسة عمر بن عبد العزيز!</h3>' +
       '<div class="gmpHow" style="font-size:15px">1️⃣ ادخلي أي لعبة من ألعاب صفّك<br>2️⃣ اختاري شعبتك واسمك<br>3️⃣ اكتبي رمزك السري اللي من المعلمة<br>' +
       '✨ وهيك نقاطك بتنحسب باسمك تلقائياً، وبيظهر جنب اسمك 🏫</div>' +
       (q.type === 'student' ? '<div class="gmpNote">✔ إنتِ مسجّلة: ' + esc(q.name) + ' — ' + esc(q.klass) + '</div>' : '') +
@@ -503,12 +503,12 @@
   }
   function studentLogin() {
     var box = document.createElement('div'); box.className = 'gmp';
-    box.innerHTML = '<h3>🏫 طالبة عمرية</h3><div class="gmpSub">⏳ جاري تحميل الشعب...</div>';
+    box.innerHTML = '<h3>🏫 طالبة (مدرسة عمر بن عبد العزيز الثانوية للبنات)</h3><div class="gmpSub">⏳ جاري تحميل الشعب...</div>';
     openModal(box);
     loadRoster().then(function (R) {
       var secs = (R && R.sections || []).filter(function (x) { return x.students && x.students.length; });
       if (!secs.length) {
-        box.innerHTML = '<h3>🏫 طالبة عمرية</h3><div class="gmpSub">ما قدرت أحمّل قوائم الشعب — تأكدي من النت وجربي مرة ثانية</div><div class="gmpBtns"><button class="gmpBtn" id="gmpBk">↩ رجوع</button></div>';
+        box.innerHTML = '<h3>🏫 طالبة (مدرسة عمر بن عبد العزيز الثانوية للبنات)</h3><div class="gmpSub">ما قدرت أحمّل قوائم الشعب — تأكدي من النت وجربي مرة ثانية</div><div class="gmpBtns"><button class="gmpBtn" id="gmpBk">↩ رجوع</button></div>';
         box.querySelector('#gmpBk').onclick = chooser; return;
       }
       function stepSec() {
