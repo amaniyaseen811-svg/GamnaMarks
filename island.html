@@ -2523,7 +2523,7 @@ window.addEventListener('load',function(){
     G.t1=Date.now();
     setTimeout(function(){
       var bonus=G.bossWon?530:0;var fin=pw+bonus;$('wP').textContent=fin;G.final=fin;
-      if(G.bossWon){G.pl[G.cur].pts+=30;}
+      if(G.bossWon){G.pl[G.cur].pts+=30;if(window.GMReport&&GMReport.trophy)GMReport.trophy();}
       var sb=document.querySelector('#p11 .sb');if(!sb)return;
       var old=sb.querySelector('.gmx-trophy');if(old)old.remove();
       var d=document.createElement('div');d.className='gmx-trophy';
@@ -2579,7 +2579,7 @@ window.addEventListener('load',function(){
         else if(o.checked){l.style.background='rgba(244,67,54,.25)';l.style.borderColor='#f44336';l.style.color='#ef9a9a';}});
       if(val===ans[i]){score++;fb.textContent='✅ '+exp[i];fb.className='wf ok';}else{fb.textContent='❌ '+exp[i];fb.className='wf ng';}
     }
-    G.ws[n]=score;
+    G.ws[n]=score;if(window.GMReport)GMReport.add('ورقة العمل '+n,score,10);
     var q=function(id){return document.querySelector('#'+pid+' [id="'+id+'"]');};
     $('s'+n).textContent=score;$('bw'+n).style.display='none';var res=$('wr'+n);res.style.display='block';
     var em=q('e'+n),gr=q('g'+n),ms=q('m'+n);

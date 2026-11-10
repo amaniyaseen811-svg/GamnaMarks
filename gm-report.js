@@ -164,7 +164,7 @@
       id: S.id, game: gameName(), page: page, name: S.name || 'بدون اسم', klass: S.klass || '', attempt: S.attempt || 1,
       date: new Date().toISOString(), timeMs: S.active, timeText: fmtTime(S.active),
       score: t.score, correct: S.correct, wrong: S.wrong, pct: t.pct, rating: t.rating,
-      sections: S.sections.slice(), finished: !!S.finished
+      sections: S.sections.slice(), finished: !!(S.finished || S.trophy)
     };
   }
 
@@ -464,7 +464,10 @@
       got = Number(got) || 0; max = Number(max) || 0;
       var ex = S.sections.filter(function (x) { return x.label === label; })[0];
       if (ex) { ex.got = got; ex.max = max; } else S.sections.push({ label: String(label), got: got, max: max });
+      if (S.started) save();
     },
+    /* الكأس: اللعبة خلصت (بدون ما نفتح شاشة التقرير) */
+    trophy: function () { S.trophy = true; if (S.started) save(); },
     score: function (n) { S.setScore = Number(n) || 0; },
     correct: function (n) { S.correct += (n == null ? 1 : n); },
     wrong: function (n) { S.wrong += (n == null ? 1 : n); },

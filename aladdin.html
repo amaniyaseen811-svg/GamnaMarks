@@ -1874,7 +1874,7 @@ function restartAll(){
       +'<p>نتيجتك: <b>'+W.score+' من '+W.total+'</b> ('+pct+'٪)</p>'
       +'<p>ثلاثون سؤالاً في تركيب الخلية ووظائف عضياتها.</p></div>'
       +'<div class="al-nav"><button class="al-next" id="alAgain">إعادة الورقتين 🔄</button>'
-      +'<button class="al-next" id="alRes">📊 نتيجتك</button><button class="al-close" id="alCls2">إغلاق</button></div>'; window.GMX_WSF={s:W.score,t:W.total};
+      +'<button class="al-next" id="alRes">📊 نتيجتك</button><button class="al-close" id="alCls2">إغلاق</button></div>'; window.GMX_WSF={s:W.score,t:W.total};if(window.GMReport){GMReport.add('ورقة العمل 1',W.score,W.total);GMReport.add('ورقة العمل 2',W.score,W.total);}
     document.getElementById('alAgain').onclick=open; document.getElementById('alRes').onclick=function(){close(); if(window.gmxResults) gmxResults();};
     document.getElementById('alCls2').onclick=close;
   }
@@ -3003,7 +3003,7 @@ window.addEventListener('load',function(){
   var _showWin=showWin;
   window.showWin=function(){
     G.t1=Date.now();score+=30;G.pl[G.cur].pts+=30;G.final=score;
-    _showWin();
+    _showWin();if(window.GMReport&&GMReport.trophy)GMReport.trophy();
     var cup=document.querySelector('#s-win .pv-cup');
     if(cup&&!document.querySelector('#s-win .gmx-badge')){var b=document.createElement('div');b.className='gmx-badge';b.textContent='🏆 مكافأة الكأس: +30 نقطة!';cup.parentNode.insertBefore(b,cup.nextSibling);}
     if(!$('gmxResBtn')){var r=document.createElement('button');r.className='btn-again';r.id='gmxResBtn';r.textContent='📊 نتيجتك';r.onclick=function(){gmxResults();};var ws=$('alWs');ws.parentNode.insertBefore(r,ws.nextSibling);}

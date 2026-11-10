@@ -2194,6 +2194,7 @@ function checkWS() {
 
   if (!PROG[CUR]) PROG[CUR] = { game: 0, easy: null, hard: null };
   PROG[CUR][WS_CUR] = sc;
+  if (window.GMReport) GMReport.add(WS_CUR === 'hard' ? 'ورقة العمل 2' : 'ورقة العمل 1', sc, arr.length);
   refreshLevels();
 
   var em, gr, msg;
@@ -4072,7 +4073,7 @@ clearInterval(lvBrkT);lvBrkOn=false;b.textContent='⏸ استراحة';m.style.d
   window.finishGame=function(){
     G.t1=Date.now();
     score+=30;if(duel())G.pl[G.cur].pts+=30;
-    _finishGame();
+    _finishGame();if(window.GMReport&&GMReport.trophy)GMReport.trophy();
     var cup=document.querySelector('#p_win .pv-cup');
     if(cup&&!document.querySelector('#p_win .gmx-badge')){var b=document.createElement('div');b.className='gmx-badge';b.textContent='🏆 مكافأة الكأس: +30 نقطة!';cup.parentNode.insertBefore(b,cup.nextSibling);}
     if(duel()){var w=$('winTxt');var s=G.pl.slice().sort(function(a,b){return b.pts-a.pts;});

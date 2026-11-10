@@ -659,7 +659,7 @@ function startIntro(){
 $('#ivPlay').onclick=()=>{const v=$('#introVid');v.play().then(()=>{$('#ivPlay').hidden=true}).catch(()=>{buildModes();show('modes')})};
 $('#skipVid').onclick=()=>{$('#introVid').pause();buildModes();show('modes')};
 function toTrophy(){
-  if(!G.trophy){G.trophy=true;G.score+=30}
+  if(!G.trophy){G.trophy=true;G.score+=30;if(window.GMReport&&GMReport.trophy)GMReport.trophy();}
   $('#trSub').textContent=L('بنيتَ {0} كاملة بأقسامها السبعة',STYLES[G.style][1]);
   sfx.win();confetti();show('trophy');
 }
@@ -680,7 +680,7 @@ $('#wsSubmit').onclick=()=>{
   WSQ.forEach((x,i)=>{const li=$('#wq'+i);const sel=li.querySelector('input:checked');
     li.querySelectorAll('label').forEach(l=>{const o=l.querySelector('span').textContent;l.querySelector('input').disabled=true;if(o===x.a)l.classList.add('ok')});
     if(sel&&x.opts[+sel.value]===x.a)c++;else{li.classList.add('miss');if(sel)sel.parentElement.classList.add('no')}});
-  const per=WSK==='ws2'?3:2;G[WSK]=c;G.score+=c*per;updHUD();
+  const per=WSK==='ws2'?3:2;G[WSK]=c;if(window.GMReport)GMReport.add(WSK==='ws2'?'ورقة العمل 2':'ورقة العمل 1',c,WSQ.length);G.score+=c*per;updHUD();
   $('#wsScore').textContent=L('النتيجة: {0} من 20 · +{1} نقطة',c,c*per);
   $('#wsSubmit').hidden=true;const nx=$('#wsNext');nx.hidden=false;nx.textContent=T(WSK==='ws1'?'📝 ورقة العمل الثانية':'📊 النتائج');
   c>=15?sfx.win():sfx.good();window.scrollTo({top:0,behavior:'smooth'});
