@@ -584,6 +584,33 @@
     });
   }
 
+  /* ---------- احتفال فائزة الشهر (بيطلع لما تفتح التطبيق بالشهر الجديد) ---------- */
+  var WHATSAPP = '970569099426';
+  function checkWinner() {
+    var p = profile(), mk = prevMonthKey();
+    if (ls('gm_pts_won_' + mk) === p.pid || ls(LS_BAN) === p.pid) return;
+    loadBoards().then(function (c) {
+      var w = (c.prev || []).filter(function (x) { return x.verified; })[0];
+      if (!w || w.pid !== p.pid) return;
+      ls('gm_pts_won_' + mk, p.pid);
+      css();
+      var code = claimCode(p.pid, mk, 'win');
+      var box = document.createElement('div'); box.className = 'gmp';
+      box.innerHTML = '<div style="text-align:center;font-size:80px;line-height:1">👑</div>' +
+        '<h3 style="font-size:24px">🎉 مبروك! إنتِ فائزة الشهر</h3>' +
+        '<div class="gmpSub" style="font-size:16px">فزتِ بمسابقة GamnaMarks لشهر <b>' + esc(monthName(mk)) + '</b><br>بـ <b style="color:#fcd34d">' + w.pts + '</b> نقطة 🏆</div>' +
+        '<div class="gmpWin">🔐 كود جائزتك<br><b style="direction:ltr;display:inline-block">' + code + '</b></div>' +
+        (p.type === 'student'
+          ? '<div class="gmpNote" style="font-size:14px">ورجي الكود للمعلمة د. أماني عشان تستلمي جائزتك 🎁</div>'
+          : '<div class="gmpNote" style="font-size:14px">تواصلي معنا على واتساب وابعتي الكود عشان تستلمي جائزتك 🎁</div>' +
+            '<a class="gmpBtn main" style="display:block;text-align:center;text-decoration:none;margin-top:8px" target="_blank" rel="noopener" href="https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent('مرحبا، أنا فائزة مسابقة GamnaMarks لشهر ' + monthName(mk) + ' — كود الجائزة: ' + code) + '">💬 واتساب GamnaMarks</a>') +
+        '<div class="gmpBtns"><button class="gmpBtn" id="gmpX">يلا نكمّل 🚀</button></div>';
+      openModal(box);
+      box.querySelector('#gmpX').onclick = closeModal;
+      if (window.confetti) try { confetti(); } catch (e) {}
+    });
+  }
+
   /* ---------- زر المعلمة (بيظهر بس على الجهاز اللي انكتبت فيه كلمة سر المعلمة بصفحة الكود) ---------- */
   function addTeacher() {
     if (ls('gm_teacher') !== '1' || document.getElementById('gmpTeach')) return;
@@ -617,6 +644,7 @@
     if (me && me.getAttribute('data-badge')) { addBadge(); addTeacher(); }
     if (me && me.getAttribute('data-promo')) setTimeout(function () { promo(); }, 700);
     scheduleSync(1500);
+    if (/contest|index/i.test(location.pathname) || location.pathname.slice(-1) === '/') setTimeout(checkWinner, 1800);
     window.addEventListener('online', function () { scheduleSync(500); });
   }
   if (document.body) init(); else document.addEventListener('DOMContentLoaded', init);

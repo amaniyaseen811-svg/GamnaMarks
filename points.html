@@ -134,7 +134,7 @@
     var hitPid=null;
     if(q){
       filtered=filtered.filter(function(x){
-        var m=TIERS.some(function(t){return code(x.pid,mk,t.key)===q||code(x.pid,mk,t.key)==='GM-'+q});
+        var m=TIERS.concat([{key:'win'}]).some(function(t){return code(x.pid,mk,t.key)===q||code(x.pid,mk,t.key)==='GM-'+q});
         if(m)hitPid=x.pid;
         return m||String(x.display||'').toUpperCase().indexOf(q)>-1;
       });
@@ -142,7 +142,8 @@
     var st=list.filter(function(x){return x.type==='student'}).length;
     $('stats').innerHTML='<div class="stat"><b>'+list.length+'</b>لعبوا هالشهر</div><div class="stat"><b>'+st+'</b>من طالباتي</div>'+
       '<div class="stat"><b>'+list.filter(function(x){return x.pts>=100}).length+'</b>وصلوا 100+</div><div class="stat"><b>'+list.reduce(function(s,x){return s+x.pts},0)+'</b>مجموع النقاط</div>';
-    $('winner').innerHTML=winner?'👑 '+(mk===mkOf(new Date())?'المتصدرة حالياً':'فائزة الشهر')+': <b>'+esc(winner.display)+'</b> '+icon(winner)+(winner.klass?' — '+esc(winner.klass):'')+' — '+winner.pts+' نقطة':'لسا ما في فائزة لهاد الشهر';
+    $('winner').innerHTML=winner?'👑 '+(mk===mkOf(new Date())?'المتصدرة حالياً':'فائزة الشهر')+': <b>'+esc(winner.display)+'</b> '+icon(winner)+(winner.klass?' — '+esc(winner.klass):'')+' — '+winner.pts+' نقطة'+
+      (mk!==mkOf(new Date())?'<br><span style="font-size:13px">🔐 كود الفائزة: <b style="direction:ltr;display:inline-block">'+code(winner.pid,mk,'win')+'</b> — بيطلعلها احتفال أول ما تفتح التطبيق'+(winner.type!=='student'?'، ومعه زر واتساب لتتواصل معك':'')+'</span>':''):'لسا ما في فائزة لهاد الشهر';
     var rank=0;
     $('rows').innerHTML=filtered.map(function(x){
       rank=list.indexOf(x)+1;
