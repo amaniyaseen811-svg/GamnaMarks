@@ -4992,6 +4992,23 @@ function wsSubmit(kind) {
   const list = kind === 'easy' ? currentEasyItems : currentHardItems;
   const answers = kind === 'easy' ? wsEasyAnswers : wsHardAnswers;
   const box = document.getElementById(kind === 'easy' ? 'wsEasyListBox' : 'wsHardListBox');
+  // لازم تجاوب على كل الأسئلة قبل التسليم
+  const missing = list.findIndex((_, qi) => answers[qi] === null || answers[qi] === undefined);
+  if (missing !== -1) {
+    const rb = document.getElementById(kind === 'easy' ? 'wsEasyResultBox' : 'wsHardResultBox');
+    const left = list.filter((_, qi) => answers[qi] === null || answers[qi] === undefined).length;
+    rb.textContent = '⚠️ جاوبي على كل الأسئلة قبل التسليم — باقي ' + left + ' سؤال';
+    rb.style.color = '#ff8a80';
+    rb.classList.remove('hidden');
+    const q = box.children[missing];
+    if (q) {
+      q.style.outline = '3px solid #ff5252'; q.style.borderRadius = '14px';
+      setTimeout(() => { q.style.outline = ''; }, 2500);
+      q.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return;
+  }
+  { const rb = document.getElementById(kind === 'easy' ? 'wsEasyResultBox' : 'wsHardResultBox'); rb.style.color = '#ffd75e'; }
   let score = 0;
   list.forEach((item, qi) => {
     const wrap = box.children[qi];
@@ -5737,6 +5754,8 @@ function babGoHome(){
 #babLBFab{left:10px!important;bottom:auto!important;top:140px!important}
 #babBackBtn{top:58px!important}
 /* لما تنفتح لوحة الدردشة أو المايك: زر التقرير ما يغطي زر الإرسال */
+/* شريط «بدون لعب = بدون نقاط» ما يغطي زر «التالي» */
+body:has(#gmWsBar) .full-screen-overlay{padding-bottom:96px!important}
 body:has(.pvc-panel.on) #gmRepBtn,body:has(.pvm-panel.on) #gmRepBtn{display:none!important}
 .pvm-pill{top:62px!important}
 #babLiveBoard{margin:8px auto 0!important}
