@@ -5736,6 +5736,9 @@ function babGoHome(){
 #babHomeBtn{inset-inline-start:auto!important;left:56px!important;top:8px!important;padding:8px 12px!important;font-size:13px!important}
 #babLBFab{left:10px!important;bottom:auto!important;top:140px!important}
 #babBackBtn{top:58px!important}
+/* لما تنفتح لوحة الدردشة أو المايك: زر التقرير ما يغطي زر الإرسال */
+body:has(.pvc-panel.on) #gmRepBtn,body:has(.pvm-panel.on) #gmRepBtn{display:none!important}
+.pvm-pill{top:62px!important}
 #babLiveBoard{margin:8px auto 0!important}
 #babLiveBoard .gml-river{max-height:92px;overflow-y:auto}
 </style>
