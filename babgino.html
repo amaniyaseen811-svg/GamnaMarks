@@ -5731,5 +5731,118 @@ function babGoHome(){
 <script>window.PVKIT_CONFIG={homeUrl:'index.html',gameMinutes:30,homeBtn:false,breakBtn:false};</script>
 <script src="pvkit.js"></script>
 <script src="gm-report.js"></script>
+<style>
+/* ترتيب الأزرار حتى ما تتغطى ببعض */
+#babHomeBtn{inset-inline-start:auto!important;left:56px!important;top:8px!important;padding:8px 12px!important;font-size:13px!important}
+#babLBFab{left:10px!important;bottom:auto!important;top:140px!important}
+#babBackBtn{top:58px!important}
+#babLiveBoard{margin:8px auto 0!important}
+#babLiveBoard .gml-river{max-height:92px;overflow-y:auto}
+</style>
+<!-- ===== بابجينو — أونلاين مع صاحباتي (GMLive) ===== -->
+<script src="gm-live.js"></script>
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  if(!window.GMLive)return;
+  var WORDS={go:'بتنتصر بالمعركة',goN:'بالانتصار بالمعركة',did:'انتصرت بالمعركة',you:'انتصرتي بالمعركة',
+    all:'ينتصر بالمعركة',team:'انتصر بالمعركة',bridge:'جبهة الفريق',bicon:'🛡️',build:'بتقوّي',built:'قوّت',
+    start:'🏕️',step:'🦠',boss:'🏰',i0:'🏕️',im:'🦠',ig:'🏰'};
+  var live={stage:0,best:0,mis:0,lastTM:0,done:false};
+  function stLen(n){return n===3?STATIONS3.length:(n===2?STATIONS2.length:STAGE1_STATIONS.length);}
+  function openLive(n,onStart,onBack){
+    try{GMLive.leave();}catch(e){}
+    live={stage:0,best:0,mis:0,lastTM:0,done:false};
+    GMLive.open({game:'babgino',total:stLen(n),lvl:'normal',words:WORDS,onBack:onBack,
+      onStart:function(cfg){
+        live={stage:n,best:0,mis:0,lastTM:0,done:false};
+        try{BAB_MODE='team';babName=cfg.name;}catch(e){}
+        GMLive.refresh();
+        onStart(cfg);
+      }});
+  }
+
+  /* 1) المرحلة الأولى: بطاقة "أونلاين مع صاحباتي" بشاشة طرق اللعب */
+  var panel=document.querySelector('#babModeScreen .bab-panel');
+  if(panel&&!$('babLiveCard')){
+    var c=document.createElement('div');
+    c.className='bab-mode';c.id='babLiveCard';
+    c.style.cssText='border-color:#4fc3f7;background:rgba(41,182,246,.13)';
+    c.innerHTML='<div class="bab-mi">🌐</div><div><div class="bab-mt" style="color:#4fc3f7">أونلاين مع صاحباتي</div>'+
+      '<div class="bab-md">كل وحدة من تلفونها وبشخصيتها، وكلكم بنفس ساحة المعركة وبتشوفوا بعض: 🤝 تعاون أو 🏁 تنافس</div></div>';
+    c.onclick=function(){
+      $('babModeScreen').style.display='none';
+      openLive(1,function(){babStartRun();},function(){babOpenMode();});
+    };
+    var firstBtn=panel.querySelector('button');
+    panel.insertBefore(c,firstBtn);
+  }
+
+  /* 2) المرحلة الثانية والثالثة: اختيار فردي أو أونلاين قبل البدء */
+  var ov=document.createElement('div');
+  ov.id='babStageMode';ov.className='bab-ov';ov.style.display='none';
+  document.body.appendChild(ov);
+  function stageChoice(n,go){
+    ov.innerHTML='<div class="bab-panel"><div style="font-size:2.2rem">⚔️</div>'+
+      '<div class="bab-h">المرحلة '+(n===2?'الثانية':'الثالثة')+' — كيف تريدين اللعب؟</div>'+
+      '<div class="bab-mode" id="babStSolo"><div class="bab-mi">🎯</div><div><div class="bab-mt">أكمل لوحدي</div>'+
+      '<div class="bab-md">تلعبين المرحلة بنفسك</div></div></div>'+
+      '<div class="bab-mode" id="babStLive" style="border-color:#4fc3f7;background:rgba(41,182,246,.13)"><div class="bab-mi">🌐</div><div>'+
+      '<div class="bab-mt" style="color:#4fc3f7">أونلاين مع صاحباتي</div>'+
+      '<div class="bab-md">غرفة جديدة لهاي المرحلة — كلكم بنفس الساحة وبتشوفوا بعض</div></div></div></div>';
+    ov.style.display='flex';
+    $('babStSolo').onclick=function(){ov.style.display='none';go();};
+    $('babStLive').onclick=function(){ov.style.display='none';
+      openLive(n,function(){go();},function(){stageChoice(n,go);});};
+  }
+  var _motiv=window.showMotivThenStart;
+  window.showMotivThenStart=function(n,fn){
+    if(n<2)return _motiv(n,fn);
+    try{GMLive.leave();GMLive.refresh();}catch(e){}
+    live={stage:0,best:0,mis:0,lastTM:0,done:false};
+    stageChoice(n,function(){_motiv(n,fn);});
+  };
+
+  /* 3) لوحة الساحة فوق السؤال — كل البنات بيشوفوا بعض */
+  var pn=$('panel');
+  if(pn){var bd=document.createElement('div');bd.id='babLiveBoard';bd.style.display='none';
+    bd.style.marginTop='8px';pn.appendChild(bd);GMLive.mountBoard(bd);}
+
+  /* 4) كل ثانية: بنبعث وين وصلت البنت */
+  function send(){
+    if(!GMLive.active()||!live.stage||currentStage!==live.stage)return;
+    var tm=totalMistakes||0;
+    if(tm>live.lastTM)live.mis+=tm-live.lastTM;
+    live.lastTM=tm;
+    var c=Math.max(0,current);if(c>stLen(live.stage))c=stLen(live.stage);
+    if(c>live.best)live.best=c;
+    GMLive.report({step:live.best,pts:getSouls(),mis:live.mis,done:live.done,won:live.done});
+  }
+  setInterval(function(){
+    send();
+    var fr=$('finalResultsScreen'),r=$('babLiveRes');
+    var on=fr&&!fr.classList.contains('hidden');
+    if(on&&GMLive.mode()&&!r){r=document.createElement('div');r.id='babLiveRes';
+      r.style.cssText='width:100%;max-width:520px;margin:14px auto 0';r.innerHTML=GMLive.resultHTML();fr.appendChild(r);}
+    else if(!on&&r)r.remove();
+  },1000);
+
+  /* 5) نهاية المرحلة = خلّصت بالغرفة */
+  var _fin=window.finishGame;
+  window.finishGame=function(){
+    if(GMLive.active()&&live.stage&&live.stage===currentStage&&!live.done){
+      live.done=true;live.best=stLen(live.stage);send();
+    }
+    return _fin.apply(this,arguments);
+  };
+  /* 6) إعادة المرحلة (3 غلطات أو انتهى الوقت) = رجعت من البداية */
+  var _rs=window.restartCurrentStage;
+  window.restartCurrentStage=function(){
+    var r=_rs.apply(this,arguments);
+    if(live.stage&&!live.done){live.best=0;live.lastTM=0;}
+    return r;
+  };
+})();
+</script>
 </body>
 </html>
