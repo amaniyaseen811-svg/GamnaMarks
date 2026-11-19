@@ -640,6 +640,7 @@
     promo: promo,
     award: award, onPlayer: onPlayer, profile: profile, monthPoints: monthPoints,
     mount: mountBoard, open: openBoardModal, choose: chooser, badge: addBadge, sync: sync, google: googleSignIn,
+    boards: loadBoards,
     _calc: calc, _totals: monthTotals, _code: claimCode, RULES: RULES, TIERS: TIERS
   };
 
