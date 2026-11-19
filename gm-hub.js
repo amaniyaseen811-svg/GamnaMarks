@@ -30,6 +30,8 @@
     'lock':           { ws: [['ورقة العمل', "go(30)"]] },
     'lumo':           { ws: [['ورقة العمل الأساسية', "openWS('easy')"], ['ورقة العمل المتقدمة', "openWS('hard')"]] },
     'noona':          { ws: [['أوراق العمل', "showWS(1)"]] },
+    'mole_tournament':{ pre: "var b=document.getElementById('introSkipBtn'),o=document.getElementById('introVideoOverlay');if(b&&o&&getComputedStyle(o).display!=='none')b.click()",
+                        ws: [['ورقة العمل 1 — المستوى الأساسي', "MoleX.openWS(1)"], ['ورقة العمل 2 — المستوى المتوسط', "MoleX.openWS(2)"], ['ورقة العمل 3 — المستوى المتقدم', "MoleX.openWS(3)"]] },
     'noran':          { pre: "document.querySelectorAll('body>video').forEach(function(v){try{v.pause()}catch(e){}v.remove()});document.querySelectorAll('body>button').forEach(function(b){if(/تخطي|تشغيل المقدمة/.test(b.textContent))b.remove()})",
                         ws: [['أوراق العمل', "goScreen('ws');loadSheet('students')"]] },
     'nutrihouse':     { ws: [['أوراق العمل', "document.getElementById('toWs1').click()"]] },
