@@ -147,6 +147,16 @@ h1,h2,h3{line-height:1.5}
   </div>
 </div>
 
+<!-- 3ب) طريقة اللعب -->
+<div id="s-mode" class="screen center">
+  <h2 class="gold">🎮 كيف تريدين اللعب؟</h2>
+  <div class="lvl" style="margin-top:14px">
+    <button class="btn" onclick="playSolo()">🎯 فردي<br><small>تحلّين القضية وحدك</small></button>
+    <button class="btn alt" onclick="playOnline()">🌐 أونلاين مع صاحباتي<br><small>كل واحدة من جهازها: 🤝 تعاون أو 🏁 تنافس — والنتائج للجميع</small></button>
+  </div>
+  <button class="btn gray" onclick="go('s-level')">→ رجوع</button>
+</div>
+
 <!-- 4) القصة والشخصيات -->
 <div id="s-story" class="screen">
   <div class="card">
@@ -163,6 +173,7 @@ h1,h2,h3{line-height:1.5}
 <!-- 5) لوحة التحقيق -->
 <div id="s-board" class="screen">
   <h2 class="gold center">🗂️ لوحة التحقيق</h2>
+  <div id="liveBoard1" style="display:none;margin:8px 0"></div>
   <div class="chars" id="boardChars"></div>
   <div class="card">
     <h3>🧩 المراحل</h3>
@@ -180,6 +191,7 @@ h1,h2,h3{line-height:1.5}
 
 <!-- 7) الأسئلة -->
 <div id="s-q" class="screen">
+  <div id="liveBoard2" style="display:none"></div>
   <div class="card">
     <div class="qhead"><b id="qTitle"></b><span class="hearts" id="qHearts"></span></div>
     <div class="prog"><i id="qProg"></i></div>
@@ -259,6 +271,7 @@ h1,h2,h3{line-height:1.5}
     <div class="res" id="resGrid"></div>
     <h2 id="resGrade" style="margin-top:14px"></h2>
   </div>
+  <div id="liveRes"></div>
   <button class="btn" id="toGenie" onclick="go('s-genie')">🧞 افتحي هدية المارد</button>
   <button class="btn alt" onclick="window.GMReport&&GMReport.finish()">📄 تقريري</button>
   <button class="btn gray" onclick="location.reload()">🔁 العبي مرة أخرى</button>
@@ -278,6 +291,7 @@ h1,h2,h3{line-height:1.5}
 <!-- نافذة -->
 <div id="modal"><div class="card" id="modalBox"></div></div>
 
+<script src="gm-live.js"></script>
 <script>
 /* ===================== بيانات اللعبة ===================== */
 /* صيغة السؤال: [السؤال, [الخيارات… الأول هو الصحيح], الشرح] — الخيارات بتتخلط تلقائيًا */
@@ -578,6 +592,7 @@ function showHelp(){
    <li>🔎 بعد كل مرحلة تحصلين على دليل يستبعد مشتبهًا به أو يشير إلى السارق.</li>
    <li>⚖️ بعد 6 مراحل اتهمي السارق، ثم استلمي الكأس (+30) وحلّي ورقتي العمل.</li>
    <li>⏱️ الوقت الكلي 30 دقيقة، ويمكنك استخدام زر التوقف المؤقت.</li>
+   <li>🌐 العبي أونلاين مع صاحباتك (حتى 6 أو أكثر): واحدة تنشئ غرفة وتشارك الكود، والباقيات يدخلن به. 🤝 تعاون أو 🏁 تنافس، والترتيب يظهر للجميع في النهاية.</li>
    <li>🏠 زر الرئيسية يعيدك إلى ألعاب GamnaMarks.</li>
   </ol>
   <p class="mut" style="margin-top:8px">النقاط: إجابة صحيحة ${G.level==='hard'?15:10} • تصنيف صحيح 5 • دليل 20 • اتهام صحيح من أول مرة 50 • الكأس 30 • ورقة العمل 5 لكل إجابة</p>
@@ -587,7 +602,17 @@ function modal(h){$('modalBox').innerHTML=h;$('modal').classList.add('on');}
 function closeModal(){$('modal').classList.remove('on');}
 
 /* ---------- المستوى والقصة ---------- */
-function setLevel(l){G.level=l;$('tLevel').textContent=l==='hard'?'🎚️ صعب':'🎚️ عادي';renderChars('storyChars',false);go('s-story');}
+function setLevel(l){G.level=l;$('tLevel').textContent=l==='hard'?'🎚️ صعب':'🎚️ عادي';go('s-mode');}
+function playSolo(){try{window.GMLive&&GMLive.leave();}catch(e){}renderChars('storyChars',false);go('s-story');}
+function playOnline(){
+  if(!window.GMLive){return playSolo();}
+  GMLive.open({game:'ipcode',total:LIVE_TOTAL,lvl:G.level,words:LIVE_WORDS,
+    onBack:function(){go('s-mode');},
+    onStart:function(cfg){
+      G.level=cfg.lvl==='hard'?'hard':'normal';$('tLevel').textContent=G.level==='hard'?'🎚️ صعب':'🎚️ عادي';
+      G.live=true;GMLive.refresh();renderChars('storyChars',false);go('s-story');
+    }});
+}
 function charCard(k,mode){
   const p=PEOPLE[k];const cl=G.cleared[k]?' cleared':'';const v=p.victim?' victim':'';const pk=mode==='pick'&&!p.victim?' pick':'';
   const ev=G.evidence[k]||0;
@@ -655,7 +680,7 @@ function answerQ(i){
   G.gameTotal++;
   if(q.opts[i].c){G.gameOK++;addScore(G.level==='hard'?15:10);try{GMReport.correct();}catch(e){}
     $('qFb').className='fb ok';$('qFb').innerHTML='✅ أحسنتِ! '+q.ex;}
-  else{btns[i].classList.add('no');G.mistakes++;try{GMReport.wrong();}catch(e){}
+  else{btns[i].classList.add('no');G.mistakes++;G.liveMis++;try{GMReport.wrong();}catch(e){}
     $('qFb').className='fb no';$('qFb').innerHTML='❌ ليست الإجابة الصحيحة. '+q.ex;$('qHearts').textContent=hearts();
     if(G.mistakes>=MAX_MISTAKES){report();return setTimeout(failChapter,900);}
   }
@@ -681,7 +706,7 @@ function classify(i,j,el){
   row.forEach((b,k)=>{b.disabled=true;if(k===it[1])b.classList.add('ok');});
   G.gameTotal++;
   if(j===it[1]){G.gameOK++;addScore(5);try{GMReport.correct();}catch(e){}}
-  else{el.classList.add('no');G.mistakes++;try{GMReport.wrong();}catch(e){}$('cHearts').textContent=hearts();
+  else{el.classList.add('no');G.mistakes++;G.liveMis++;try{GMReport.wrong();}catch(e){}$('cHearts').textContent=hearts();
     if(G.mistakes>=MAX_MISTAKES){report();return setTimeout(failChapter,900);}}
   report();
   G.cleft--;if(G.cleft===0)$('cDone').style.display='inline-block';
@@ -706,7 +731,7 @@ function openAccuse(){
 }
 function accuse(k){
   G.accTries++;
-  if(k==='rami'){addScore(G.accTries===1?50:20);try{GMReport.correct();GMReport.add('الاتهام',G.accTries===1?1:0,1);}catch(e){}go('s-reveal');}
+  if(k==='rami'){G.accused=true;addScore(G.accTries===1?50:20);try{GMReport.correct();GMReport.add('الاتهام',G.accTries===1?1:0,1);}catch(e){}go('s-reveal');}
   else{try{GMReport.wrong();}catch(e){}
     const why={noor:'ملفات نور الأصلية هي الأقدم؛ إنها صاحبة التصاميم لا سارقتها.',adam:'سجل الدخول يُثبت أن آدم غادر الساعة 22:00 قبل الحادثة.',sami:'عقد سامي انتهى، وكان مسافرًا ليلة الحادثة.'}[k];
     $('accFb').className='fb no';$('accFb').innerHTML='❌ ليس الشخص الصحيح. '+why+' راجعي الأدلة مرة أخرى.';}
@@ -777,6 +802,34 @@ function openGift(i,el){
   if(g.indexOf('20 نقطة')>-1)addScore(20);report();
   $('giftRes').style.display='block';$('giftRes').innerHTML='🧞 هديتك: '+g;
 }
+
+/* ---------- اللعب الأونلاين الجماعي (gm-live) ----------
+   الخطوات: لكل مرحلة خطوتان (الأسئلة ثم التصنيف) × 6 + الحكم = 13 */
+const LIVE_TOTAL=13;
+const LIVE_WORDS={go:'بتكشف السارق',goN:'بكشف السارق',did:'كشفت السارق',you:'كشفتي السارق',all:'يكشف السارق',team:'كشف السارق',
+  bridge:'ملف القضية',bicon:'🗂️',build:'بتضيف دليلًا إلى',built:'أضافت دليلًا إلى',start:'🔍',step:'🔎',boss:'🦹',i0:'🔍',im:'🔎',ig:'🦹'};
+G.liveBest=0;G.liveMis=0;
+function liveStep(){
+  if(G.accused)return LIVE_TOTAL;
+  let st=G.done*2;
+  if(document.getElementById('s-classify').classList.contains('on'))st+=1;
+  return Math.min(st,LIVE_TOTAL);
+}
+function liveSend(){
+  if(!window.GMLive||!GMLive.active())return;
+  G.liveBest=Math.max(G.liveBest,liveStep());
+  GMLive.report({step:G.liveBest,pts:G.score,mis:G.liveMis,done:!!G.finished,won:!!G.finished});
+}
+(function(){
+  if(!window.GMLive)return;
+  GMLive.mountBoard(document.getElementById('liveBoard1'));
+  GMLive.mountBoard(document.getElementById('liveBoard2'));
+  setInterval(function(){
+    liveSend();
+    const box=document.getElementById('liveRes');
+    if(document.getElementById('s-results').classList.contains('on')&&GMLive.mode()){const h=GMLive.resultHTML();if(box.__h!==h){box.__h=h;box.innerHTML=h;}}
+  },1000);
+})();
 
 /* ---------- وضع «أوراق العمل مباشرة» (gm-hub) ---------- */
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
