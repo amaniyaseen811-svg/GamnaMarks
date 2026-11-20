@@ -22,6 +22,7 @@
     'castle':         { ws: [['ورقة العمل', "go('pgWin');buildWin();var q=document.getElementById('quizSection'),n=q&&q.previousElementSibling;while(n){n.style.display='none';n=n.previousElementSibling;}window.scrollTo(0,0)"]] },
     'cosette-grammar':{ ws: [['أوراق العمل', "document.getElementById('toWs1').click()"]] },
     'ifclauses':      { ws: [['أوراق التمرين', "screenWorksheets()"]] },
+    'luebt_alfikra_almsuruqa': { ws: [['ورقة العمل الأولى (أساسية)', "openWS(1)"], ['ورقة العمل الثانية (متقدمة)', "openWS(2)"]] },
     'island':         { ws: [['ورقة العمل الأولى', "P(13)"], ['ورقة العمل الثانية', "P(14)"]] },
     'kanaan':         { pre: "var b=document.querySelector('#videoContainer button');if(b)b.click()", ws: [['أوراق العمل', "scrWS(1)"]] },
     'khaleej_alabtal':{ ws: [['أوراق العمل', "openWorksheetPicker()"]] },

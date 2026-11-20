@@ -2,559 +2,786 @@
 <html lang="ar" dir="rtl">
 <head>
 <script src="gm-controls.js" data-gm="home,pause"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شفرة الفكرة المسروقة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { 
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-            color: #e5e7eb;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container { max-width: 900px; margin: 0 auto; }
-        .screen { display: none; animation: fadeIn 0.5s; }
-        .screen.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        .cover-screen {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-        }
-        .cover-screen video {
-            width: 100%;
-            max-width: 600px;
-            border-radius: 10px;
-        }
-        
-        .intro-screen { text-align: center; padding: 60px 20px; }
-        .intro-screen h1 { 
-            font-size: 2.5rem; font-weight: 900;
-            background: linear-gradient(to right, #fcd34d, #fed7aa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-        }
-        .intro-screen .emoji { font-size: 4rem; margin-bottom: 20px; }
-        .intro-story {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 10px;
-            padding: 25px;
-            margin: 30px 0;
-            line-height: 1.8;
-            font-size: 1.1rem;
-            color: #fef3c7;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 15px;
-            margin: 30px 0;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        button {
-            padding: 15px 30px;
-            font-size: 1rem;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            min-width: 200px;
-        }
-        .btn-kids { background: linear-gradient(to right, #22c55e, #059669); color: white; }
-        .btn-kids:hover { transform: scale(1.05); }
-        .btn-adults { background: linear-gradient(to right, #2563eb, #4c1d95); color: white; }
-        .btn-adults:hover { transform: scale(1.05); }
-        .btn-next { background: linear-gradient(to right, #f59e0b, #d97757); color: white; }
-        .btn-next:hover { background: linear-gradient(to right, #d97706, #c2410c); }
-        
-        .video-screen {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-            padding: 40px 20px;
-        }
-        .video-screen video {
-            width: 100%;
-            max-width: 800px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
-        
-        .level-screen { padding: 40px 20px; min-height: 100vh; }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid rgba(245, 158, 11, 0.3);
-        }
-        .header h2 { font-size: 2rem; color: #fcd34d; }
-        .score-box { text-align: right; }
-        .score-box .score { font-size: 2rem; font-weight: 900; color: #4ade80; }
-        
-        .info-box {
-            background: rgba(30, 41, 59, 0.8);
-            border-left: 4px solid #8b5cf6;
-            padding: 25px;
-            margin-bottom: 30px;
-            border-radius: 8px;
-            line-height: 1.9;
-            color: #e0e7ff;
-        }
-        .info-box strong { color: #c084fc; font-size: 1.1rem; }
-        .info-box ul { text-align: right; margin: 15px 0; padding-right: 20px; }
-        .info-box li { margin: 8px 0; color: #f5d4ff; }
-        
-        .story-box {
-            background: rgba(30, 41, 59, 0.7);
-            border-left: 4px solid #f59e0b;
-            padding: 20px;
-            margin-bottom: 25px;
-            border-radius: 5px;
-            line-height: 1.8;
-        }
-        
-        .questions-container { margin-bottom: 30px; }
-        .question-card {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-        }
-        .question-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 15px; color: #fcd34d; }
-        .options { display: flex; flex-direction: column; gap: 10px; }
-        .option {
-            background: rgba(59, 130, 246, 0.3);
-            border: 1px solid rgba(59, 130, 246, 0.5);
-            color: white;
-            padding: 12px;
-            border-radius: 5px;
-            text-align: right;
-            transition: all 0.3s;
-        }
-        .option:hover { background: rgba(59, 130, 246, 0.5); }
-        .option.selected { background: rgba(34, 197, 94, 0.5); }
-        
-        .btn-submit {
-            width: 100%;
-            padding: 20px;
-            font-size: 1.2rem;
-            background: linear-gradient(to right, #f59e0b, #d97757);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-        
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(to right, #f59e0b, #d97757);
-            transition: width 0.3s;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شفرة الفكرة المسروقة — IP CODE</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#fcd34d;--gold2:#d4af37;--bg:#0b1023;--card:#151b3a;--card2:#1e2550;--ok:#22c55e;--bad:#ef4444;--txt:#e5e7eb;--mut:#9ca3af;--pur:#7c3aed}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif}
+html,body{min-height:100%}
+body{background:radial-gradient(ellipse at top,#1e1b4b 0%,#0b1023 60%) fixed;color:var(--txt);overflow-x:hidden}
+.wrap{max-width:820px;margin:0 auto;padding:70px 14px 90px}
+.screen{display:none;animation:fade .45s}
+.screen.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1,h2,h3{line-height:1.5}
+.gold{background:linear-gradient(90deg,#fde68a,#f59e0b);-webkit-background-clip:text;background-clip:text;color:transparent}
+.card{background:linear-gradient(160deg,var(--card),#0f1430);border:1px solid rgba(252,211,77,.25);border-radius:18px;padding:20px;margin:14px 0;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+.btn{display:inline-block;border:0;cursor:pointer;border-radius:14px;padding:13px 26px;font-size:1.05rem;font-weight:800;color:#1a1300;background:linear-gradient(90deg,#fde68a,#f59e0b);box-shadow:0 4px 16px rgba(245,158,11,.35);transition:transform .15s;margin:6px}
+.btn:hover{transform:scale(1.04)} .btn:disabled{opacity:.45;cursor:default;transform:none}
+.btn.alt{background:linear-gradient(90deg,#6366f1,#7c3aed);color:#fff;box-shadow:0 4px 16px rgba(124,58,237,.4)}
+.btn.gray{background:#374151;color:#fff;box-shadow:none}
+.center{text-align:center}
+.mut{color:var(--mut)}
+/* شريط علوي */
+#hud{position:fixed;top:0;left:0;right:0;z-index:50;display:none;justify-content:center;gap:8px;padding:8px;background:rgba(11,16,35,.9);backdrop-filter:blur(6px);border-bottom:1px solid rgba(252,211,77,.2);flex-wrap:wrap}
+#hud.on{display:flex}
+.pill{background:var(--card2);border:1px solid rgba(252,211,77,.3);border-radius:999px;padding:4px 12px;font-weight:700;font-size:.92rem;white-space:nowrap}
+#tTime.low{color:#f87171;border-color:#f87171;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.5}}
+/* أزرار عائمة */
+.ipfab{position:fixed;z-index:60;width:48px;height:48px;border-radius:50%;border:2px solid var(--gold2);background:#1e2550;color:#fff;font-size:22px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+#fabHelp{bottom:18px;right:18px} #fabMusic{bottom:74px;right:18px}
+/* غلاف */
+.coverBox{position:relative;max-width:420px;margin:0 auto;border-radius:20px;overflow:hidden;border:2px solid var(--gold2);box-shadow:0 0 40px rgba(252,211,77,.25)}
+.coverBox video,.coverBox img{width:100%;display:block}
+.vid{width:100%;max-height:70vh;border-radius:14px;background:#000;display:block;margin:0 auto}
+/* الشخصيات */
+.chars{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.ch{background:var(--card2);border-radius:14px;overflow:hidden;border:2px solid transparent;text-align:center;position:relative;transition:.3s}
+.ch img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;display:block}
+.ch b{display:block;padding:6px 4px 0}
+.ch small{display:block;color:var(--mut);padding:0 4px 8px;font-size:.8rem}
+.ch.cleared{filter:grayscale(1);opacity:.55}
+.ch.cleared::after{content:'مُستبعَد ✔';position:absolute;top:8px;right:8px;background:#16a34a;color:#fff;font-size:.75rem;padding:2px 8px;border-radius:8px;font-weight:800}
+.ch .ev{position:absolute;top:8px;left:8px;background:#dc2626;color:#fff;font-size:.78rem;padding:2px 8px;border-radius:8px;font-weight:800;display:none}
+.ch.pick{cursor:pointer}.ch.pick:hover{border-color:var(--gold)}
+.ch.victim::after{content:'صاحبة المشروع';position:absolute;top:8px;right:8px;background:#2563eb;color:#fff;font-size:.72rem;padding:2px 8px;border-radius:8px;font-weight:800}
+/* لوحة المراحل */
+.chaps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.chap{display:flex;gap:10px;align-items:center;background:var(--card2);border-radius:14px;padding:12px;border:2px solid transparent}
+.chap .ic{font-size:30px}
+.chap.done{border-color:#16a34a}.chap.now{border-color:var(--gold);box-shadow:0 0 18px rgba(252,211,77,.3)}
+.chap.lock{opacity:.45}
+.clues{margin-top:8px}
+.clue{background:#2a1f05;border-right:4px solid var(--gold);border-radius:10px;padding:8px 12px;margin:6px 0;font-size:.93rem}
+/* المعلومات */
+.info h3{color:var(--gold);margin-bottom:8px}
+.info p{line-height:2;margin:6px 0}
+.info ul{list-style:none;line-height:2.1}
+.info li{background:rgba(255,255,255,.04);border-radius:10px;padding:6px 10px;margin:6px 0}
+.adv{margin-top:10px;background:rgba(124,58,237,.15);border:1px dashed #a78bfa;border-radius:12px;padding:10px}
+/* الأسئلة */
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.prog{height:10px;background:#0f1430;border-radius:99px;overflow:hidden;margin:10px 0}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,#f59e0b,#fde68a);transition:width .4s}
+.qtext{font-size:1.15rem;font-weight:800;color:#fff;margin:12px 0;line-height:1.9}
+.opts{display:grid;gap:10px}
+.opt{text-align:right;background:#0f1430;border:2px solid #334155;color:#fff;border-radius:12px;padding:12px 14px;font-size:1rem;font-weight:600;cursor:pointer;transition:.15s;line-height:1.7}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt.ok{background:rgba(34,197,94,.18);border-color:var(--ok)}
+.opt.no{background:rgba(239,68,68,.18);border-color:var(--bad)}
+.opt:disabled{cursor:default}
+.fb{display:none;margin-top:12px;border-radius:12px;padding:10px 14px;font-weight:700;line-height:1.8}
+.fb.ok{display:block;background:rgba(34,197,94,.15);border:1px solid var(--ok)}
+.fb.no{display:block;background:rgba(239,68,68,.15);border:1px solid var(--bad)}
+.hearts{font-size:1.1rem;letter-spacing:2px}
+/* التصنيف */
+.citem{background:#0f1430;border:2px solid #334155;border-radius:12px;padding:10px;margin:8px 0}
+.citem .t{font-weight:800;margin-bottom:6px}
+.cbtns{display:flex;flex-wrap:wrap;gap:6px}
+.cb{border:1px solid #6366f1;background:#1e2550;color:#fff;border-radius:10px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:.9rem}
+.cb:disabled{cursor:default;opacity:.5}
+.cb.ok{background:#15803d;border-color:#22c55e;opacity:1}.cb.no{background:#b91c1c;border-color:#ef4444;opacity:1}
+/* شاشة الدليل */
+.clueBig{font-size:1.15rem;line-height:2;background:linear-gradient(160deg,#3b2a05,#1a1300);border:2px solid var(--gold2);border-radius:16px;padding:18px;margin:12px 0}
+.stamp{display:inline-block;transform:rotate(-6deg);border:3px solid #dc2626;color:#dc2626;font-weight:900;padding:4px 14px;border-radius:8px;font-size:1.2rem;margin:8px}
+/* الكأس والمارد */
+.cupImg,.genieImg{width:100%;max-width:440px;border-radius:16px;border:2px solid var(--gold2);box-shadow:0 8px 40px rgba(255,215,94,.35);animation:pop 1s ease}
+.genieImg{max-width:320px}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.gifts{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:360px;margin:14px auto}
+.gift{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:46px;background:linear-gradient(135deg,#1a2c5c,#0d1737);border:2px solid var(--gold2);border-radius:16px;cursor:pointer;transition:.2s}
+.gift:hover{transform:scale(1.05)} .gift.used{opacity:.35;cursor:default}
+/* النتائج */
+.res{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.res div{background:var(--card2);border-radius:12px;padding:12px;text-align:center}
+.res b{display:block;font-size:1.5rem;color:var(--gold)}
+/* نافذة */
+#modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;padding:16px}
+#modal.on{display:flex}
+#modal .card{max-width:560px;width:100%;max-height:85vh;overflow:auto}
+.lvl{display:grid;gap:12px;max-width:460px;margin:0 auto}
+.lvl button{padding:18px}
+.reveal img{max-width:280px;width:70%;border-radius:16px;border:3px solid #dc2626;box-shadow:0 0 40px rgba(220,38,38,.5)}
+@media(max-width:520px){.qtext{font-size:1.02rem}.btn{padding:12px 18px;font-size:.98rem}}
+</style>
 </head>
 <body>
-    <div class="container">
-        <!-- Cover Screen -->
-        <div id="cover" class="screen active cover-screen">
-            <video width="100%" max-width="600px" autoplay onended="skipCover()" style="border-radius: 10px;">
-                <source src="ipcode-cover.mp4" type="video/mp4">
-            </video>
-            <p style="margin-top: 20px; color: #9ca3af;">اضغطي للمتابعة →</p>
-            <button class="btn-next" onclick="skipCover()" style="margin-top: 20px;">تابعي ▶️</button>
-        </div>
+<div id="hud">
+  <span class="pill" id="tTime">⏱️ 30:00</span>
+  <span class="pill" id="tScore">⭐ 0</span>
+  <span class="pill" id="tLevel">🎚️ عادي</span>
+</div>
+<button class="ipfab" id="fabHelp" title="التعليمات" onclick="showHelp()">❓</button>
+<button class="ipfab" id="fabMusic" title="الموسيقى" onclick="toggleMusic()">🔊</button>
+<audio id="bgm" src="samplex-music.mp3" loop preload="none"></audio>
 
-        <!-- Intro Screen -->
-        <div id="intro" class="screen intro-screen">
-            <div class="emoji">🔐</div>
-            <h1>شفرة الفكرة المسروقة</h1>
-            <p style="margin-bottom: 10px; color: #9ca3af;">The Cipher of the Stolen Idea</p>
-            
-            <div class="intro-story">
-                غدًا سيُفتتح معرض المستقبل للابتكار، وقبل الافتتاح بساعات فقط تصل رسالة غامضة:<br><br>
-                «الشعار الذي ستشاهدونه... ليس ملكًا لمن يدّعي أنه صاحبه.»<br><br>
-                في هذه اللعبة، عليك أن تفك شيفرة الملكية الفكرية للشعارات واللوجوهات وتكتشف الحقيقة!
-            </div>
-            
-            <div class="button-group">
-                <button class="btn-kids" onclick="startGame('kids')">🎮 للأطفال والشباب</button>
-                <button class="btn-adults" onclick="startGame('adults')">🔬 للكبار والمختصين</button>
-            </div>
-        </div>
+<div class="wrap">
 
-        <!-- Video Screen -->
-        <div id="videoScreen" class="screen video-screen">
-            <h2 style="color: #fcd34d; margin-bottom: 20px;">🎬 الفيديو الترويجي</h2>
-            <video width="100%" max-width="800px" controls style="border-radius: 10px; margin-bottom: 30px;">
-                <source src="CIPHER_NARRATIVE_STORY_FINAL_ultra.mp4" type="video/mp4">
-            </video>
-            <div class="button-group">
-                <button class="btn-next" onclick="continueToGame()">تابعي اللعبة ▶️</button>
-                <button class="btn-next" onclick="backToIntro()" style="background: linear-gradient(to right, #6b7280, #4b5563);">العودة ◀️</button>
-            </div>
-        </div>
+<!-- 1) الغلاف المتحرك -->
+<div id="s-cover" class="screen on center">
+  <div class="coverBox">
+    <video id="coverVid" autoplay muted loop playsinline poster="ipcode-cover.jpg"><source src="ipcode-cover.mp4" type="video/mp4"></video>
+  </div>
+  <h1 class="gold" style="margin-top:14px">🔐 شفرة الفكرة المسروقة</h1>
+  <p class="mut">IP CODE — لعبة تحقيق تفاعلية في الملكية الفكرية</p>
+  <button class="btn" onclick="go('s-video');startMusic(false)">ابدئي التحقيق ▶️</button>
+</div>
 
-        <!-- Level Screen -->
-        <div id="level" class="screen level-screen">
-            <div class="header">
-                <div>
-                    <h2 id="levelTitle">المستوى</h2>
-                </div>
-                <div class="score-box">
-                    <div class="score" id="score">⭐ 0</div>
-                </div>
-            </div>
-            
-            <div class="progress-bar">
-                <div class="progress-fill" id="progress" style="width: 0%;"></div>
-            </div>
-            
-            <div class="info-box" id="info"></div>
-            <div class="story-box" id="story"></div>
-            <div class="questions-container" id="questions"></div>
-            
-            <button class="btn-submit" id="submitBtn" onclick="submitLevel()" disabled>
-                ✅ تحقق من الإجابات
-            </button>
-        </div>
-    </div>
+<!-- 2) فيديو المقدمة -->
+<div id="s-video" class="screen center">
+  <h2 class="gold">🎬 القصة</h2>
+  <video id="introVid" class="vid" controls playsinline preload="metadata" poster="ipcode-cover.jpg"><source src="CIPHER_NARRATIVE_STORY_FINAL_ultra.mp4" type="video/mp4"></video>
+  <button class="btn" onclick="go('s-level')">تابعي ⏭️</button>
+</div>
 
-    <script>
-        let gameState = {
-            difficulty: null,
-            currentLevel: 0,
-            score: 0,
-            answers: {}
-        };
+<!-- 3) اختيار المستوى -->
+<div id="s-level" class="screen center">
+  <h2 class="gold">🎚️ اختاري مستوى التحقيق</h2>
+  <p class="mut">الأسئلة تتغير في كل مرة تلعبين فيها</p>
+  <div class="lvl" style="margin-top:14px">
+    <button class="btn" onclick="setLevel('normal')">🟢 مستوى عادي<br><small>أسئلة أساسية — 10 نقاط لكل إجابة صحيحة</small></button>
+    <button class="btn alt" onclick="setLevel('hard')">🔴 مستوى صعب<br><small>حالات وتحليل — 15 نقطة لكل إجابة صحيحة</small></button>
+  </div>
+</div>
 
-        const levelsData = {
-            0: {
-                title: '📌 المستوى الأول: ما هو اللوجو؟',
-                info: `<strong>📚 المعلومات الهامة:</strong><br>
-                    اللوجو (Logo) هو رمز أو تصميم بصري يمثل الشركة أو العلامة التجارية.<br><br>
-                    <strong>وظيفة اللوجو:</strong>
-                    <ul>
-                    <li>🎯 تحديد الهوية البصرية وتمييز العلامة</li>
-                    <li>💼 تمثيل الشركة والقيم والرسالة</li>
-                    <li>🔑 تذكر العملاء بالعلامة التجارية</li>
-                    <li>✨ زيادة الثقة والاحترافية</li>
-                    </ul>`,
-                story: 'عندما ترى لوجو معين، ماذا تتذكر؟',
-                kids: [
-                    { q: 'اللوجو هو:', a: [
-                        { t: 'اسم الشركة فقط', c: false },
-                        { t: 'رمز أو تصميم يمثل الشركة', c: true },
-                        { t: 'موقع الشركة على الإنترنت', c: false }
-                    ]},
-                    { q: 'لماذا تحتاج كل شركة لوجو خاص بها؟', a: [
-                        { t: 'للديكور فقط', c: false },
-                        { t: 'لتمييزها عن الشركات الأخرى وتذكر العملاء', c: true },
-                        { t: 'لا فائدة من اللوجو', c: false }
-                    ]}
-                ],
-                adults: [
-                    { q: 'ما الفرق بين اللوجو والعلامة التجارية؟', a: [
-                        { t: 'لا يوجد فرق', c: false },
-                        { t: 'اللوجو جزء من العلامة التجارية الأوسع', c: true },
-                        { t: 'العلامة التجارية هي صورة فقط', c: false }
-                    ]},
-                    { q: 'حسب الدراسات، كم نسبة تأثير اللوجو على قرار الشراء؟', a: [
-                        { t: '5% فقط', c: false },
-                        { t: 'حوالي 80% من القرارات الأولية', c: true },
-                        { t: 'لا يوجد تأثير', c: false }
-                    ]}
-                ]
-            },
-            1: {
-                title: '🎨 المستوى الثاني: أنواع اللوجوهات',
-                info: `<strong>📚 المعلومات الهامة:</strong><br>
-                    هناك 3 أنواع رئيسية من اللوجوهات:<br><br>
-                    <strong>1. لوجو كلماتي (Wordmark):</strong> يستخدم الأحرف والكلمات فقط<br>
-                    <strong>2. لوجو رمزي (Symbol):</strong> استخدام صورة أو رمز معين بدون كلمات<br>
-                    <strong>3. لوجو مركب (Combination):</strong> دمج الكلمات والصور معاً`,
-                story: 'كل نوع لوجو له استخدام مختلف ومميزات خاصة',
-                kids: [
-                    { q: 'اللوجو الكلماتي يعني:', a: [
-                        { t: 'استخدام صور فقط', c: false },
-                        { t: 'استخدام الأحرف والكلمات', c: true },
-                        { t: 'استخدام الألوان الزاهية جداً', c: false }
-                    ]},
-                    { q: 'اللوجو الرمزي يعتمد على:', a: [
-                        { t: 'الكلمات المكتوبة', c: false },
-                        { t: 'صورة أو رمز يمثل الشركة', c: true },
-                        { t: 'الأرقام فقط', c: false }
-                    ]}
-                ],
-                adults: [
-                    { q: 'متى يكون اللوجو الرمزي البحت الأفضل؟', a: [
-                        { t: 'للشركات الجديدة المجهولة', c: false },
-                        { t: 'للعلامات الشهيرة جداً', c: true },
-                        { t: 'للشركات الصغيرة فقط', c: false }
-                    ]},
-                    { q: 'ما مميزات اللوجو المركب؟', a: [
-                        { t: 'يوفر مرونة في الاستخدام', c: true },
-                        { t: 'يقلل من تكاليف التصميم', c: false },
-                        { t: 'يسهل النسخ واللصق', c: false }
-                    ]}
-                ]
-            },
-            2: {
-                title: '✨ المستوى الثالث: عناصر التصميم الجيد',
-                info: `<strong>📚 المعلومات الهامة:</strong><br>
-                    لوجو جيد يجب أن يتمتع بـ:<br>
-                    <strong>1. البساطة:</strong> سهل التذكر والتعرف عليه<br>
-                    <strong>2. الملائمة:</strong> يناسب طبيعة العمل<br>
-                    <strong>3. الأصالة:</strong> فريد ومختلف عن الآخرين<br>
-                    <strong>4. الديمومة:</strong> لا يتقادم مع الزمن`,
-                story: 'اللوجو الجيد يبقى في ذاكرة العملاء لسنوات طويلة',
-                kids: [
-                    { q: 'أهم صفة في اللوجو الجيد:', a: [
-                        { t: 'أن يكون معقداً جداً', c: false },
-                        { t: 'أن يكون بسيطاً وسهل التذكر', c: true },
-                        { t: 'أن يكون ملوناً جداً', c: false }
-                    ]},
-                    { q: 'لماذا يجب أن يكون اللوجو فريداً؟', a: [
-                        { t: 'للتمييز عن المنافسين', c: true },
-                        { t: 'لأن القانون يفرضه', c: false },
-                        { t: 'لا فائدة من التميز', c: false }
-                    ]}
-                ],
-                adults: [
-                    { q: 'ماذا تعني ديمومة اللوجو؟', a: [
-                        { t: 'ألا يتغير تماماً', c: false },
-                        { t: 'الاستمرارية والعدم تقادمه مع الزمن', c: true },
-                        { t: 'أن يكون على كل شيء', c: false }
-                    ]},
-                    { q: 'كم عدد الألوان الأمثل في اللوجو؟', a: [
-                        { t: 'لون واحد فقط', c: false },
-                        { t: 'من 1 إلى 3 ألوان', c: true },
-                        { t: '5 ألوان أو أكثر', c: false }
-                    ]}
-                ]
-            },
-            3: {
-                title: '🔐 المستوى الرابع: حماية اللوجو',
-                info: `<strong>📚 المعلومات الهامة:</strong><br>
-                    اللوجو محمي قانونياً عبر:<br>
-                    <strong>1. براءة التصميم:</strong> حماية التصميم البصري<br>
-                    <strong>2. العلامة التجارية:</strong> حماية الاسم والشعار<br>
-                    <strong>3. حقوق النشر:</strong> إذا كان عمل فني أصلي`,
-                story: 'لا يمكن لأي شخص نسخ اللوجو بدون إذن',
-                kids: [
-                    { q: 'هل يمكنك استخدام لوجو شركة أخرى؟', a: [
-                        { t: 'نعم، مادام موجود على الإنترنت', c: false },
-                        { t: 'لا، إلا بإذن من الشركة', c: true },
-                        { t: 'يمكن مع تغيير بسيط', c: false }
-                    ]},
-                    { q: 'عقوبة نسخ اللوجو:', a: [
-                        { t: 'إنذار شفوي', c: false },
-                        { t: 'غرامة مالية وحذف اللوجو', c: true },
-                        { t: 'لا يوجد عقوبة', c: false }
-                    ]}
-                ],
-                adults: [
-                    { q: 'كم سنة تستمر حماية العلامة التجارية؟', a: [
-                        { t: '5 سنوات', c: false },
-                        { t: '10 سنوات قابلة للتجديد', c: true },
-                        { t: '10 سنوات غير قابلة للتجديد', c: false }
-                    ]},
-                    { q: 'هل يمكن تسجيل لوجو مشابه جداً؟', a: [
-                        { t: 'نعم، طالما التفاصيل مختلفة', c: false },
-                        { t: 'لا، يرفض التسجيل', c: true },
-                        { t: 'نعم، بدون قيود', c: false }
-                    ]}
-                ]
-            },
-            4: {
-                title: '💡 المستوى الخامس: الهوية البصرية',
-                info: `<strong>📚 المعلومات الهامة:</strong><br>
-                    الهوية البصرية تشمل:<br>
-                    <strong>1. اللوجو:</strong> الشعار الرئيسي<br>
-                    <strong>2. الألوان:</strong> الألوان المميزة<br>
-                    <strong>3. الخطوط:</strong> نوع الخط المستخدم<br>
-                    <strong>4. العناصر البصرية:</strong> الأيقونات والصور`,
-                story: 'اللوجو هو أساس الهوية البصرية الشاملة',
-                kids: [
-                    { q: 'الهوية البصرية تتضمن:', a: [
-                        { t: 'اللوجو فقط', c: false },
-                        { t: 'اللوجو والألوان والخطوط وعناصر أخرى', c: true },
-                        { t: 'النصوص فقط', c: false }
-                    ]},
-                    { q: 'لماذا نختار ألوان معينة؟', a: [
-                        { t: 'عشوائياً', c: false },
-                        { t: 'لأنها تعكس قيم العلامة', c: true },
-                        { t: 'لا أهمية للألوان', c: false }
-                    ]}
-                ],
-                adults: [
-                    { q: 'تأثير ثبات الهوية البصرية:', a: [
-                        { t: 'لا تأثير', c: false },
-                        { t: 'تزيد التعرف بنسبة 80%', c: true },
-                        { t: 'تقلل المبيعات', c: false }
-                    ]},
-                    { q: 'ما أهمية التناسق في الهوية؟', a: [
-                        { t: 'اللوجو فقط', c: false },
-                        { t: 'التناسق في جميع العناصر', c: true },
-                        { t: 'الأسعار والخدمات', c: false }
-                    ]}
-                ]
-            },
-            5: {
-                title: '🏆 المستوى السادس: المسؤولية والاحترافية',
-                info: `<strong>📚 المعلومات الهامة:</strong><br>
-                    كمصمم، يجب عليك:<br>
-                    <strong>1. احترام حقوق الآخرين</strong> - عدم النسخ<br>
-                    <strong>2. الأصالة والابتكار</strong> - تصاميم فريدة<br>
-                    <strong>3. التوثيق القانوني</strong> - تسجيل رسمي<br>
-                    <strong>4. الالتزام بالجودة</strong> - أفضل تصميم`,
-                story: 'فك شيفرة النجاح في عالم اللوجو',
-                kids: [
-                    { q: 'كمصمم، ما واجبك؟', a: [
-                        { t: 'نسخ التصاميم الناجحة', c: false },
-                        { t: 'ابتكار تصاميم أصلية وفريدة', c: true },
-                        { t: 'استخدام أي صور', c: false }
-                    ]},
-                    { q: 'لماذا تسجيل اللوجو مهم؟', a: [
-                        { t: 'لا فائدة', c: false },
-                        { t: 'لحماية حقوقك والآخرين', c: true },
-                        { t: 'للشركات الكبيرة فقط', c: false }
-                    ]}
-                ],
-                adults: [
-                    { q: 'أهمية تصميم لوجو احترافي:', a: [
-                        { t: 'مضيعة للمال', c: false },
-                        { t: 'يعكس احترافية الشركة ويزيد قيمتها', c: true },
-                        { t: 'ليس هناك فرق', c: false }
-                    ]},
-                    { q: 'كيف تتجنب القضايا القانونية؟', a: [
-                        { t: 'بتجاهل حقوق الآخرين', c: false },
-                        { t: 'بابتكار تصاميم أصلية وتسجيلها', c: true },
-                        { t: 'بدون ضمانات', c: false }
-                    ]}
-                ]
-            }
-        };
+<!-- 4) القصة والشخصيات -->
+<div id="s-story" class="screen">
+  <div class="card">
+    <h2 class="gold center">📩 رسالة غامضة</h2>
+    <p style="line-height:2.1;margin-top:8px">قبل ساعات من افتتاح <b>معرض المستقبل للابتكار</b>، تصل إلى ليان رسالة من مجهول يوقّع باسم <b>X</b>:</p>
+    <p class="clue" style="font-size:1.05rem">«مشروع NOVA الذي ستعرضينه غدًا… سيقدّمه شخص آخر على أنه له. ابحثي عن الأدلة قبل فوات الأوان.»</p>
+    <p style="line-height:2.1">مهمتك: حلّي <b>6 مراحل</b> في الملكية الفكرية، وفي نهاية كل مرحلة تحصلين على <b>دليل</b>. بعد الأدلة الستة، اتهمي السارق الحقيقي!</p>
+  </div>
+  <h3 class="gold center">👥 شخصيات القضية</h3>
+  <div class="chars" id="storyChars"></div>
+  <div class="center"><button class="btn" onclick="startCase()">🔍 افتحي لوحة التحقيق</button></div>
+</div>
 
-        function skipCover() {
-            document.getElementById('cover').classList.remove('active');
-            document.getElementById('intro').classList.add('active');
-        }
+<!-- 5) لوحة التحقيق -->
+<div id="s-board" class="screen">
+  <h2 class="gold center">🗂️ لوحة التحقيق</h2>
+  <div class="chars" id="boardChars"></div>
+  <div class="card">
+    <h3>🧩 المراحل</h3>
+    <div class="chaps" id="chapList" style="margin-top:10px"></div>
+  </div>
+  <div class="card" id="clueBox" style="display:none"><h3>🔎 الأدلة التي جمعتِها</h3><div class="clues" id="clueList"></div></div>
+  <div class="center"><button class="btn" id="boardGo" onclick="openChapter()">ابدئي المرحلة ▶️</button></div>
+</div>
 
-        function startGame(difficulty) {
-            gameState.difficulty = difficulty;
-            gameState.currentLevel = 0;
-            gameState.score = 0;
-            document.getElementById('intro').classList.remove('active');
-            document.getElementById('videoScreen').classList.add('active');
-        }
+<!-- 6) صفحة المعلومات -->
+<div id="s-info" class="screen">
+  <div class="card info" id="infoBox"></div>
+  <div class="center"><button class="btn" onclick="startQuestions()">فهمت، إلى الأسئلة ✍️</button></div>
+</div>
 
-        function backToIntro() {
-            document.getElementById('videoScreen').classList.remove('active');
-            document.getElementById('intro').classList.add('active');
-        }
+<!-- 7) الأسئلة -->
+<div id="s-q" class="screen">
+  <div class="card">
+    <div class="qhead"><b id="qTitle"></b><span class="hearts" id="qHearts"></span></div>
+    <div class="prog"><i id="qProg"></i></div>
+    <div class="mut" id="qNum"></div>
+    <div class="qtext" id="qText"></div>
+    <div class="opts" id="qOpts"></div>
+    <div class="fb" id="qFb"></div>
+    <div class="center" style="margin-top:10px"><button class="btn" id="qNext" style="display:none" onclick="nextQ()">التالي ⬅️</button></div>
+  </div>
+</div>
 
-        function continueToGame() {
-            document.getElementById('videoScreen').classList.remove('active');
-            document.getElementById('level').classList.add('active');
-            showLevel();
-        }
+<!-- 8) تحدي التصنيف -->
+<div id="s-classify" class="screen">
+  <div class="card">
+    <div class="qhead"><b id="cTitle">🧩 تحدي التصنيف</b><span class="hearts" id="cHearts"></span></div>
+    <p class="qtext" id="cQ"></p>
+    <div id="cItems"></div>
+    <div class="center"><button class="btn" id="cDone" style="display:none" onclick="finishChapter()">احصلي على الدليل 🔎</button></div>
+  </div>
+</div>
 
-        function showLevel() {
-            const level = levelsData[gameState.currentLevel];
-            const questions = gameState.difficulty === 'kids' ? level.kids : level.adults;
-            
-            document.getElementById('levelTitle').textContent = level.title + ` (${gameState.currentLevel + 1}/6)`;
-            document.getElementById('info').innerHTML = level.info;
-            document.getElementById('story').textContent = level.story;
-            document.getElementById('score').textContent = `⭐ ${gameState.score}`;
-            document.getElementById('progress').style.width = `${((gameState.currentLevel) / 6) * 100}%`;
-            
-            let questionsHTML = '';
-            questions.forEach((q, idx) => {
-                questionsHTML += `<div class="question-card">
-                    <div class="question-title">${q.q}</div>
-                    <div class="options">`;
-                q.a.forEach((opt, optIdx) => {
-                    questionsHTML += `<button class="option" onclick="selectAnswer(${idx}, ${optIdx}, ${opt.c})">${opt.t}</button>`;
-                });
-                questionsHTML += `</div></div>`;
-            });
-            
-            document.getElementById('questions').innerHTML = questionsHTML;
-            document.getElementById('submitBtn').disabled = true;
-            gameState.answers = {};
-        }
+<!-- 9) الدليل -->
+<div id="s-clue" class="screen center">
+  <h2 class="gold">🔎 دليل جديد!</h2>
+  <div class="clueBig" id="clueText"></div>
+  <div id="clueEffect"></div>
+  <button class="btn" onclick="afterClue()">العودة إلى لوحة التحقيق 🗂️</button>
+</div>
 
-        function selectAnswer(qIdx, optIdx, isCorrect) {
-            gameState.answers[qIdx] = isCorrect;
-            
-            const questions = document.querySelectorAll('.question-card');
-            const buttons = questions[qIdx].querySelectorAll('.option');
-            
-            buttons.forEach((btn, idx) => {
-                btn.classList.remove('selected');
-                if (idx === optIdx) {
-                    btn.classList.add('selected');
-                }
-            });
-            
-            document.getElementById('submitBtn').disabled = false;
-        }
+<!-- 10) الاتهام -->
+<div id="s-accuse" class="screen">
+  <h2 class="gold center">⚖️ لحظة الحكم</h2>
+  <p class="center" style="line-height:2">راجعي الأدلة، ثم اضغطي على صورة الشخص الذي سرق فكرة NOVA.</p>
+  <div class="card"><div class="clues" id="accClues"></div></div>
+  <div class="chars" id="accChars"></div>
+  <div class="fb" id="accFb"></div>
+</div>
 
-        function submitLevel() {
-            const level = levelsData[gameState.currentLevel];
-            const questions = gameState.difficulty === 'kids' ? level.kids : level.adults;
-            
-            let correctCount = 0;
-            questions.forEach((q, idx) => {
-                if (gameState.answers[idx] === true) {
-                    correctCount++;
-                }
-            });
-            
-            if (correctCount === questions.length) {
-                gameState.score += 10;
-                if (gameState.currentLevel < 5) {
-                    gameState.currentLevel++;
-                    setTimeout(() => showLevel(), 500);
-                } else {
-                    if (window.GMReport && GMReport.trophy) GMReport.trophy();
-                    alert('🎉 تهانينا! أتممت اللعبة بنجاح!\nحصلت على ' + gameState.score + ' نقطة');
-                    gameState.currentLevel = 0;
-                    gameState.score = 0;
-                    document.getElementById('level').classList.remove('active');
-                    document.getElementById('intro').classList.add('active');
-                }
-            } else {
-                alert('❌ حاولي مرة أخرى. لم تجيبي على جميع الأسئلة بشكل صحيح.');
-            }
-        }
-    </script>
+<!-- 11) كشف الحقيقة -->
+<div id="s-reveal" class="screen center reveal">
+  <h2 class="gold">🎯 كُشفت الحقيقة!</h2>
+  <img src="sami-cover.jpg" alt="رامي">
+  <div class="stamp">مُدان</div>
+  <div class="card" style="text-align:right;line-height:2.1">
+    <p><b>رامي</b> زار المختبر بصفته مستثمرًا محتملًا ووقّع اتفاقية سرية، ثم عاد ليلًا ببطاقة زائر ونسخ الملفات الساعة 02:13، وقدّم طلبًا لتسجيل اسم NOVA، وصاغ طلب براءة منسوخًا من دفتر ليان، واستخدم تصاميم نور في كتيّبه.</p>
+    <p>✅ <b>نور</b> صاحبة التصاميم الأصلية، و<b>آدم</b> غادر قبل الحادثة، و<b>سامي</b> كان مسافرًا ولا حق له في المشروع.</p>
+    <p class="clue" style="font-size:1.05rem">💡 الدرس: «احمِ فكرتك قبل أن تضطر لإثبات أنها لك».</p>
+  </div>
+  <button class="btn" onclick="showTrophy()">استلمي الكأس 🏆</button>
+</div>
+
+<!-- 12) الكأس -->
+<div id="s-trophy" class="screen center">
+  <img class="cupImg" src="gm-cup.jpg" alt="الكأس">
+  <h2 class="gold" style="margin-top:10px">🏆 مبروك! حصلتِ على 30 نقطة إضافية</h2>
+  <p class="mut">أنتِ الآن محققة ملكية فكرية… بقي أن تثبتي ذلك في أوراق العمل</p>
+  <button class="btn" onclick="openWS(1)">📝 ورقة العمل الأولى</button>
+</div>
+
+<!-- 13) أوراق العمل -->
+<div id="s-ws" class="screen">
+  <div class="card">
+    <div class="qhead"><b id="wTitle"></b><span class="pill" id="wScore"></span></div>
+    <div class="prog"><i id="wProg"></i></div>
+    <div class="mut" id="wNum"></div>
+    <div class="qtext" id="wText"></div>
+    <div class="opts" id="wOpts"></div>
+    <div class="fb" id="wFb"></div>
+    <div class="center" style="margin-top:10px"><button class="btn" id="wNext" style="display:none" onclick="nextW()">التالي ⬅️</button></div>
+  </div>
+</div>
+
+<!-- 14) النتائج -->
+<div id="s-results" class="screen center">
+  <h2 class="gold">📊 نتيجتك النهائية</h2>
+  <div class="card">
+    <div class="res" id="resGrid"></div>
+    <h2 id="resGrade" style="margin-top:14px"></h2>
+  </div>
+  <button class="btn" id="toGenie" onclick="go('s-genie')">🧞 افتحي هدية المارد</button>
+  <button class="btn alt" onclick="window.GMReport&&GMReport.finish()">📄 تقريري</button>
+  <button class="btn gray" onclick="location.reload()">🔁 العبي مرة أخرى</button>
+</div>
+
+<!-- 15) المارد -->
+<div id="s-genie" class="screen center">
+  <img class="genieImg" src="gm-genie.jpg" alt="المارد">
+  <h2 class="gold" style="margin-top:10px">شبيك لبيك! اختاري صندوقًا واحدًا</h2>
+  <div class="gifts" id="gifts"></div>
+  <div class="card" id="giftRes" style="display:none;font-size:1.15rem;font-weight:800;line-height:2"></div>
+  <a class="btn" href="index.html">🏠 ألعاب GamnaMarks</a>
+</div>
+
+</div>
+
+<!-- نافذة -->
+<div id="modal"><div class="card" id="modalBox"></div></div>
+
+<script>
+/* ===================== بيانات اللعبة ===================== */
+/* صيغة السؤال: [السؤال, [الخيارات… الأول هو الصحيح], الشرح] — الخيارات بتتخلط تلقائيًا */
+const CHAPTERS = [
+{
+  id:1, icon:'✍️', title:'حق المؤلف', sub:'من صاحب التصميم الأصلي؟',
+  info:`<h3>✍️ ما هو حق المؤلف؟</h3>
+  <p>يحمي حق المؤلف <b>التعبير الأصلي</b> عن الأفكار: النصوص، والرسوم، والتصاميم، والصور، والموسيقى، والبرامج الحاسوبية، ولا يحمي <b>الفكرة المجردة</b> نفسها.</p>
+  <ul>
+   <li>🕐 <b>متى ينشأ؟</b> تلقائيًا لحظة إنجاز العمل وتثبيته، دون حاجة إلى تسجيل (اتفاقية برن 1886).</li>
+   <li>💰 <b>الحقوق المالية:</b> النسخ، والنشر، والترجمة، والتوزيع، والاستغلال التجاري.</li>
+   <li>🏅 <b>الحقوق الأدبية:</b> نسبة العمل إلى صاحبه ومنع تشويهه، وهي لا تُباع.</li>
+   <li>⏳ <b>المدة:</b> حياة المؤلف + 50 سنة على الأقل حسب اتفاقية برن، وكثير من الدول تجعلها 70 سنة.</li>
+   <li>🗂️ <b>الإثبات:</b> المسودات والملفات الأصلية المؤرخة والنشر الموثّق.</li>
+  </ul>`,
+  normal:[
+   ['ماذا يحمي حق المؤلف؟',['التعبير الأصلي عن الفكرة كالنص والرسم','الفكرة المجردة نفسها','الاسم التجاري للشركة','طريقة سرية لصنع منتج'],'حق المؤلف يحمي الشكل الذي عُبّر به عن الفكرة، لا الفكرة المجردة.'],
+   ['متى ينشأ حق المؤلف على رسمة صمّمتها نور؟',['لحظة إنجازها وتثبيتها','بعد تسجيلها رسميًا فقط','بعد نشرها على الإنترنت','بعد بيعها'],'الحماية تلقائية لحظة إنجاز العمل وتثبيته.'],
+   ['أيّ مما يلي عمل محمي بحق المؤلف؟',['برنامج حاسوب كتبه آدم','فكرة تطبيق لم تُكتب بعد','رقم هاتف','اسم مدينة'],'البرامج الحاسوبية المكتوبة مصنفات محمية بحق المؤلف.'],
+   ['الحق الأدبي للمؤلف يعني:',['أن يُنسب العمل إلى صاحبه دائمًا','حق بيع العمل','حق تحصيل الضرائب','حق نسخ أعمال الآخرين'],'الحق الأدبي يضمن نسبة العمل لصاحبه ومنع تشويهه.'],
+   ['ما أفضل دليل يثبت أن نور صاحبة التصميم؟',['مسودات وملفات أصلية مؤرخة باسمها','منشور تكتبه بعد السرقة','شهادة صديقة لم ترَ التصميم','أن التصميم يعجبها'],'الأدلة المؤرخة الأقدم هي الأقوى في إثبات الأسبقية.'],
+   ['نسخ صورة من الإنترنت ونشرها على أنها من تصويرك:',['تعدٍّ على حق المؤلف','مسموح لأنها على الإنترنت','مسموح إذا غيّرتِ لونها','مسموح دائمًا للطلاب'],'وجود العمل على الإنترنت لا يعني أنه بلا مالك.'],
+   ['حسب اتفاقية برن، الحد الأدنى لمدة الحماية:',['حياة المؤلف و50 سنة بعد وفاته','5 سنوات','10 سنوات قابلة للتجديد','حياة المؤلف فقط'],'برن تضع حدًا أدنى هو حياة المؤلف + 50 سنة.'],
+   ['يكون الاقتباس من كتاب في بحث مدرسي سليمًا عندما:',['يكون محدودًا مع ذكر المصدر','يكون كاملًا دون ذكر المصدر','نغيّر كلماته وننسبه لأنفسنا','ننسخ الكتاب كله'],'الاقتباس المحدود مع ذكر المصدر من الاستثناءات المقبولة.'],
+   ['هل تحتاج قصة قصيرة كتبتِها إلى تسجيل حتى تُحمى؟',['لا، الحماية تلقائية والتوثيق يساعد في الإثبات','نعم، وإلا فلا حماية','نعم في كل الدول','فقط إذا كانت طويلة'],'التسجيل ليس شرطًا للحماية، لكنه يقوّي الإثبات.']
+  ],
+  hard:[
+   ['فكرة «تطبيق يذكّر الطلاب بمواعيد الامتحانات»، هل يحميها حق المؤلف؟',['لا؛ يحمي الشيفرة والتصميم المكتوب لا الفكرة المجردة','نعم بمجرد قولها','نعم إذا قيلت أمام شهود','نعم لمدة سنة'],'الأفكار المجردة لا تُحمى، بل التعبير عنها.'],
+   ['باعت نور حقوقها المالية في التصميم لشركة. ما الذي يبقى لها؟',['الحق الأدبي في نسبة التصميم إليها','لا شيء على الإطلاق','حق بيع التصميم مرة أخرى','حق منع الشركة من استخدامه'],'الحقوق الأدبية تبقى للمؤلف ولا تنتقل بالبيع.'],
+   ['عمل صمّمته موظفة ضمن مهام وظيفتها:',['يحدد العقد والقانون مالك حقوقه المالية، وغالبًا تكون لصاحب العمل','هو دائمًا للموظفة وحدها','لا يحميه أحد','يصبح ملكًا عامًا'],'أعمال الوظيفة تخضع لعقد العمل والقانون.'],
+   ['أيّ إجراء يقوّي موقف المبدعة عند النزاع؟',['حفظ نسخ مؤرخة وإيداع العمل أو نشره بتاريخ موثّق','إخفاء العمل وعدم حفظ نسخ منه','حذف المسودات القديمة','الاكتفاء بالذاكرة'],'التوثيق المؤرخ هو خط الدفاع الأول.'],
+   ['ترجمة كتاب ونشرها دون إذن المؤلف:',['تعدٍّ على حقه المالي في الترجمة','مسموحة لأنها بلغة أخرى','مسموحة إذا ذكرنا اسم المؤلف','مسموحة دائمًا'],'الترجمة من الحقوق المالية الحصرية للمؤلف.'],
+   ['انقضت مدة حماية رواية قديمة. ماذا يعني ذلك؟',['دخلت الملك العام ويجوز استخدامها مع نسبتها لمؤلفها','لا يجوز استخدامها أبدًا','تنتقل لأول من ينشرها','تُحذف من المكتبات'],'بعد انقضاء المدة يدخل العمل الملك العام، ويبقى ذكر مؤلفه واجبًا.'],
+   ['غيّر رامي ألوان تصميم نور قليلًا وادّعى أنه جديد. قانونيًا:',['يبقى نسخًا لعمل نور ويُعد تعديًا','أصبح عملًا أصليًا لرامي','لا مشكلة لأن الألوان تغيّرت','يصبح ملكًا مشتركًا'],'التعديل البسيط لا يخلق عملًا أصليًا جديدًا.'],
+   ['ما الاتفاقية الدولية الأساسية لحماية المصنفات الأدبية والفنية؟',['اتفاقية برن','اتفاقية باريس','اتفاقية جنيف للمناخ','بروتوكول كيوتو'],'برن (1886) هي اتفاقية المصنفات الأدبية والفنية.']
+  ],
+  classify:{ q:'صنّفي: هل العنصر محمي بحق المؤلف؟', bins:['محمي بحق المؤلف','غير محمي'], items:[
+   ['رسمة شعار NOVA الأصلية',0],['أغنية ألّفتها طالبة',0],['شيفرة برنامج كتبها آدم',0],['صورة فوتوغرافية التقطتها ليان',0],
+   ['فكرة مجردة لم تُكتب',1],['حقيقة علمية: الماء يغلي عند 100°س',1],['اسم شخص',1],['رواية منشورة',0]]},
+  clue:{ text:'ملفات نور الأصلية مؤرخة قبل ثلاثة أشهر من المعرض، وكتيّب رامي التسويقي يستخدم التصميم نفسه.', clear:'noor', point:'rami' }
+},
+{
+  id:2, icon:'™️', title:'العلامة التجارية', sub:'لمن اسم NOVA؟',
+  info:`<h3>™️ ما هي العلامة التجارية؟</h3>
+  <p>إشارة مميزة (اسم، أو شعار، أو رمز، أو لون مميز) <b>تميّز منتجات جهة أو خدماتها</b> عن غيرها.</p>
+  <ul>
+   <li>📝 <b>الحماية:</b> بالتسجيل لدى الجهة المختصة في كل دولة.</li>
+   <li>✅ <b>الشروط:</b> أن تكون مميزة، وغير مضللة، وغير مشابهة لعلامة مسجلة لمنتجات مماثلة بشكل يربك المستهلك.</li>
+   <li>⏳ <b>المدة:</b> غالبًا 10 سنوات قابلة للتجديد دون حد.</li>
+   <li>®️ الرمز ® يعني علامة مسجلة، و™ يُستخدم عادة لعلامة غير مسجلة يدّعي صاحبها حقه فيها.</li>
+  </ul>`,
+  normal:[
+   ['الوظيفة الأساسية للعلامة التجارية:',['تمييز منتجات جهة عن غيرها','حماية اختراع تقني','حماية رواية','إخفاء معلومة سرية'],'العلامة تخبر المستهلك بمصدر المنتج.'],
+   ['كيف تُحمى العلامة التجارية حماية قوية؟',['بالتسجيل لدى الجهة المختصة','تلقائيًا بمجرد رسمها','بنشرها على مواقع التواصل فقط','لا تحتاج إلى حماية'],'التسجيل هو أساس الحماية القوية للعلامة.'],
+   ['الرمز ® يعني:',['علامة مسجلة رسميًا','علامة مقلدة','منتج مستورد','علامة منتهية'],'® = Registered أي مسجلة.'],
+   ['المدة الشائعة لحماية العلامة المسجلة:',['10 سنوات قابلة للتجديد','20 سنة غير قابلة للتجديد','سنة واحدة','مدى الحياة دون تجديد'],'تتجدد العلامة ما دام صاحبها يجدّدها.'],
+   ['أيّ مما يلي يمكن أن يكون علامة تجارية؟',['اسم أو شعار أو رمز مميز','قانون فيزيائي','معادلة رياضية','فكرة عامة'],'العلامة إشارة مميزة يراها المستهلك.'],
+   ['بيع حقائب تحمل شعار شركة مشهورة دون إذنها:',['تقليد وتعدٍّ على العلامة التجارية','تجارة مشروعة','حرية تعبير','مسموح إذا كان السعر أقل'],'التقليد يضلل المستهلك ويمس حق صاحب العلامة.'],
+   ['لماذا لا يصلح اسم «خبز» علامة تجارية لمخبز؟',['لأنه اسم عام وصفي غير مميز','لأنه قصير','لأنه عربي','لأنه جميل'],'الأسماء العامة الوصفية لا تميّز منتجًا عن غيره.'],
+   ['تقدّم شخص لتسجيل اسم مشروع غيره قبل صاحبه. ما الدرس؟',['سجّلي علامتك مبكرًا قبل الإعلان عنها','لا تُسمّي مشروعك','انشري الاسم بسرعة فقط','الاسم لا يهم'],'التسجيل المبكر يغلق الباب أمام المتربصين.']
+  ],
+  hard:[
+   ['شركة سجّلت علامة «نجمة» للأحذية. هل يمكن لشركة أخرى تسجيل «نجمة» للأدوية؟',['قد يمكن غالبًا لأن الحماية مرتبطة بفئة المنتجات ما لم تكن العلامة مشهورة','مستحيل دائمًا','نعم، ويجوز لها استخدامها للأحذية أيضًا','نعم بشرط تغيير حرف'],'حماية العلامة مرتبطة بالمنتجات المسجلة لها، والمشهورة تحظى بحماية أوسع.'],
+   ['تُرفض علامة مشابهة جدًا لعلامة مسجلة لمنتجات مماثلة لأنها:',['تسبب لبسًا وتضليلًا للمستهلك','أطول','أحدث تصميمًا','بلغة مختلفة'],'معيار الرفض الأساسي هو احتمال اللبس.'],
+   ['لماذا قد تُشطب علامة تجارية مسجلة؟',['لعدم استعمالها مدة يحددها القانون أو لعدم تجديدها','لأنها نجحت كثيرًا','لأن صاحبها غيّر عنوانه','لأن لونها قديم'],'عدم التجديد أو عدم الاستعمال الطويل من أسباب الشطب.'],
+   ['العلامة المشهورة عالميًا تحظى بحماية:',['أوسع قد تمتد إلى منتجات مختلفة','أضعف من غيرها','لا تُحمى','في بلد واحد فقط دون استثناء'],'الشهرة توسّع نطاق الحماية.'],
+   ['سجّلتِ علامتك في فلسطين فقط. ماذا يعني ذلك؟',['الحماية إقليمية، وتحتاجين تسجيلًا في الدول الأخرى','محمية في العالم كله','محمية في الدول العربية تلقائيًا','لا حماية أصلًا'],'الحماية تمنحها كل دولة لأراضيها.'],
+   ['ما الفرق بين ™ و ®؟',['® لعلامة مسجلة، و™ عادة لعلامة غير مسجلة يدّعي صاحبها حقه فيها','لا فرق بينهما','™ أقوى قانونيًا','® للعلامات الأجنبية فقط'],'® تدل على التسجيل الرسمي.'],
+   ['أيّ اتفاقية دولية تشمل حماية العلامات والملكية الصناعية؟',['اتفاقية باريس 1883','اتفاقية برن فقط','بروتوكول كيوتو','اتفاقية فيينا للعلاقات الدبلوماسية'],'باريس هي اتفاقية الملكية الصناعية.'],
+   ['قدّم رامي طلب تسجيل اسم NOVA بعد يوم من رؤيته في العرض المبدئي. ما الذي يُضعف طلبه؟',['سوء النية وإثبات سبق استعمال ليان للاسم','لا شيء يُضعفه','أنه سجّل أولًا فيملكها دائمًا','أن الاسم إنجليزي'],'سوء النية وسبق الاستعمال من أسباب الاعتراض على التسجيل.']
+  ],
+  classify:{ q:'صنّفي: هل يصلح علامة تجارية؟', bins:['يصلح علامة','لا يصلح'], items:[
+   ['شعار مبتكر مميز',0],['اسم مبتكر مثل NOVA',0],['كلمة «حليب» لمنتج حليب',1],['شعار يشبه شعارًا مشهورًا لمنتج مماثل',1],
+   ['لون مميز يرتبط بمنتج معروف',0],['عبارة مضللة: «دواء يشفي كل الأمراض»',1],['رمز مبتكر لمطعم',0],['علم دولة كما هو',1]]},
+  clue:{ text:'سجل مكتب العلامات: طلب تسجيل اسم NOVA وشعارها قدّمته شركة رامي بعد يوم واحد من العرض المبدئي.', point:'rami' }
+},
+{
+  id:3, icon:'💡', title:'براءة الاختراع', sub:'دفتر المختبر يتكلم',
+  info:`<h3>💡 ما هي براءة الاختراع؟</h3>
+  <p>حق استئثاري يُمنح للمخترع على <b>حل تقني جديد</b> لمشكلة، مقابل الكشف عن تفاصيله في طلب البراءة.</p>
+  <ul>
+   <li>✅ <b>الشروط:</b> الجدة، والخطوة الابتكارية (غير بديهي لأهل الاختصاص)، وقابلية التطبيق الصناعي.</li>
+   <li>⏳ <b>المدة:</b> 20 سنة من تاريخ إيداع الطلب (اتفاقية تريبس)، ولا تتجدد.</li>
+   <li>🚫 <b>لا تُمنح</b> للاكتشافات والنظريات العلمية والطرق الرياضية المجردة.</li>
+   <li>⚠️ <b>تنبيه:</b> الإعلان عن الاختراع قبل إيداع الطلب قد يُفقده شرط الجدة.</li>
+   <li>📓 دفتر المختبر المؤرخ يوثّق مراحل الاختراع.</li>
+  </ul>`,
+  normal:[
+   ['شروط منح براءة الاختراع:',['الجدة والخطوة الابتكارية وقابلية التطبيق الصناعي','الجمال والشهرة','السعر المرتفع','أن يكون المخترع كبيرًا في السن'],'هذه الشروط الثلاثة متفق عليها دوليًا.'],
+   ['مدة حماية البراءة غالبًا:',['20 سنة من تاريخ إيداع الطلب','10 سنوات قابلة للتجديد','مدى الحياة','5 سنوات'],'20 سنة وفق اتفاقية تريبس.'],
+   ['أيّ مما يلي يمكن أن يحصل على براءة؟',['جهاز جديد لتنقية الماء بطريقة مبتكرة','نظرية علمية','نبات مكتشف في الطبيعة','قصيدة'],'البراءة للحلول التقنية الجديدة.'],
+   ['ماذا يقدّم المخترع مقابل الحماية؟',['الكشف عن تفاصيل الاختراع في طلب البراءة','إخفاء الاختراع للأبد','مبلغًا للجمهور','التنازل عن اسمه'],'الكشف مقابل الحماية: هذه فكرة نظام البراءات.'],
+   ['معنى «الجدة»:',['ألا يكون الاختراع معروفًا للعامة قبل إيداع الطلب','أن يكون مصنوعًا حديثًا','أن يكون لونه جديدًا','أن يكون غاليًا'],'الجدة تُقاس بما كان معروفًا قبل تاريخ الإيداع.'],
+   ['دفتر المختبر المؤرخ لليان مهم لأنه:',['يوثّق مراحل الاختراع وتواريخها','يرفع سعر الاختراع','يغني عن التسجيل دائمًا','للزينة فقط'],'التوثيق المؤرخ دليل قوي في النزاعات.'],
+   ['بعد انتهاء مدة البراءة:',['يصبح الاختراع متاحًا للجميع','تتجدد تلقائيًا','يُمنع استخدامه','ينتقل للدولة سرًا'],'يدخل الاختراع الملك العام.'],
+   ['شرحت ليان اختراعها بالتفصيل في منشور عام قبل التقديم. ما الخطر؟',['قد يفقد الاختراع شرط الجدة','لا خطر','يصبح أقوى','تتضاعف مدة الحماية'],'قدّمي الطلب أولًا، ثم أعلني.']
+  ],
+  hard:[
+   ['«الخطوة الابتكارية» تعني:',['ألا يكون الاختراع بديهيًا لشخص من أهل الاختصاص','أن يتطلب خطوات كثيرة','أن يكون كبير الحجم','أن ينجح تجاريًا'],'المعيار هو عدم البداهة لأهل الاختصاص.'],
+   ['اكتشف عالم خاصية جديدة في نبات بري. هل يحصل على براءة للخاصية نفسها؟',['لا؛ الاكتشاف وحده ليس اختراعًا، وقد يُحمى تطبيق تقني جديد مبني عليه','نعم دائمًا','نعم إذا كان أول من رآه','نعم إذا صوّره'],'الاكتشاف غير الاختراع.'],
+   ['تُمنح البراءة:',['في كل دولة على حدة، فالحماية إقليمية','في العالم كله بطلب واحد نهائي','في الدول العربية تلقائيًا','لا تُمنح لأحد'],'لا توجد «براءة عالمية» واحدة نهائية.'],
+   ['وجد الفاحص في طلب رامي الخطأ الحسابي نفسه الموجود في دفتر ليان. علامَ يدل ذلك؟',['نسخ مباشر من عمل ليان','صدفة طبيعية','أن رامي أذكى','أن ليان نسخت منه'],'تكرار الخطأ نفسه دليل نسخ كلاسيكي، ودفتر ليان أقدم.'],
+   ['طوّرت فتاة نسخة محسّنة من اختراع محمي ببراءة قائمة. ماذا يلزمها لتصنيعها تجاريًا؟',['قد تحتاج ترخيصًا من صاحب البراءة الأصلية، رغم أن تحسينها قد يُحمى','لا شيء','إلغاء البراءة الأصلية','تغيير اللون فقط'],'التحسين قد يُحمى، لكنه قد يستخدم الاختراع الأصلي المحمي.'],
+   ['أيّ مما يلي غير قابل للبراءة عادة؟',['طريقة رياضية مجردة','آلة جديدة','مركب كيميائي جديد مفيد','طريقة تصنيع مبتكرة'],'الطرق الرياضية المجردة مستثناة.'],
+   ['لماذا تختار بعض الشركات السر التجاري بدل البراءة؟',['لأن البراءة تتطلب كشف التفاصيل وتنتهي، والسر قد يدوم ما دام محفوظًا','لأن السر أقوى قانونيًا في كل الحالات','لأن البراءة ممنوعة','لا فرق بينهما'],'لكل خيار مزاياه ومخاطره.'],
+   ['ما الجزء الذي يحدد بدقة نطاق الحماية في طلب البراءة؟',['عناصر الحماية (المطالبات)','غلاف الطلب','صورة المخترع','إعلان المنتج'],'المطالبات ترسم حدود الحق.']
+  ],
+  classify:{ q:'صنّفي: هل يمكن منحه براءة اختراع؟', bins:['قابل للبراءة','غير قابل'], items:[
+   ['جهاز جديد يحوّل الضباب إلى ماء شرب',0],['طريقة مبتكرة لتصنيع ألواح شمسية أرخص',0],['نظرية النسبية',1],['اكتشاف معدن في الطبيعة',1],
+   ['دواء بتركيبة جديدة فعالة',0],['معادلة رياضية',1],['أداة زراعية معروفة منذ سنوات',1],['مستشعر جديد يروي النباتات تلقائيًا',0]]},
+  clue:{ text:'مسودة طلب براءة باسم رامي تكرر نص دفتر ليان، حتى الخطأ الحسابي نفسه في الصفحة 14.', point:'rami' }
+},
+{
+  id:4, icon:'🔒', title:'الأسرار التجارية', sub:'لغز الساعة 02:13',
+  info:`<h3>🔒 ما هو السر التجاري؟</h3>
+  <p>معلومة تجارية أو تقنية (وصفة، شيفرة مصدرية، قوائم عملاء، خطط تسويق) تُحمى ما دامت:</p>
+  <ul>
+   <li>🤫 <b>سرية</b> غير معروفة للعامة،</li>
+   <li>💎 لها <b>قيمة تجارية</b> لكونها سرية،</li>
+   <li>🛡️ واتخذ صاحبها <b>إجراءات معقولة</b> لحفظها (كلمات مرور، صلاحيات، اتفاقيات عدم إفشاء NDA).</li>
+   <li>⏳ لا تحتاج تسجيلًا ولا مدة محددة، لكنها تسقط إذا كُشفت بطريقة مشروعة كالتطوير المستقل.</li>
+   <li>🚨 سرقتها بالتجسس أو بخرق اتفاقية سرية تعدٍّ يعاقب عليه القانون.</li>
+  </ul>`,
+  normal:[
+   ['السر التجاري هو:',['معلومة لها قيمة تجارية تُحفظ سرًا بإجراءات معقولة','شعار معروض في الشارع','كتاب منشور','براءة منشورة'],'السرية والقيمة والحماية: ثلاثة عناصر.'],
+   ['مدة حماية السر التجاري:',['ما دام سرًا محفوظًا','20 سنة','10 سنوات','سنة واحدة'],'لا مدة محددة؛ الحماية مستمرة ما دام السر محفوظًا.'],
+   ['أيّ مما يلي مثال على سر تجاري؟',['الشيفرة المصدرية غير المنشورة لتطبيق NOVA','اسم NOVA المعروض','صورة الإعلان','عنوان الشركة'],'ما لا يعرفه العامة وله قيمة هو السر.'],
+   ['اتفاقية عدم الإفشاء (NDA) تهدف إلى:',['إلزام الطرف الآخر بعدم كشف المعلومات السرية','نشر المعلومات','بيع الشركة','تسجيل العلامة'],'NDA أداة أساسية لحماية الأسرار عند مشاركتها.'],
+   ['أيّ إجراء يحمي السر التجاري؟',['كلمات مرور وتحديد من يطّلع على الملفات','ترك الملفات على مكتب مفتوح','مشاركة الشيفرة في مجموعة عامة','نشرها للتسويق'],'الإجراءات المعقولة شرط للحماية.'],
+   ['توصيل USB بجهاز الشركة ليلًا ونسخ الملفات دون إذن:',['سرقة أسرار تجارية','نسخة احتياطية مشروعة','عمل تطوعي','لا مشكلة'],'النسخ غير المصرح به استيلاء غير مشروع.'],
+   ['هل يحتاج السر التجاري إلى تسجيل؟',['لا','نعم دائمًا','نعم كل سنة','نعم في المحكمة'],'لا يوجد تسجيل للأسرار، وإلا لما بقيت أسرارًا.'],
+   ['الوصفة السرية لمشروب شهير مثال على:',['سر تجاري','حق مؤلف','علامة تجارية','براءة منتهية'],'من أشهر أمثلة الأسرار التجارية.']
+  ],
+  hard:[
+   ['توصّلت شركة منافسة إلى الوصفة نفسها بتجاربها الخاصة دون نسخ. الحكم:',['تطوير مستقل مشروع لا يُعد تعديًا','سرقة سر تجاري','تعدٍّ على حق المؤلف','يجب أن تدفع تعويضًا دائمًا'],'السر لا يمنع غيرك من الوصول إليه بجهده المشروع.'],
+   ['لماذا خسرت شركة دعواها بسرقة سرها؟',['لأنها لم تتخذ إجراءات معقولة لحماية المعلومة','لأن المعلومة قيّمة','لأن الموظف تركها','لأنها شركة صغيرة'],'من لم يحمِ سره لا يستطيع ادعاء سريته.'],
+   ['انتقلت موظفة سابقة إلى شركة جديدة. ما الذي لا يجوز لها؟',['استخدام أسرار شركتها السابقة التي التزمت بسريتها','استخدام مهاراتها وخبرتها العامة','العمل في المجال نفسه عمومًا','ذكر خبرتها في سيرتها الذاتية'],'الخبرة العامة لها، أما الأسرار فلا.'],
+   ['سجل النظام: USB متصل الساعة 02:13، وبطاقة زائر باسم رامي فُعّلت 01:58، وآدم غادر 22:00. الاستنتاج الأقوى:',['الأدلة تشير إلى رامي وتستبعد آدم','آدم هو الفاعل','لا علاقة للأدلة بالقضية','ليان سرقت مشروعها'],'التسلسل الزمني يربط بطاقة رامي بلحظة النسخ.'],
+   ['أيّ مما يلي ليس سرًا تجاريًا؟',['معلومة منشورة في مجلة علمية','قائمة عملاء خاصة','خطة تسعير داخلية','خوارزمية غير منشورة'],'ما نُشر لم يعد سرًا.'],
+   ['أفضل مبدأ لصلاحيات الوصول إلى الملفات السرية:',['كل شخص يطّلع فقط على ما يحتاجه لعمله','الجميع يطّلعون على كل شيء','لا أحد حتى المالك','الزوار فقط'],'مبدأ «الحاجة إلى المعرفة».'],
+   ['خرق اتفاقية عدم الإفشاء يترتب عليه عادة:',['مسؤولية قانونية وتعويض عن الضرر','لا شيء','مكافأة','تسجيل براءة'],'الاتفاقية عقد ملزم.'],
+   ['ميزة السر التجاري مقارنة بالبراءة:',['لا يتطلب الكشف وقد يدوم مدة غير محددة','يحمي من التطوير المستقل','أرخص وأقوى دائمًا','يُمنح عالميًا'],'لكن لا يحمي من التطوير المستقل.']
+  ],
+  classify:{ q:'صنّفي: هل هو سر تجاري؟', bins:['سر تجاري','ليس سرًا'], items:[
+   ['الشيفرة المصدرية غير المنشورة',0],['قائمة المستثمرين الخاصة',0],['خطة التسويق القادمة',0],['عنوان الشركة على موقعها',1],
+   ['شعار NOVA المعروض',1],['وصفة سرية لمشروب',0],['معلومة منشورة في كتاب',1],['رقم هاتف خدمة العملاء المعلن',1]]},
+  clue:{ text:'سجل الدخول: آدم غادر الساعة 22:00، وبطاقة زائر باسم رامي فُعّلت 01:58، ثم اتصل USB بالنظام الساعة 02:13.', clear:'adam', point:'rami' }
+},
+{
+  id:5, icon:'📜', title:'العقود والتراخيص', sub:'هل لسامي حق في NOVA؟',
+  info:`<h3>📜 العقود والتراخيص</h3>
+  <ul>
+   <li>🔑 <b>الترخيص:</b> إذن من المالك لغيره باستخدام حقه وفق شروط (مدة، مكان، نطاق، مقابل)، مع <b>بقاء الملكية</b> للمالك.</li>
+   <li>🥇 <b>الترخيص الحصري</b> يمنع منح الإذن لغير المرخَّص له في النطاق نفسه، و<b>غير الحصري</b> يسمح بأكثر من مرخَّص له.</li>
+   <li>🔁 <b>التنازل:</b> نقل الملكية نهائيًا إلى طرف آخر.</li>
+   <li>✍️ الاتفاقات المكتوبة الواضحة تحدد من يملك ماذا، وماذا يحق لكل شريك عند انتهاء الشراكة.</li>
+   <li>🌐 رخص <b>المشاع الإبداعي</b> (Creative Commons) تسمح باستخدام الأعمال بشروط معلنة، مثل ذكر المصدر.</li>
+  </ul>`,
+  normal:[
+   ['الترخيص يعني:',['إذنًا بالاستخدام مع بقاء الملكية للمالك','بيع الملكية نهائيًا','سرقة مشروعة','تسجيل علامة'],'المرخَّص له يستخدم ولا يملك.'],
+   ['التنازل عن الحق يعني:',['انتقال الملكية إلى طرف آخر','إذنًا مؤقتًا بالاستخدام','رفض الاستخدام','تجديد البراءة'],'التنازل نقل نهائي للملكية.'],
+   ['لماذا يجب أن يكون اتفاق الشراكة مكتوبًا؟',['لتحديد من يملك ماذا ومنع النزاعات','لأنه أجمل','لا داعي لذلك','لزيادة عدد الصفحات'],'الوضوح المكتوب يمنع النزاع لاحقًا.'],
+   ['الترخيص غير الحصري:',['يسمح للمالك بمنح الإذن لأكثر من جهة','يمنع الجميع','ينقل الملكية','ينتهي فورًا'],'غير حصري = أكثر من مرخَّص له.'],
+   ['صورة برخصة مشاع إبداعي تشترط ذكر المصدر. الاستخدام الصحيح:',['استخدامها مع ذكر اسم المصوّر والمصدر','استخدامها دون ذكر شيء','ادعاء ملكيتها','بيعها باسمك'],'الالتزام بشروط الرخصة واجب.'],
+   ['انتهى عقد سامي مع ليان قبل سنة دون أي حقوق له في NOVA. النتيجة:',['لا يملك سامي حقًا في المشروع','سامي يملك نصف المشروع','سامي يملك المشروع كاملًا','لا يُعرف شيء'],'العقد المكتوب حسم المسألة.'],
+   ['المقابل المالي للترخيص يُسمى غالبًا:',['عائدات (إتاوات)','ضريبة','غرامة','هدية'],'الإتاوات مقابل الاستخدام المرخَّص.'],
+   ['أيّ عنصر مهم في عقد الترخيص؟',['المدة والمكان ونطاق الاستخدام والمقابل','لون الورق','نوع الخط فقط','صور الطرفين'],'هذه العناصر ترسم حدود الإذن.']
+  ],
+  hard:[
+   ['منحت ليان شركة ترخيصًا حصريًا في فلسطين لمدة 3 سنوات. هل يمكنها منح شركة ثانية ترخيصًا في فلسطين خلال المدة؟',['لا، لأن الترخيص حصري في الإقليم والمدة نفسيهما','نعم دائمًا','نعم إذا كانت الثانية أصغر','نعم بعد شهر'],'الحصرية التزام على المالك.'],
+   ['استخدم المرخَّص له التصميم خارج حدود العقد (في دولة أخرى). الحكم:',['تجاوز للترخيص ويُعد تعديًا','مسموح لأنه مرخَّص له','يصبح مالكًا','يُلغى العقد دون أي أثر'],'الترخيص محدود بشروطه.'],
+   ['شريكان طوّرا مشروعًا دون عقد ثم اختلفا. ما المشكلة الأساسية؟',['غموض الملكية وصعوبة إثبات حق كل منهما','لا مشكلة','يملكه الأكبر سنًا','يملكه من سجّل أولًا دون نقاش'],'غياب العقد يفتح باب النزاع.'],
+   ['وقّع رامي اتفاقية سرية عند زيارته كمستثمر محتمل، ثم استخدم ما رآه. هذا:',['خرق للاتفاقية واستيلاء على سر تجاري','حق مشروع للمستثمر','ترخيص ضمني','تنازل من ليان'],'الاطلاع بموجب NDA لا يمنح حق الاستخدام.'],
+   ['الفرق الجوهري بين الترخيص والتنازل:',['الترخيص يمنح الاستخدام وتبقى الملكية، والتنازل ينقل الملكية','لا فرق بينهما','التنازل مؤقت والترخيص دائم','الترخيص للعلامات فقط'],'استخدام مقابل ملكية.'],
+   ['ما فائدة بند «ملكية الأعمال الناتجة» في عقد العمل؟',['يحدد مسبقًا من يملك ما ينتجه الموظف أثناء العمل','يحدد الراتب فقط','يمنع الإجازات','لا فائدة له'],'بند وقائي يمنع النزاع.'],
+   ['رخصة المشاع الإبداعي «غير تجاري» تعني:',['يُسمح بالاستخدام لكن ليس لأغراض الربح','يُسمح بالبيع','يُمنع كل استخدام','تنتقل الملكية'],'NC = Non-Commercial.'],
+   ['اشترت شركة حقوق تطبيق كاملة بعقد تنازل. من يحق له منح تراخيص لاحقًا؟',['الشركة المالكة الجديدة','المبرمج الأصلي','أي شخص','لا أحد'],'المالك وحده يرخّص.']
+  ],
+  classify:{ q:'صنّفي: ترخيص أم تنازل؟', bins:['ترخيص','تنازل (نقل ملكية)'], items:[
+   ['إذن باستخدام الشعار سنتين مقابل مبلغ',0],['بيع حقوق التطبيق كاملة لشركة',1],['السماح لمدرسة بعرض فيلم في يوم محدد',0],['نقل ملكية براءة الاختراع إلى مستثمر',1],
+   ['إذن بطباعة 1000 نسخة من كتاب',0],['بيع العلامة التجارية مع المصنع',1],['استخدام برنامج باشتراك شهري',0],['التخلي عن كل حقوق رواية المالية لدار نشر',1]]},
+  clue:{ text:'عقد سامي انتهى قبل سنة دون أي حقوق في NOVA، وختم جوازه يثبت أنه كان مسافرًا ليلة الحادثة. أما رامي فقد وقّع اتفاقية سرية عند زيارته كمستثمر.', clear:'sami', point:'rami' }
+},
+{
+  id:6, icon:'🛡️', title:'الحماية الشاملة', sub:'الخطة الكاملة… ثم الحكم',
+  info:`<h3>🛡️ مشروع واحد… عدة أنواع حماية</h3>
+  <ul>
+   <li>✍️ <b>حق المؤلف</b> للتصاميم والنصوص والشيفرة.</li>
+   <li>™️ <b>العلامة التجارية</b> للاسم والشعار.</li>
+   <li>💡 <b>البراءة</b> للحل التقني الجديد.</li>
+   <li>🔒 <b>السر التجاري</b> لما لا يُنشر.</li>
+   <li>🏺 <b>التصميم الصناعي</b> للشكل الخارجي المميز للمنتج (10 سنوات على الأقل حسب تريبس).</li>
+   <li>📍 <b>المؤشر الجغرافي:</b> اسم يربط منتجًا بمكان تعود إليه جودته أو سمعته.</li>
+   <li>🌍 المنظمة العالمية للملكية الفكرية (الويبو) تأسست 1967، واليوم العالمي للملكية الفكرية 26 نيسان.</li>
+  </ul>
+  <p>🧭 <b>الخطة:</b> وثّقي، سجّلي ما يحتاج تسجيلًا، احفظي الأسرار، واكتبي العقود <b>قبل</b> الإعلان.</p>`,
+  normal:[
+   ['أيّ حماية تناسب الشكل الخارجي المميز لزجاجة عطر؟',['التصميم الصناعي','البراءة فقط','السر التجاري','لا شيء'],'التصميم الصناعي يحمي المظهر.'],
+   ['اسم تطبيق NOVA وشعاره يُحميان بـ:',['العلامة التجارية','براءة الاختراع','السر التجاري','المؤشر الجغرافي'],'الاسم والشعار = علامة.'],
+   ['الشيفرة البرمجية المكتوبة تُحمى بـ:',['حق المؤلف (ويمكن إبقاؤها سرًا تجاريًا)','العلامة التجارية','المؤشر الجغرافي','التصميم الصناعي'],'البرامج مصنفات أدبية.'],
+   ['المؤشر الجغرافي:',['اسم يربط منتجًا بمكان تعود إليه جودته أو سمعته','شعار شركة','اختراع جديد','رواية'],'يحمي سمعة المنتجات المرتبطة بأماكنها.'],
+   ['اليوم العالمي للملكية الفكرية:',['26 نيسان','1 كانون الثاني','8 آذار','5 حزيران'],'تحتفل به الويبو كل عام.'],
+   ['ما الخطوة الأولى قبل الإعلان عن مشروع جديد؟',['توثيق العمل وتسجيل ما يحتاج تسجيلًا وكتابة العقود','الإعلان أولًا ثم التفكير','نشر كل التفاصيل التقنية','لا شيء'],'الحماية تسبق الإعلان.'],
+   ['المنظمة الدولية المختصة بالملكية الفكرية:',['الويبو (WIPO)','اليونيسف','الفيفا','منظمة الصحة العالمية'],'الويبو وكالة تابعة للأمم المتحدة.'],
+   ['أكملي شعار اللعبة: «احمِ فكرتك قبل أن …»',['تضطر لإثبات أنها لك','تنساها','تبيعها','تنشرها'],'هذه رسالة اللعبة الأساسية.']
+  ],
+  hard:[
+   ['مشروع NOVA: جهاز مبتكر + اسم + برنامج + طريقة تصنيع سرية. خطة الحماية الأنسب:',['براءة للجهاز، وعلامة للاسم، وحق مؤلف للبرنامج، وسر تجاري للطريقة','براءة واحدة تكفي للجميع','علامة تجارية للجميع','لا حاجة للحماية'],'لكل عنصر الحماية التي تناسبه.'],
+   ['لماذا تُوصف الملكية الفكرية بأنها «إقليمية»؟',['لأن كل دولة تمنح الحماية وفق قوانينها، فتحتاجين غالبًا حماية في كل سوق','لأنها تحمي الأقاليم الجغرافية','لأنها للدول الكبيرة فقط','لأنها لا تشمل الإنترنت'],'مبدأ الإقليمية أساس في النظام الدولي.'],
+   ['أيّ نوعين لا يحتاجان تسجيلًا لينشآ؟',['حق المؤلف والسر التجاري','البراءة والعلامة','العلامة المسجلة والتصميم الصناعي','البراءة والتصميم الصناعي'],'الحماية فيهما تنشأ دون إيداع.'],
+   ['شركة تبيع منتجًا وتدّعي أنه من منطقة مشهورة وهو ليس منها. هذا يمس:',['المؤشر الجغرافي ويضلل المستهلك','حق المؤلف','البراءة','لا شيء'],'ادعاء المنشأ الكاذب تضليل.'],
+   ['الحد الأدنى لحماية التصاميم الصناعية حسب اتفاقية تريبس:',['10 سنوات','سنة واحدة','50 سنة','مدى الحياة'],'تريبس تضع 10 سنوات حدًا أدنى.'],
+   ['اتفاقية تريبس (TRIPS) مرتبطة بـ:',['منظمة التجارة العالمية ووضع حد أدنى لحماية الملكية الفكرية','اليونيسف','الفيفا','البنك الدولي فقط'],'تريبس جزء من اتفاقيات منظمة التجارة العالمية.'],
+   ['أفضل تصرف لليان بعد كشف الحقيقة:',['جمع الأدلة الموثقة واللجوء إلى الجهات المختصة والاعتراض على طلبات رامي','التشهير برامي على مواقع التواصل','التنازل عن المشروع','نسخ مشروع رامي انتقامًا'],'الطريق القانوني يحمي الحق دون أن يضرّ صاحبه.'],
+   ['طالبة صمّمت لعبة تعليمية. ما الأنسب لحمايتها؟',['توثيق الشيفرة والتصاميم بتواريخ، وتسجيل الاسم علامة إن لزم، وكتابة اتفاق مع الفريق','نشرها دون أي توثيق','الاكتفاء بقول إنها لها','إخفاؤها للأبد'],'خطة متكاملة كما تعلمتِ في المراحل الست.']
+  ],
+  classify:{ q:'صنّفي كل عنصر بنوع الحماية المناسب:', bins:['حق المؤلف','علامة تجارية','براءة اختراع','سر تجاري'], items:[
+   ['قصة اللعبة المكتوبة',0],['اسم NOVA',1],['جهاز تقني مبتكر جديد',2],['خطة التسعير الداخلية',3],
+   ['شعار مطعم',1],['لحن أغنية',0],['طريقة جديدة لتحلية الماء',2],['قائمة العملاء الخاصة',3]]},
+  clue:{ text:'رسالة من X: «جمعتِ كل الأدلة… الآن قرري: من سرق فكرة NOVA؟»', point:null }
+}];
+
+const WS1 = [
+ ['الملكية الفكرية تعني:',['حقوقًا قانونية على إبداعات العقل','ملكية الأراضي','ملكية السيارات','ملكية الأموال']],
+ ['تنقسم الملكية الفكرية بشكل رئيسي إلى:',['حق المؤلف والملكية الصناعية','الأراضي والمباني','العقود والضرائب','الكتب والمجلات']],
+ ['أيّ نوع يحمي الرواية؟',['حق المؤلف','البراءة','العلامة التجارية','المؤشر الجغرافي']],
+ ['أيّ نوع يحمي شعار الشركة؟',['العلامة التجارية','البراءة','السر التجاري','لا شيء']],
+ ['أيّ نوع يحمي الاختراع التقني الجديد؟',['براءة الاختراع','العلامة التجارية','المؤشر الجغرافي','التصميم الصناعي']],
+ ['الوصفة السرية غير المسجلة تُحمى بوصفها:',['سرًا تجاريًا','علامة تجارية','براءة اختراع','مؤشرًا جغرافيًا']],
+ ['مدة براءة الاختراع:',['20 سنة من تاريخ الإيداع','5 سنوات','حياة المخترع + 70 سنة','دائمة']],
+ ['تُجدَّد العلامة التجارية عادة كل:',['10 سنوات','سنة','50 سنة','لا تُجدَّد']],
+ ['ينشأ حق المؤلف:',['تلقائيًا عند إنجاز العمل وتثبيته','بعد التسجيل فقط','بعد البيع','بعد 10 سنوات']],
+ ['الترخيص هو:',['إذن بالاستخدام مع بقاء الملكية','نقل الملكية','سرقة','هدية دائمة']],
+ ['ذكر المصدر عند الاقتباس:',['واجب أخلاقي وقانوني','غير مهم','ممنوع','للكتب الأجنبية فقط']],
+ ['الويبو (WIPO) هي:',['المنظمة العالمية للملكية الفكرية','منظمة رياضية','بنك دولي','شركة تقنية']],
+ ['نسخ برنامج مدفوع وتوزيعه مجانًا:',['قرصنة وتعدٍّ على حق المؤلف','مشاركة مشروعة','عمل خيري','مسموح']],
+ ['الرمز ® يدل على:',['علامة تجارية مسجلة','منتج مقلد','براءة منتهية','حق مؤلف']]
+];
+const WS2 = [
+ ['أرادت طالبة حماية فكرة تطبيق لم تبرمجه بعد. الأنسب الآن:',['إبقاؤها سرية مع اتفاقيات عدم إفشاء، ثم حماية ما تنتجه','تسجيل الفكرة حق مؤلف','نشرها لتثبت ملكيتها','طلب براءة للفكرة المجردة']],
+ ['اختراع نُشر في مؤتمر عام قبل تقديم طلب البراءة:',['قد يفقد شرط الجدة','يزداد قوة','لا يتأثر','يتحول إلى علامة']],
+ ['شركة سجّلت علامتها في الأردن فقط وتريد البيع في مصر:',['عليها طلب الحماية في مصر أيضًا','محمية تلقائيًا','لا تحتاج شيئًا','يكفي وضع ™']],
+ ['أيّ حق لا يُباع عادة ويبقى للمؤلف؟',['الحق الأدبي في نسبة العمل إليه','حق النسخ','حق الترجمة','حق التوزيع']],
+ ['التطوير المستقل للسر التجاري نفسه:',['مشروع ولا يُعد تعديًا','سرقة دائمًا','تعدٍّ على البراءة','ممنوع']],
+ ['تُقبل كلمة «تفاحة» علامة لأجهزة الحاسوب رغم أنها كلمة عامة لأن:',['لا علاقة وصفية بين الكلمة والمنتج فتكون مميزة','كل الكلمات مقبولة','لأنها قصيرة','لأنها فاكهة']],
+ ['صمّم مصمم شعارًا بعقد ينص على نقل الحقوق للعميل:',['تنتقل الحقوق المالية للعميل ويبقى الحق الأدبي للمصمم غالبًا','يبقى كل شيء للمصمم','لا يملكه أحد','يصبح ملكًا عامًا']],
+ ['أيّ مجموعة تحتاج كلها تسجيلًا للحماية الكاملة؟',['البراءة والعلامة والتصميم الصناعي','حق المؤلف والسر التجاري','السر التجاري فقط','لا شيء يحتاج تسجيلًا']],
+ ['الحد الأدنى لمدة حماية حق المؤلف وفق اتفاقية برن:',['حياة المؤلف + 50 سنة','20 سنة','10 سنوات','حياة المؤلف فقط']],
+ ['تحليل منتج اشتُري بطريقة نظامية لمعرفة تركيبه (الهندسة العكسية):',['قد يكون مشروعًا في كثير من القوانين ولا يُعد سرقة سر تجاري','سرقة دائمًا','تعدٍّ على العلامة','ممنوع عالميًا']],
+ ['مستثمر رأى عرضًا سريًا بعد توقيع NDA ثم أطلق منتجًا مطابقًا:',['خرق للاتفاقية واستيلاء على سر تجاري','منافسة مشروعة','ترخيص ضمني','تنازل']],
+ ['ما فائدة البحث في قواعد بيانات البراءات قبل البدء باختراع؟',['التأكد من الجدة وتجنب التعدي على براءات قائمة','لا فائدة','نسخ الاختراعات','تسجيل علامة']],
+ ['استخدام أغنية محمية في فيديو تجاري دون إذن:',['تعدٍّ على حق المؤلف حتى لو ذُكر اسم المغني','مسموح مع ذكر الاسم','مسموح إذا كانت قصيرة','مسموح على الإنترنت']],
+ ['الترخيص الحصري يعني:',['لا يُمنح الإذن لغير المرخَّص له في النطاق نفسه','الإذن لعدة جهات','نقل الملكية','انتهاء الحماية']]
+];
+
+</script>
+<script>
+/* ===================== منطق اللعبة ===================== */
+const PEOPLE = {
+  layan:{name:'ليان',role:'المخترعة — صاحبة مشروع NOVA',img:'rami-cover.jpg',victim:true},
+  noor:{name:'نور',role:'المصممة',img:'layan-cover.jpg'},
+  adam:{name:'آدم',role:'المبرمج',img:'x-cover.jpg'},
+  sami:{name:'سامي',role:'الشريك السابق',img:'noor-cover.jpg'},
+  rami:{name:'رامي',role:'المنافس',img:'sami-cover.jpg'}
+};
+const SUSPECTS = ['noor','adam','sami','rami'];
+const Q_PER_CHAPTER = 5, C_PER_CHAPTER = 5, MAX_MISTAKES = 3, WS_COUNT = 10, TIME_LIMIT = 30*60;
+
+const G = {
+  level:'normal', score:0, ch:0, done:0, cleared:{}, evidence:{}, clues:[],
+  qs:[], qi:0, mistakes:0, timeLeft:TIME_LIMIT, timer:null,
+  gameOK:0, gameTotal:0, wsOK:[0,0], ws:null, wi:0, wsN:1, accTries:0, finished:false
+};
+const $ = id => document.getElementById(id);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');window.scrollTo(0,0);
+  if(id!=='s-video'){const v=$('introVid');if(v&&!v.paused)v.pause();}
+  if(id==='s-video'){const v=$('introVid');try{v.currentTime=0;v.play().catch(()=>{});}catch(e){}pauseMusic();}
+  else if(G.musicOn!==false && id!=='s-cover') startMusic(true);
+  if(id==='s-genie') buildGifts();
+}
+function addScore(n){G.score+=n;$('tScore').textContent='⭐ '+G.score;try{window.GMReport&&GMReport.score(G.score);}catch(e){}}
+function report(){try{if(window.GMReport){GMReport.add('أسئلة المراحل',G.gameOK,G.gameTotal);GMReport.score(G.score);}}catch(e){}}
+
+/* ---------- الموسيقى ---------- */
+G.musicOn=true;
+function startMusic(force){const a=$('bgm');if(!G.musicOn)return;a.volume=.35;a.play().catch(()=>{});}
+function pauseMusic(){try{$('bgm').pause();}catch(e){}}
+function toggleMusic(){G.musicOn=!G.musicOn;$('fabMusic').textContent=G.musicOn?'🔊':'🔇';if(G.musicOn)startMusic();else pauseMusic();}
+
+/* ---------- التعليمات ---------- */
+function showHelp(){
+  modal(`<h2 class="gold">❓ تعليمات اللعبة</h2>
+  <ol style="line-height:2.1;margin:10px 20px 0 0">
+   <li>اختاري المستوى: <b>عادي</b> أو <b>صعب</b>.</li>
+   <li>في كل مرحلة اقرئي صفحة المعلومات، ثم أجيبي عن ${Q_PER_CHAPTER} أسئلة وتحدي تصنيف.</li>
+   <li>❤️ لديك ${MAX_MISTAKES} محاولات خاطئة في كل مرحلة؛ إذا نفدت تعيدين المرحلة بأسئلة جديدة.</li>
+   <li>🔎 بعد كل مرحلة تحصلين على دليل يستبعد مشتبهًا به أو يشير إلى السارق.</li>
+   <li>⚖️ بعد 6 مراحل اتهمي السارق، ثم استلمي الكأس (+30) وحلّي ورقتي العمل.</li>
+   <li>⏱️ الوقت الكلي 30 دقيقة، ويمكنك استخدام زر التوقف المؤقت.</li>
+   <li>🏠 زر الرئيسية يعيدك إلى ألعاب GamnaMarks.</li>
+  </ol>
+  <p class="mut" style="margin-top:8px">النقاط: إجابة صحيحة ${G.level==='hard'?15:10} • تصنيف صحيح 5 • دليل 20 • اتهام صحيح من أول مرة 50 • الكأس 30 • ورقة العمل 5 لكل إجابة</p>
+  <div class="center"><button class="btn" onclick="closeModal()">حسنًا 👍</button></div>`);
+}
+function modal(h){$('modalBox').innerHTML=h;$('modal').classList.add('on');}
+function closeModal(){$('modal').classList.remove('on');}
+
+/* ---------- المستوى والقصة ---------- */
+function setLevel(l){G.level=l;$('tLevel').textContent=l==='hard'?'🎚️ صعب':'🎚️ عادي';renderChars('storyChars',false);go('s-story');}
+function charCard(k,mode){
+  const p=PEOPLE[k];const cl=G.cleared[k]?' cleared':'';const v=p.victim?' victim':'';const pk=mode==='pick'&&!p.victim?' pick':'';
+  const ev=G.evidence[k]||0;
+  return `<div class="ch${cl}${v}${pk}" ${pk?`onclick="accuse('${k}')"`:''}><img src="${p.img}" alt="${p.name}"><span class="ev" style="${ev&&mode!=='story'?'display:block':''}">🔴 أدلة: ${ev}</span><b>${p.name}</b><small>${p.role}</small></div>`;
+}
+function renderChars(el,mode){$(el).innerHTML=(mode==='pick'?SUSPECTS:['layan',...SUSPECTS]).map(k=>charCard(k,mode||'story')).join('');}
+function startCase(){
+  $('hud').classList.add('on');
+  if(!G.timer){G.timer=setInterval(tick,1000);}
+  renderBoard();go('s-board');
+}
+function tick(){
+  if(G.finished)return;
+  G.timeLeft=Math.max(0,G.timeLeft-1);
+  const m=Math.floor(G.timeLeft/60),s=G.timeLeft%60;
+  $('tTime').textContent='⏱️ '+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  $('tTime').classList.toggle('low',G.timeLeft<=120);
+  if(G.timeLeft===0){clearInterval(G.timer);G.timer=null;
+    modal(`<h2 class="gold center">⏰ انتهى الوقت!</h2><p class="center" style="line-height:2">انتهت الثلاثون دقيقة. سننتقل إلى أوراق العمل لتكملي وتُحسب نتيجتك.</p><div class="center"><button class="btn" onclick="closeModal();openWS(1)">إلى ورقة العمل 📝</button></div>`);
+  }
+}
+
+/* ---------- لوحة التحقيق ---------- */
+function renderBoard(){
+  renderChars('boardChars','board');
+  $('chapList').innerHTML=CHAPTERS.map((c,i)=>{
+    const st=i<G.done?'done':i===G.done?'now':'lock';
+    return `<div class="chap ${st}"><span class="ic">${i<G.done?'✅':i===G.done?c.icon:'🔒'}</span><div><b>المرحلة ${i+1}: ${c.title}</b><br><small class="mut">${c.sub}</small></div></div>`;
+  }).join('');
+  $('clueBox').style.display=G.clues.length?'block':'none';
+  $('clueList').innerHTML=G.clues.map((t,i)=>`<div class="clue">🔎 ${i+1}. ${t}</div>`).join('');
+  const b=$('boardGo');
+  if(G.done>=CHAPTERS.length){b.textContent='⚖️ إلى لحظة الحكم';}
+  else b.textContent='ابدئي المرحلة '+(G.done+1)+' ▶️';
+}
+function openChapter(){
+  if(G.done>=CHAPTERS.length){return openAccuse();}
+  G.ch=G.done;const c=CHAPTERS[G.ch];
+  const adv=G.level==='hard'?`<div class="adv">🔴 <b>المستوى الصعب:</b> الأسئلة هنا حالات عملية تحتاج تحليلًا؛ اقرئي الشروط والاستثناءات بدقة.</div>`:'';
+  $('infoBox').innerHTML=`<div class="mut">المرحلة ${c.id} من 6</div>`+c.info+adv;
+  go('s-info');
+}
+
+/* ---------- الأسئلة ---------- */
+function buildQs(bank,n){return shuffle(bank).slice(0,n).map(q=>{const opts=shuffle(q[1].map((t,i)=>({t,c:i===0})));return {q:q[0],opts,ex:q[2]||''};});}
+function hearts(){return '❤️'.repeat(MAX_MISTAKES-G.mistakes)+'🖤'.repeat(G.mistakes);}
+function startQuestions(){
+  const c=CHAPTERS[G.ch];G.mistakes=0;G.qi=0;
+  G.qs=buildQs(G.level==='hard'?c.hard:c.normal,Q_PER_CHAPTER);
+  $('qTitle').textContent=c.icon+' '+c.title;
+  go('s-q');showQ();
+}
+function showQ(){
+  const q=G.qs[G.qi];
+  $('qHearts').textContent=hearts();
+  $('qNum').textContent='السؤال '+(G.qi+1)+' من '+G.qs.length;
+  $('qProg').style.width=(G.qi/G.qs.length*100)+'%';
+  $('qText').textContent=q.q;
+  $('qOpts').innerHTML=q.opts.map((o,i)=>`<button class="opt" onclick="answerQ(${i})">${o.t}</button>`).join('');
+  $('qFb').className='fb';$('qNext').style.display='none';
+}
+function answerQ(i){
+  const q=G.qs[G.qi];const btns=$('qOpts').querySelectorAll('.opt');
+  btns.forEach((b,j)=>{b.disabled=true;if(q.opts[j].c)b.classList.add('ok');});
+  G.gameTotal++;
+  if(q.opts[i].c){G.gameOK++;addScore(G.level==='hard'?15:10);try{GMReport.correct();}catch(e){}
+    $('qFb').className='fb ok';$('qFb').innerHTML='✅ أحسنتِ! '+q.ex;}
+  else{btns[i].classList.add('no');G.mistakes++;try{GMReport.wrong();}catch(e){}
+    $('qFb').className='fb no';$('qFb').innerHTML='❌ ليست الإجابة الصحيحة. '+q.ex;$('qHearts').textContent=hearts();
+    if(G.mistakes>=MAX_MISTAKES){report();return setTimeout(failChapter,900);}
+  }
+  report();
+  $('qNext').style.display='inline-block';
+  $('qNext').textContent=G.qi<G.qs.length-1?'التالي ⬅️':'إلى تحدي التصنيف 🧩';
+}
+function nextQ(){G.qi++;if(G.qi<G.qs.length)showQ();else startClassify();}
+function failChapter(){
+  modal(`<h2 class="center" style="color:#f87171">💔 نفدت محاولاتك</h2><p class="center" style="line-height:2">ارتكبتِ ${MAX_MISTAKES} أخطاء في هذه المرحلة. راجعي المعلومات وأعيدي المرحلة بأسئلة جديدة.</p><div class="center"><button class="btn" onclick="closeModal();openChapter()">🔁 أعيدي المرحلة</button></div>`);
+}
+
+/* ---------- التصنيف ---------- */
+function startClassify(){
+  const c=CHAPTERS[G.ch].classify;
+  G.citems=shuffle(c.items).slice(0,C_PER_CHAPTER);G.cleft=G.citems.length;
+  $('cQ').textContent=c.q;$('cHearts').textContent=hearts();$('cDone').style.display='none';
+  $('cItems').innerHTML=G.citems.map((it,i)=>`<div class="citem"><div class="t">${i+1}. ${it[0]}</div><div class="cbtns">${c.bins.map((b,j)=>`<button class="cb" onclick="classify(${i},${j},this)">${b}</button>`).join('')}</div></div>`).join('');
+  go('s-classify');
+}
+function classify(i,j,el){
+  const it=G.citems[i];const row=el.parentNode.querySelectorAll('.cb');
+  row.forEach((b,k)=>{b.disabled=true;if(k===it[1])b.classList.add('ok');});
+  G.gameTotal++;
+  if(j===it[1]){G.gameOK++;addScore(5);try{GMReport.correct();}catch(e){}}
+  else{el.classList.add('no');G.mistakes++;try{GMReport.wrong();}catch(e){}$('cHearts').textContent=hearts();
+    if(G.mistakes>=MAX_MISTAKES){report();return setTimeout(failChapter,900);}}
+  report();
+  G.cleft--;if(G.cleft===0)$('cDone').style.display='inline-block';
+}
+
+/* ---------- الأدلة ---------- */
+function finishChapter(){
+  const c=CHAPTERS[G.ch];G.done=G.ch+1;
+  G.clues.push(c.clue.text);addScore(20);
+  let eff='';
+  if(c.clue.clear){G.cleared[c.clue.clear]=true;eff+=`<p style="color:#4ade80;font-weight:800">✔ ${PEOPLE[c.clue.clear].name} مُستبعَد/ة من الشبهات</p>`;}
+  if(c.clue.point){G.evidence[c.clue.point]=(G.evidence[c.clue.point]||0)+1;eff+=`<p style="color:#f87171;font-weight:800">🔴 دليل جديد يُضاف إلى ملف أحد المشتبه بهم…</p>`;}
+  $('clueText').textContent='🔎 '+c.clue.text;$('clueEffect').innerHTML=eff+'<p class="mut">+20 نقطة</p>';
+  go('s-clue');
+}
+function afterClue(){renderBoard();go('s-board');}
+
+/* ---------- الاتهام ---------- */
+function openAccuse(){
+  $('accClues').innerHTML=G.clues.map((t,i)=>`<div class="clue">🔎 ${i+1}. ${t}</div>`).join('');
+  renderChars('accChars','pick');$('accFb').className='fb';go('s-accuse');
+}
+function accuse(k){
+  G.accTries++;
+  if(k==='rami'){addScore(G.accTries===1?50:20);try{GMReport.correct();GMReport.add('الاتهام',G.accTries===1?1:0,1);}catch(e){}go('s-reveal');}
+  else{try{GMReport.wrong();}catch(e){}
+    const why={noor:'ملفات نور الأصلية هي الأقدم؛ إنها صاحبة التصاميم لا سارقتها.',adam:'سجل الدخول يُثبت أن آدم غادر الساعة 22:00 قبل الحادثة.',sami:'عقد سامي انتهى، وكان مسافرًا ليلة الحادثة.'}[k];
+    $('accFb').className='fb no';$('accFb').innerHTML='❌ ليس الشخص الصحيح. '+why+' راجعي الأدلة مرة أخرى.';}
+}
+
+/* ---------- الكأس ---------- */
+function showTrophy(){addScore(30);try{GMReport.trophy();}catch(e){}report();go('s-trophy');}
+
+/* ---------- أوراق العمل ---------- */
+function openWS(n){
+  closeModal();$('hud').classList.add('on');
+  if(!G.timer&&!G.finished&&G.timeLeft>0)G.timer=setInterval(tick,1000);
+  G.wsN=n;G.wi=0;G.wsOK[n-1]=0;
+  G.ws=buildQs(n===1?WS1:WS2,WS_COUNT);
+  $('wTitle').textContent=n===1?'📝 ورقة العمل الأولى (أساسية)':'📝 ورقة العمل الثانية (متقدمة)';
+  go('s-ws');showW();
+}
+function showW(){
+  const q=G.ws[G.wi];
+  $('wScore').textContent='✔ '+G.wsOK[G.wsN-1]+' / '+G.ws.length;
+  $('wNum').textContent='السؤال '+(G.wi+1)+' من '+G.ws.length;
+  $('wProg').style.width=(G.wi/G.ws.length*100)+'%';
+  $('wText').textContent=q.q;
+  $('wOpts').innerHTML=q.opts.map((o,i)=>`<button class="opt" onclick="answerW(${i})">${o.t}</button>`).join('');
+  $('wFb').className='fb';$('wNext').style.display='none';
+}
+function answerW(i){
+  const q=G.ws[G.wi];const btns=$('wOpts').querySelectorAll('.opt');
+  btns.forEach((b,j)=>{b.disabled=true;if(q.opts[j].c)b.classList.add('ok');});
+  if(q.opts[i].c){G.wsOK[G.wsN-1]++;addScore(5);try{GMReport.correct();}catch(e){}$('wFb').className='fb ok';$('wFb').textContent='✅ إجابة صحيحة';}
+  else{btns[i].classList.add('no');try{GMReport.wrong();}catch(e){}$('wFb').className='fb no';$('wFb').textContent='❌ الإجابة الصحيحة مظللة بالأخضر';}
+  $('wScore').textContent='✔ '+G.wsOK[G.wsN-1]+' / '+G.ws.length;
+  try{GMReport.add(G.wsN===1?'ورقة العمل 1':'ورقة العمل 2',G.wsOK[G.wsN-1],G.ws.length);GMReport.score(G.score);}catch(e){}
+  $('wNext').style.display='inline-block';
+  $('wNext').textContent=G.wi<G.ws.length-1?'التالي ⬅️':(G.wsN===1?'إلى ورقة العمل الثانية ⬅️':'عرض النتيجة 📊');
+}
+function nextW(){G.wi++;if(G.wi<G.ws.length)showW();else if(G.wsN===1)openWS(2);else showResults();}
+
+/* ---------- النتائج ---------- */
+function showResults(){
+  G.finished=true;if(G.timer){clearInterval(G.timer);G.timer=null;}
+  const used=TIME_LIMIT-G.timeLeft,m=Math.floor(used/60),s=used%60;
+  const gamePct=G.gameTotal?G.gameOK/G.gameTotal:0;
+  const wsPct=(G.wsOK[0]+G.wsOK[1])/(WS_COUNT*2);
+  const pct=Math.round((G.gameTotal?(gamePct*.5+wsPct*.5):wsPct)*100);
+  const grade=pct>=90?['🥇 ممتاز','#fcd34d']:pct>=80?['🥈 جيد جدًا','#a5b4fc']:pct>=65?['🥉 جيد','#86efac']:pct>=50?['👍 مقبول','#fdba74']:['💪 تحتاجين إلى مراجعة','#f87171'];
+  const rank=pct>=90?'محققة ملكية فكرية خبيرة 🕵️‍♀️':pct>=75?'محققة متمكنة 🔍':pct>=50?'محققة مبتدئة 🔎':'متدربة تحقيق 📚';
+  $('resGrid').innerHTML=`<div>⭐ النقاط<b>${G.score}</b></div><div>⏱️ الوقت<b>${m}:${String(s).padStart(2,'0')}</b></div>
+   <div>🧩 أسئلة المراحل<b>${G.gameOK}/${G.gameTotal}</b></div><div>🎚️ المستوى<b>${G.level==='hard'?'صعب':'عادي'}</b></div>
+   <div>📝 ورقة العمل 1<b>${G.wsOK[0]}/${WS_COUNT}</b></div><div>📝 ورقة العمل 2<b>${G.wsOK[1]}/${WS_COUNT}</b></div>
+   <div style="grid-column:1/-1">🏅 الرتبة<b style="font-size:1.15rem">${rank}</b></div>`;
+  $('resGrade').innerHTML=`<span style="color:${grade[1]}">${grade[0]} — ${pct}%</span>`;
+  report();
+  go('s-results');
+}
+
+/* ---------- المارد ---------- */
+const GIFTS=['🌟 نجمة «حارسة الأفكار» الذهبية!','🎓 لقب «محققة الملكية الفكرية» لهذا الأسبوع!','➕ 20 نقطة إضافية!','🛡️ درع «احمِ فكرتك» — شاركي معلومة تعلمتِها مع صديقة!'];
+function buildGifts(){
+  if(G.giftsBuilt)return;G.giftsBuilt=true;
+  G.giftOrder=shuffle(GIFTS);
+  $('gifts').innerHTML=G.giftOrder.map((g,i)=>`<div class="gift" onclick="openGift(${i},this)">🎁</div>`).join('');
+}
+function openGift(i,el){
+  if(G.giftTaken)return;G.giftTaken=true;
+  document.querySelectorAll('.gift').forEach(g=>{if(g!==el)g.classList.add('used');});
+  el.textContent='✨';const g=G.giftOrder[i];
+  if(g.indexOf('20 نقطة')>-1)addScore(20);report();
+  $('giftRes').style.display='block';$('giftRes').innerHTML='🧞 هديتك: '+g;
+}
+
+/* ---------- وضع «أوراق العمل مباشرة» (gm-hub) ---------- */
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+</script>
 <script src="gm-report.js"></script>
 </body>
 </html>
