@@ -126,11 +126,12 @@ h1,h2,h3{line-height:1.5}
 <div id="s-cover" class="screen on center">
   <div class="coverBox">
     <video id="coverVid" autoplay muted loop playsinline poster="ipcode-cover.jpg"></video>
-    <script>(function(){var v=document.getElementById('coverVid'),port=innerHeight>=innerWidth;v.src=port?'ipcode-cover-v.mp4':'ipcode-cover-h.mp4';v.parentNode.classList.add(port?'port':'land');try{v.play().catch(function(){})}catch(e){}})();</script>
+    <button id="covSnd" onclick="var v=document.getElementById('coverVid');v.muted=!v.muted;if(!v.muted){v.play();}this.textContent=v.muted?'🔇':'🔊'" style="position:absolute;bottom:10px;left:10px;width:42px;height:42px;border-radius:50%;border:2px solid #d4af37;background:rgba(0,0,0,.55);color:#fff;font-size:20px;cursor:pointer">🔇</button>
+    <script>(function(){var v=document.getElementById('coverVid'),port=innerHeight>=innerWidth;v.src=port?'ipcode-cine-v.mp4':'ipcode-cine-h.mp4';v.parentNode.classList.add(port?'port':'land');try{v.play().catch(function(){})}catch(e){}})();</script>
   </div>
   <h1 class="gold" style="margin-top:14px">🔐 شفرة الفكرة المسروقة</h1>
   <p class="mut">IP CODE — لعبة تحقيق تفاعلية في الملكية الفكرية</p>
-  <button class="btn" onclick="go('s-video');startMusic(false)">ابدئي التحقيق ▶️</button>
+  <button class="btn" onclick="var cv=document.getElementById('coverVid');cv.pause();go('s-video');startMusic(false)">ابدئي التحقيق ▶️</button>
 </div>
 
 <!-- 2) فيديو المقدمة -->
