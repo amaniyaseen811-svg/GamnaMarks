@@ -36,6 +36,8 @@ h1,h2,h3{line-height:1.5}
 /* غلاف */
 .coverBox{position:relative;max-width:420px;margin:0 auto;border-radius:20px;overflow:hidden;border:2px solid var(--gold2);box-shadow:0 0 40px rgba(252,211,77,.25)}
 .coverBox video,.coverBox img{width:100%;display:block}
+.coverBox.port{max-width:min(380px,37vh)}.coverBox.land{max-width:min(760px,90vw)}
+.coverBox.port video{aspect-ratio:9/16;max-height:66vh;object-fit:cover}.coverBox.land video{aspect-ratio:16/9}
 .vid{width:100%;max-height:70vh;border-radius:14px;background:#000;display:block;margin:0 auto}
 /* الشخصيات */
 .chars{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
@@ -123,7 +125,8 @@ h1,h2,h3{line-height:1.5}
 <!-- 1) الغلاف المتحرك -->
 <div id="s-cover" class="screen on center">
   <div class="coverBox">
-    <video id="coverVid" autoplay muted loop playsinline poster="ipcode-cover.jpg"><source src="ipcode-cover.mp4" type="video/mp4"></video>
+    <video id="coverVid" autoplay muted loop playsinline poster="ipcode-cover.jpg"></video>
+    <script>(function(){var v=document.getElementById('coverVid'),port=innerHeight>=innerWidth;v.src=port?'ipcode-cover-v.mp4':'ipcode-cover-h.mp4';v.parentNode.classList.add(port?'port':'land');try{v.play().catch(function(){})}catch(e){}})();</script>
   </div>
   <h1 class="gold" style="margin-top:14px">🔐 شفرة الفكرة المسروقة</h1>
   <p class="mut">IP CODE — لعبة تحقيق تفاعلية في الملكية الفكرية</p>
