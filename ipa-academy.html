@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>أكاديمية الملكية الفكرية — AAIPA</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<!-- أكاديمية الملكية الفكرية — الجمعية الأمريكية العربية لحماية الملكية الفكرية (فرع فلسطين)
+     تصميم وإعداد د. أماني ياسين داود — جزء من تطبيق GamnaMarks
+     المحتوى بملف ipa-content.js · الفيديوهات بمجلد ipa-videos (kids-01.mp4 … adults-18.mp4)
+     البيانات بقاعدة Firebase (مجموعة aaipa_learners) · لوحة المدرب بكلمة سر المعلمة -->
+<style>
+:root{--gold:#e7c26b;--gold2:#b8862f;--gold3:#fff3c4;--bg:#0b0b0d;--card:#16161b;--line:#2b2a31;--txt:#f3eee2;--mut:#a59f90;--ok:#34d399;--bad:#f87171}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Cairo','Tajawal',sans-serif}
+body{background:radial-gradient(ellipse at top,#1d1a12 0%,#0b0b0d 60%) fixed}
+button,input,select{font-family:inherit}
+.scr{display:none;min-height:100vh;padding:74px 16px 40px;max-width:860px;margin:0 auto;animation:fade .45s ease}
+.scr.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.gold{background:linear-gradient(135deg,var(--gold3),var(--gold) 45%,var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent}
+h1{font-size:30px;font-weight:900;text-align:center;line-height:1.4}
+h2{font-size:22px;font-weight:900;margin-bottom:12px}
+.sub{color:var(--mut);text-align:center;font-size:15px;margin-top:6px}
+.btn{display:block;width:100%;border:0;border-radius:16px;padding:15px 18px;font-size:17px;font-weight:800;cursor:pointer;transition:.2s;color:#1a1306;background:linear-gradient(135deg,var(--gold3),var(--gold) 50%,var(--gold2));box-shadow:0 6px 22px rgba(231,194,107,.25)}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:transparent;color:var(--gold);border:1.5px solid var(--gold2);box-shadow:none}
+.btn.dark{background:#24232a;color:var(--txt);box-shadow:none}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.mt{margin-top:14px}.mt2{margin-top:24px}
+/* شريط علوي */
+#top{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(11,11,13,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+#top img{width:38px;height:38px;border-radius:50%}
+#top .tt{flex:1;font-weight:900;font-size:15px;line-height:1.2}
+#top .tt small{display:block;color:var(--mut);font-weight:600;font-size:11px}
+.home{border:1px solid var(--gold2);background:transparent;color:var(--gold);border-radius:12px;padding:7px 12px;font-weight:800;cursor:pointer;font-size:14px}
+#ptsTop{font-weight:900;color:var(--gold);font-size:14px;white-space:nowrap}
+/* الغلاف */
+.logoWrap{position:relative;width:250px;height:250px;margin:10px auto 20px}
+.logoWrap img{position:absolute;inset:18px;width:214px;height:214px;border-radius:50%;animation:breathe 4s ease-in-out infinite;box-shadow:0 0 50px rgba(231,194,107,.35)}
+.ring{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;border-top-color:var(--gold);border-left-color:rgba(231,194,107,.35);animation:spin 3.2s linear infinite}
+.ring.r2{inset:-12px;border-top-color:transparent;border-bottom-color:var(--gold2);border-right-color:rgba(231,194,107,.25);animation-duration:5.5s;animation-direction:reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes breathe{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.04);filter:brightness(1.18)}}
+.dust{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.dust i{position:absolute;bottom:-10px;width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:.0;animation:rise linear infinite}
+@keyframes rise{0%{transform:translateY(0);opacity:0}15%{opacity:.8}100%{transform:translateY(-105vh);opacity:0}}
+.scr>*{position:relative;z-index:1}
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}
+.feat div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 6px;text-align:center;font-size:13px;color:var(--mut)}
+.feat b{display:block;font-size:22px;color:var(--gold)}
+/* البطاقات */
+.levels{display:grid;gap:12px}
+.lv{display:flex;align-items:center;gap:14px;background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:16px;cursor:pointer;transition:.2s;text-align:right;color:var(--txt);width:100%}
+.lv:hover,.lv.sel{border-color:var(--gold);box-shadow:0 0 0 3px rgba(231,194,107,.15)}
+.lv .ic{font-size:34px;width:52px;text-align:center}
+.lv b{font-size:18px;display:block}.lv span{color:var(--mut);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px}
+label{display:block;font-weight:800;margin:14px 0 6px;font-size:15px}
+input,select{width:100%;background:#0f0f13;border:1.5px solid var(--line);border-radius:12px;padding:13px;color:var(--txt);font-size:16px;outline:none}
+input:focus,select:focus{border-color:var(--gold)}
+.err{color:var(--bad);font-size:13px;margin-top:6px;min-height:18px}
+.note{background:rgba(231,194,107,.08);border:1px dashed var(--gold2);border-radius:14px;padding:12px;font-size:13.5px;color:#e9dfc3;line-height:1.8}
+/* خريطة الدورة */
+.hello{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.hello .av{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:28px;background:linear-gradient(135deg,#2c2414,#14110a);border:2px solid var(--gold2)}
+.prog{height:12px;background:#222;border-radius:9px;overflow:hidden;margin:8px 0 4px}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold3));border-radius:9px;transition:width .8s}
+.stage{margin-top:22px}
+.stage h3{font-size:18px;font-weight:900;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(min-width:620px){.grid{grid-template-columns:repeat(6,1fr)}}
+.ses{position:relative;aspect-ratio:1/1.15;border-radius:16px;border:1.5px solid var(--line);background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:var(--txt);padding:6px;transition:.2s}
+.ses .n{font-size:12px;color:var(--mut);font-weight:800}
+.ses .e{font-size:28px}
+.ses .t{font-size:11.5px;text-align:center;line-height:1.3;font-weight:700}
+.ses.done{border-color:var(--ok);background:linear-gradient(180deg,#10261f,#16161b)}
+.ses.done::after{content:'✓';position:absolute;top:6px;left:8px;color:var(--ok);font-weight:900}
+.ses.now{border-color:var(--gold);box-shadow:0 0 18px rgba(231,194,107,.35);animation:pulse 2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 30px rgba(231,194,107,.6)}}
+.ses.lock{opacity:.38;cursor:not-allowed}
+.ses.lock::after{content:'🔒';position:absolute;top:5px;left:6px;font-size:13px}
+/* الفيديو والشرح */
+.vbox{position:relative;border-radius:18px;overflow:hidden;background:#000;border:1px solid var(--line)}
+.vbox video{width:100%;display:block;max-height:70vh;background:#000}
+.slides{position:relative;min-height:380px;padding:26px 20px;background:radial-gradient(circle at 20% 0%,#2a2210,#0d0d10 70%)}
+.slides .hd{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.slides .hd .em{font-size:40px}
+.step{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:14px;margin-bottom:10px;border:1.5px solid transparent;opacity:.18;transition:all .6s}
+.step .num{flex:0 0 36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:900;background:#2a2620;color:var(--gold)}
+.step p{font-size:17px;line-height:1.8;padding-top:2px}
+.step.seen{opacity:.6}
+.step.act{opacity:1;border-color:var(--gold);background:rgba(231,194,107,.10);box-shadow:0 0 22px rgba(231,194,107,.18)}
+.step.act .num{background:var(--gold);color:#1a1306;animation:pop .6s}
+.step.act::before{content:'⬅';position:absolute;left:10px;color:var(--gold);font-size:22px;animation:nudge 1s infinite;margin-top:4px}
+.step{position:relative}
+@keyframes pop{50%{transform:scale(1.3)}}
+@keyframes nudge{50%{transform:translateX(-6px)}}
+.vbar{height:6px;background:#222}.vbar i{display:block;height:100%;width:0;background:var(--gold);transition:width .3s linear}
+.badge{display:inline-block;background:#24232a;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:12.5px;color:var(--mut);margin:0 0 10px}
+/* أوراق العمل */
+.wsHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;flex-wrap:wrap}
+.lives{font-size:20px;letter-spacing:4px}
+.qcard{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px}
+.qnum{color:var(--gold);font-weight:900;font-size:14px}
+.qtxt{font-size:19px;font-weight:800;line-height:1.8;margin:8px 0 16px}
+.opt{display:block;width:100%;text-align:right;background:#0f0f13;border:1.5px solid var(--line);color:var(--txt);border-radius:14px;padding:14px;font-size:16.5px;margin-bottom:10px;cursor:pointer;transition:.15s;line-height:1.6}
+.opt:hover{border-color:var(--gold2)}
+.opt.ok{border-color:var(--ok);background:#0f2a20}
+.opt.no{border-color:var(--bad);background:#2a1212;animation:shake .4s}
+@keyframes shake{25%{transform:translateX(6px)}75%{transform:translateX(-6px)}}
+.dots{display:flex;gap:6px;justify-content:center;margin:14px 0}
+.dots i{width:10px;height:10px;border-radius:50%;background:#333}.dots i.d{background:var(--gold)}.dots i.c{background:#fff;transform:scale(1.3)}
+/* نافذة */
+#modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;padding:18px}
+#modal.on{display:flex}
+#modal .in{background:#141318;border:1.5px solid var(--gold2);border-radius:22px;padding:24px;max-width:420px;width:100%;text-align:center;animation:fade .3s}
+#modal .big{font-size:58px;margin-bottom:6px}
+#modal h3{font-size:22px;font-weight:900;margin-bottom:8px}
+#modal p{color:#d9d2c0;line-height:1.9;margin-bottom:16px}
+.focus{animation:glowR 1.2s infinite}
+@keyframes glowR{50%{text-shadow:0 0 22px #f87171}}
+/* النتيجة */
+.trophy{font-size:90px;text-align:center;animation:bounce 1.4s infinite}
+@keyframes bounce{50%{transform:translateY(-10px) scale(1.05)}}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}
+.stats div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.stats b{display:block;font-size:24px;color:var(--gold)}.stats span{font-size:12px;color:var(--mut)}
+/* لوحة المدرب */
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
+.tbl th,.tbl td{border-bottom:1px solid var(--line);padding:9px 6px;text-align:right;vertical-align:top}
+.tbl th{color:var(--gold);position:sticky;top:0;background:#111}
+.tblWrap{overflow:auto;max-height:65vh;border:1px solid var(--line);border-radius:14px}
+.chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11.5px;background:#24232a;color:var(--mut);margin:1px}
+.mini{display:grid;grid-template-columns:repeat(9,1fr);gap:3px;margin-top:4px;min-width:150px}
+.mini i{height:12px;border-radius:3px;background:#2b2a31}.mini i.d{background:var(--ok)}
+.foot{text-align:center;color:#6f6a5f;font-size:12px;margin-top:28px;line-height:1.8}
+/* الشهادة */
+.cert{background:linear-gradient(135deg,#fffaf0,#f6ead0);color:#2b2112;border:10px double #b8862f;border-radius:10px;padding:26px 18px;text-align:center;font-family:'Cairo'}
+.cert img{width:90px;height:90px;border-radius:50%}
+.cert h2{font-size:26px;margin:8px 0;color:#7a5410}
+.cert .nm{font-size:30px;font-weight:900;color:#2b2112;margin:10px 0;border-bottom:2px solid #b8862f;display:inline-block;padding:0 20px 4px}
+@media print{body *{visibility:hidden}#certArea,#certArea *{visibility:visible}#certArea{position:fixed;inset:0;margin:auto}}
+</style>
+</head>
+<body>
+<div class="dust" id="dust"></div>
+
+<div id="top">
+  <img src="aaipa-logo.png" alt="AAIPA">
+  <div class="tt"><span class="gold">أكاديمية الملكية الفكرية</span><small>AAIPA · فلسطين</small></div>
+  <span id="ptsTop"></span>
+  <button class="home" onclick="goHome()">🏠 الألعاب</button>
+</div>
+
+<!-- ١) الغلاف -->
+<section class="scr on" id="sCover">
+  <div class="logoWrap"><div class="ring"></div><div class="ring r2"></div><img src="aaipa-logo.png" alt="شعار الجمعية"></div>
+  <h1 class="gold">أكاديمية الملكية الفكرية</h1>
+  <p class="sub">الجمعية الأمريكية العربية لحماية الملكية الفكرية — فرع فلسطين</p>
+  <div class="feat">
+    <div><b>18</b>ندوة متتابعة</div>
+    <div><b>3</b>مراحل</div>
+    <div><b>36</b>ورقة عمل</div>
+  </div>
+  <button class="btn" onclick="startFlow()">✨ ابدأ رحلتك</button>
+  <button class="btn ghost mt" onclick="show('sRestore')">🔑 عندي حساب — أكمل من حيث توقفت</button>
+  <p class="foot">من الأساسيات إلى التفاصيل إلى التطبيق<br>كل ندوة: فيديو شرح ⬅ ورقة عمل ١ ⬅ ورقة عمل ٢ (أصعب)<br><a href="#" onclick="trainerLogin();return false" style="color:#6f6a5f">👩‍🏫 لوحة المدرب</a></p>
+</section>
+
+<!-- ٢) اختيار المرحلة -->
+<section class="scr" id="sLevel">
+  <h2 class="gold">١) اختر مرحلتك الدراسية</h2>
+  <div class="levels" id="levels"></div>
+</section>
+
+<!-- ٣) التسجيل -->
+<section class="scr" id="sReg">
+  <h2 class="gold">٢) بياناتك</h2>
+  <div class="box">
+    <div class="badge" id="regLevel"></div>
+    <label>👤 الاسم الكامل</label><input id="fName" autocomplete="name" maxlength="60">
+    <label>📧 البريد الإلكتروني</label><input id="fEmail" type="email" dir="ltr" autocomplete="email" maxlength="80">
+    <label>💬 رقم الواتساب (مع رمز الدولة)</label><input id="fWa" type="tel" dir="ltr" placeholder="+970 5X XXX XXXX" maxlength="20">
+    <label>🌍 الدولة</label><select id="fCountry"></select>
+    <div class="err" id="regErr"></div>
+    <p class="note mt">🔒 بياناتك بتوصل للمدرب فقط، لمتابعة تقدّمك وإرسال شهادتك.</p>
+    <button class="btn mt" onclick="register()">ابدأ الدورة 🚀</button>
+    <button class="btn dark mt" onclick="show('sLevel')">→ رجوع</button>
+  </div>
+</section>
+
+<!-- استعادة الحساب -->
+<section class="scr" id="sRestore">
+  <h2 class="gold">🔑 أكمل من حيث توقفت</h2>
+  <div class="box">
+    <label>📧 البريد الإلكتروني اللي سجّلت فيه</label><input id="rEmail" type="email" dir="ltr">
+    <div class="err" id="rErr"></div>
+    <button class="btn mt" onclick="restore()">استرجاع تقدّمي</button>
+    <button class="btn dark mt" onclick="show('sCover')">→ رجوع</button>
+  </div>
+</section>
+
+<!-- ٤) خريطة الدورة -->
+<section class="scr" id="sMap">
+  <div class="hello"><div class="av" id="hAv">🎓</div><div style="flex:1"><b id="hName" style="font-size:18px"></b><div style="color:var(--mut);font-size:13px" id="hLevel"></div></div></div>
+  <div class="box">
+    <div style="display:flex;justify-content:space-between;font-size:14px"><b>تقدّمك في الدورة</b><span id="hProg"></span></div>
+    <div class="prog"><i id="hBar" style="width:0"></i></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--mut)"><span id="hPts"></span><span id="hNext"></span></div>
+  </div>
+  <div id="stages"></div>
+  <button class="btn mt2" id="btnCert" style="display:none" onclick="showCert()">🎓 شهادتي</button>
+  <p class="foot"><a href="#" onclick="logout();return false" style="color:#6f6a5f">تسجيل خروج من هذا الجهاز</a></p>
+</section>
+
+<!-- ٥) الفيديو / الشرح -->
+<section class="scr" id="sVideo">
+  <div class="badge" id="vBadge"></div>
+  <h2 id="vTitle"></h2>
+  <div class="vbox" id="vBox"></div>
+  <p class="note mt" id="vNote">🎬 شاهد الشرح للآخر، بعدها بتفتح ورقة العمل.</p>
+  <button class="btn mt" id="vNext" disabled onclick="startSheet()">📝 انتقل لورقة العمل</button>
+  <button class="btn dark mt" onclick="openMap()">→ رجوع للخريطة</button>
+</section>
+
+<!-- ٦) ورقة العمل -->
+<section class="scr" id="sWs">
+  <div class="wsHead"><div><div class="badge" id="wBadge"></div><h2 id="wTitle" style="margin:0"></h2></div><div class="lives" id="wLives"></div></div>
+  <div class="dots" id="wDots"></div>
+  <div class="qcard"><div class="qnum" id="qNum"></div><div class="qtxt" id="qTxt"></div><div id="qOpts"></div></div>
+  <p class="note mt">⚠️ مسموح غلطتين: بالغلطة الأولى بتعيد الورقة من أولها، وبالغلطة التانية لازم ترجع تحضر الفيديو.</p>
+</section>
+
+<!-- ٧) النتيجة -->
+<section class="scr" id="sDone">
+  <div class="trophy">🏆</div>
+  <h1 class="gold" id="dTitle">أحسنت!</h1>
+  <p class="sub" id="dSub"></p>
+  <div class="stats"><div><b id="dPts">0</b><span>نقاط الندوة</span></div><div><b id="dMis">0</b><span>الأخطاء</span></div><div><b id="dRe">0</b><span>إعادة الفيديو</span></div></div>
+  <button class="btn" id="dNext" onclick="nextSession()">الندوة التالية ⬅</button>
+  <button class="btn dark mt" onclick="openMap()">🗺️ خريطة الدورة</button>
+</section>
+
+<!-- لوحة المدرب -->
+<section class="scr" id="sTrainer" style="max-width:1200px">
+  <h2 class="gold">👩‍🏫 لوحة المدرب — المشاركون ونقاطهم</h2>
+  <div class="row" style="flex-wrap:wrap">
+    <select id="tLevel" onchange="renderTrainer()"><option value="">كل المراحل</option></select>
+    <input id="tSearch" placeholder="🔎 بحث بالاسم أو الدولة" oninput="renderTrainer()">
+  </div>
+  <div class="row mt"><button class="btn dark" onclick="loadTrainer()">🔄 تحديث</button><button class="btn dark" onclick="exportCSV()">⬇️ تنزيل Excel (CSV)</button><button class="btn dark" onclick="show('sCover')">✖ إغلاق</button></div>
+  <p class="sub" id="tInfo" style="text-align:right"></p>
+  <div class="tblWrap"><table class="tbl" id="tTbl"></table></div>
+</section>
+
+<div id="modal"><div class="in" id="mIn"></div></div>
+
+<script src="ipa-content.js"></script>
+<script>
+(function(){
+/* ================== إعدادات ================== */
+var PROJECT='cursed-castle-bb43b', API_KEY='AIzaSyADxQ7-3UDxYD3VTOoVrn7d6516_5bqd5Y', COLL='aaipa_learners';
+var DOCS='https://firestore.googleapis.com/v1/projects/'+PROJECT+'/databases/(default)/documents/'+COLL;
+var TEACHER_PASS='amani2026';
+var VIDEO_DIR='ipa-videos/';
+var PTS={perQ1:2, perQ2:3, ws1:10, ws2:20, mistake:5, min:10};   /* قواعد النقاط */
+var LEVELS=[
+  {k:'basic', ic:'🧒', t:'المرحلة الأساسية', s:'الصفوف ١ – ٦', g:'kids'},
+  {k:'upper', ic:'🧑‍🎓', t:'المرحلة الأساسية العليا', s:'الصفوف ٧ – ١٠', g:'kids'},
+  {k:'sec',   ic:'🎒', t:'المرحلة الثانوية', s:'الصفوف ١١ – ١٢', g:'adults'},
+  {k:'uni',   ic:'🎓', t:'المرحلة الجامعية', s:'طلاب الجامعات والكليات', g:'adults'},
+  {k:'other', ic:'🌟', t:'أخرى', s:'معلمون، أهالي، رياديون، مهتمون', g:'adults'}
+];
+var COUNTRIES=['فلسطين','الأردن','مصر','السعودية','الإمارات','قطر','الكويت','البحرين','عُمان','اليمن','العراق','سوريا','لبنان','ليبيا','تونس','الجزائر','المغرب','موريتانيا','السودان','الصومال','جيبوتي','جزر القمر','تركيا','الولايات المتحدة','كندا','بريطانيا','ألمانيا','فرنسا','السويد','دولة أخرى'];
+var S=window.IPA_SESSIONS, ST=window.IPA_STAGES;
+
+/* ================== أدوات ================== */
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}}
+function lsJ(k,d){try{return JSON.parse(ls(k)||'')||d}catch(e){return d}}
+function hash(str){var a=0x811c9dc5,b=0x01000193;for(var i=0;i<str.length;i++){var c=str.charCodeAt(i);a=Math.imul(a^c,16777619)>>>0;b=Math.imul(b^c,2246822519)>>>0}return a.toString(36)+b.toString(36)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function lv(k){return LEVELS.filter(function(x){return x.k===k})[0]||LEVELS[4]}
+function show(id){Array.prototype.forEach.call(document.querySelectorAll('.scr'),function(s){s.classList.remove('on')});$(id).classList.add('on');window.scrollTo(0,0);stopVideo()}
+window.show=show;
+window.goHome=function(){location.href='index.html'};
+var AC=null;function beep(ok){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();var o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);var t=AC.currentTime;if(ok){o.frequency.setValueAtTime(660,t);o.frequency.setValueAtTime(990,t+.09)}else{o.type='sawtooth';o.frequency.setValueAtTime(220,t);o.frequency.setValueAtTime(150,t+.12)}g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.001,t+.3);o.start(t);o.stop(t+.32)}catch(e){}}
+function modal(html){$('mIn').innerHTML=html;$('modal').classList.add('on')}
+function closeModal(){$('modal').classList.remove('on')}
+window.closeModal=closeModal;
+
+/* غبار ذهبي */
+(function(){var d=$('dust');for(var i=0;i<26;i++){var e=document.createElement('i');e.style.left=Math.random()*100+'%';e.style.animationDuration=(7+Math.random()*9)+'s';e.style.animationDelay=(-Math.random()*12)+'s';var s=2+Math.random()*4;e.style.width=e.style.height=s+'px';d.appendChild(e)}})();
+
+/* ================== الحساب والتخزين ================== */
+var ME=lsJ('ipa_profile',null);   /* {id,name,email,wa,country,level,created} */
+var PR=lsJ('ipa_progress',{});    /* {sessionId:{done,pts,mis,re,tries,at}} */
+function saveLocal(){ls('ipa_profile',JSON.stringify(ME));ls('ipa_progress',JSON.stringify(PR))}
+function group(){return lv(ME.level).g}
+function totalPts(){var t=0;for(var k in PR)if(PR[k].done)t+=PR[k].pts||0;return t}
+function doneCount(){var n=0;for(var k in PR)if(PR[k].done)n++;return n}
+function nextId(){for(var i=0;i<S.length;i++)if(!(PR[S[i].id]&&PR[S[i].id].done))return S[i].id;return null}
+function sumOf(f){var t=0;for(var k in PR)t+=PR[k][f]||0;return t}
+
+function toFields(o){var f={};Object.keys(o).forEach(function(k){var v=o[k];if(typeof v==='number')f[k]={integerValue:String(Math.round(v))};else f[k]={stringValue:String(v==null?'':v)}});return f}
+function fromFields(f){var o={};f=f||{};Object.keys(f).forEach(function(k){var v=f[k];o[k]=v.integerValue!=null?+v.integerValue:v.doubleValue!=null?v.doubleValue:v.stringValue!=null?v.stringValue:''});return o}
+var syncT=null;
+function sync(){clearTimeout(syncT);syncT=setTimeout(pushRemote,800)}
+function pushRemote(){
+  if(!ME||!window.fetch)return;
+  var nx=nextId();
+  var rec={name:ME.name,email:ME.email,wa:ME.wa,country:ME.country,level:ME.level,group:group(),
+    points:totalPts(),done:doneCount(),mistakes:sumOf('mis'),rewatch:sumOf('re'),current:nx||'تمت',
+    progress:JSON.stringify(PR),created:ME.created||Date.now(),updated:Date.now()};
+  fetch(DOCS+'/'+ME.id+'?key='+API_KEY,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:toFields(rec)}),keepalive:true})
+   .then(function(r){ls('ipa_pending',r.ok?null:'1')}).catch(function(){ls('ipa_pending','1')});
+}
+window.addEventListener('online',function(){if(ls('ipa_pending'))pushRemote()});
+
+/* ================== التدفق ================== */
+window.startFlow=function(){if(ME){openMap();return}renderLevels();show('sLevel')};
+var pickedLevel=null;
+function renderLevels(){
+  $('levels').innerHTML=LEVELS.map(function(l){return '<button class="lv" onclick="pickLevel(\''+l.k+'\')"><span class="ic">'+l.ic+'</span><span><b>'+l.t+'</b><span>'+l.s+'</span></span></button>'}).join('');
+}
+window.pickLevel=function(k){pickedLevel=k;var l=lv(k);$('regLevel').textContent=l.ic+' '+l.t+' — '+l.s;show('sReg');setTimeout(function(){$('fName').focus()},300)};
+$('fCountry').innerHTML=COUNTRIES.map(function(c){return '<option>'+c+'</option>'}).join('');
+
+window.register=function(){
+  var n=$('fName').value.trim().replace(/\s+/g,' '),e=$('fEmail').value.trim().toLowerCase(),w=$('fWa').value.replace(/[\s\-()]/g,''),c=$('fCountry').value;
+  var err='';
+  if(n.length<3||n.split(' ').length<2)err='اكتب اسمك الكامل (الاسم الأول واسم العائلة على الأقل).';
+  else if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e))err='البريد الإلكتروني غير صحيح.';
+  else if(!/^\+?\d{8,15}$/.test(w))err='رقم الواتساب غير صحيح (أرقام فقط مع رمز الدولة).';
+  $('regErr').textContent=err;if(err)return;
+  ME={id:'L'+hash(e),name:n,email:e,wa:w,country:c,level:pickedLevel,created:Date.now()};
+  /* لو الإيميل مسجّل من قبل، منرجّع تقدّمه */
+  fetchDoc(ME.id).then(function(o){if(o&&o.progress){try{PR=JSON.parse(o.progress)||{}}catch(x){PR={}}if(o.created)ME.created=o.created}else PR={};finishReg()}).catch(function(){PR={};finishReg()});
+};
+function finishReg(){saveLocal();sync();openMap();
+  modal('<div class="big">🎉</div><h3>أهلاً '+esc(ME.name.split(' ')[0])+'!</h3><p>دورتك مقسومة على ٣ مراحل، بكل مرحلة ٦ ندوات.<br>كل ندوة: فيديو شرح، بعده ورقتي عمل.<br><b>تذكّر:</b> مسموح غلطتين بس بكل ورقة 🎯</p><button class="btn" onclick="closeModal()">يلا نبدأ!</button>')}
+function fetchDoc(id){return fetch(DOCS+'/'+id+'?key='+API_KEY).then(function(r){if(!r.ok)return null;return r.json()}).then(function(j){return j&&j.fields?fromFields(j.fields):null})}
+window.restore=function(){
+  var e=$('rEmail').value.trim().toLowerCase();if(!/@/.test(e)){$('rErr').textContent='اكتب بريدك الإلكتروني.';return}
+  $('rErr').textContent='⏳ جاري البحث...';
+  fetchDoc('L'+hash(e)).then(function(o){
+    if(!o){$('rErr').textContent='ما لقينا حساب بهاد الإيميل. سجّل من جديد من «ابدأ رحلتك».';return}
+    ME={id:'L'+hash(e),name:o.name,email:o.email,wa:o.wa,country:o.country,level:o.level,created:o.created};
+    try{PR=JSON.parse(o.progress)||{}}catch(x){PR={}}
+    saveLocal();openMap();
+  }).catch(function(){$('rErr').textContent='تأكد من الاتصال بالإنترنت وحاول مرة ثانية.'});
+};
+window.logout=function(){modal('<div class="big">👋</div><h3>تسجيل خروج؟</h3><p>تقدّمك محفوظ، وبتقدر ترجعله من «عندي حساب» بإيميلك.</p><div class="row"><button class="btn" onclick="doLogout()">نعم</button><button class="btn dark" onclick="closeModal()">لا</button></div>')};
+window.doLogout=function(){pushRemote();ME=null;PR={};ls('ipa_profile',null);ls('ipa_progress',null);closeModal();show('sCover');updTop()};
+
+function updTop(){$('ptsTop').textContent=ME?('⭐ '+totalPts()):''}
+
+/* ================== خريطة الدورة ================== */
+window.openMap=function(){
+  if(!ME){show('sCover');return}
+  var l=lv(ME.level);$('hAv').textContent=l.ic;$('hName').textContent=ME.name;$('hLevel').textContent=l.t+' · '+ME.country;
+  var d=doneCount(),nx=nextId();
+  $('hProg').textContent=d+' / '+S.length;$('hBar').style.width=Math.round(d/S.length*100)+'%';
+  $('hPts').textContent='⭐ '+totalPts()+' نقطة';$('hNext').textContent=nx?('التالي: الندوة '+nx):'🎓 أتممت الدورة!';
+  var g=group();
+  $('stages').innerHTML=ST.map(function(st){
+    return '<div class="stage"><h3>'+st.icon+' <span class="gold">'+st.title+'</span></h3><div class="grid">'+
+      S.filter(function(s){return s.stage===st.n}).map(function(s){
+        var p=PR[s.id]||{},cls=p.done?'done':(s.id===nx?'now':(nx!==null&&s.id>nx?'lock':''));
+        return '<button class="ses '+cls+'" onclick="openSession('+s.id+')"><span class="n">الندوة '+s.id+'</span><span class="e">'+s.icon+'</span><span class="t">'+esc(s[g].title)+'</span></button>';
+      }).join('')+'</div></div>';
+  }).join('');
+  $('btnCert').style.display=nx?'none':'block';
+  updTop();show('sMap');
+};
+
+/* ================== الندوة: الفيديو ================== */
+var CUR=null;  /* {s, sheet:0|1, mis, re, mode, q, list, ptsLive, misTotal} */
+window.openSession=function(id){
+  var nx=nextId();
+  if(nx!==null&&id>nx){beep(false);modal('<div class="big">🔒</div><h3>الندوة مقفلة</h3><p>خلّص الندوة '+nx+' أولاً، الندوات بتنفتح بالترتيب.</p><button class="btn" onclick="closeModal()">تمام</button>');return}
+  var s=S.filter(function(x){return x.id===id})[0];
+  CUR={s:s,sheet:0,mis:0,re:0,misTotal:0,pts:0,qi:0,list:[],start:Date.now()};
+  playVideo();
+};
+var slideT=null;
+function stopVideo(){clearInterval(slideT);var v=document.querySelector('#vBox video');if(v)try{v.pause()}catch(e){}}
+function playVideo(forced){
+  var s=CUR.s,g=group(),c=s[g],nn=(s.id<10?'0':'')+s.id;
+  $('vBadge').textContent='الندوة '+s.id+' من '+S.length+' · '+ST[s.stage-1].title;
+  $('vTitle').innerHTML=s.icon+' '+esc(c.title);
+  $('vNext').disabled=true;
+  $('vNote').innerHTML=forced?'🎯 <b>الرجاء التركيز</b> — شاهد الشرح للآخر، بعدها بترجع لورقة العمل.':'🎬 شاهد الشرح للآخر، بعدها بتفتح ورقة العمل.';
+  show('sVideo');
+  var src=VIDEO_DIR+g+'-'+nn+'.mp4';
+  var v=document.createElement('video');v.src=src;v.playsInline=true;v.setAttribute('playsinline','');v.controls=true;v.preload='metadata';
+  var fell=false;
+  function fallback(){if(fell)return;fell=true;runSlides(c,s)}
+  v.onerror=fallback;
+  v.onloadedmetadata=function(){if(fell)return;$('vBox').innerHTML='';$('vBox').appendChild(v);
+    var maxT=0;v.ontimeupdate=function(){if(!v.seeking)maxT=Math.max(maxT,v.currentTime)};
+    v.onseeking=function(){if(v.currentTime>maxT+1)v.currentTime=maxT}; /* ممنوع تقديم الفيديو */
+    v.onended=function(){$('vNext').disabled=false;beep(true)};};
+  setTimeout(function(){if(!v.readyState)fallback()},8000);
+  $('vBox').innerHTML='<div class="slides" style="display:grid;place-items:center"><div style="text-align:center;color:var(--mut)">⏳ جاري التحميل…</div></div>';
+}
+/* شرح متحرك بالخطوات (لحين تجهيز الفيديو) */
+function runSlides(c,s){
+  var pts=c.points;
+  $('vBox').innerHTML='<div class="slides"><div class="hd"><span class="em">'+s.icon+'</span><b class="gold" style="font-size:21px">'+esc(c.title)+'</b></div>'+
+    pts.map(function(p,i){return '<div class="step" id="st'+i+'"><span class="num">'+(i+1)+'</span><p>'+esc(p)+'</p></div>'}).join('')+
+    '</div><div class="vbar"><i id="vProg"></i></div>';
+  var i=-1,per=7000,el=0,total=pts.length*per;
+  function go(){if(i>=0){$('st'+i).classList.remove('act');$('st'+i).classList.add('seen')}i++;if(i<pts.length){$('st'+i).classList.add('act');beep(true)}}
+  go();clearInterval(slideT);
+  slideT=setInterval(function(){el+=250;$('vProg').style.width=Math.min(100,el/total*100)+'%';
+    if(el%per===0&&i<pts.length-1)go();
+    if(el>=total){clearInterval(slideT);$('st'+i).classList.remove('act');$('st'+i).classList.add('seen');$('vNext').disabled=false;
+      Array.prototype.forEach.call(document.querySelectorAll('.step'),function(x){x.style.opacity=1})}},250);
+}
+
+/* ================== أوراق العمل ================== */
+window.startSheet=function(){
+  var c=CUR.s[group()];
+  var raw=c.ws[CUR.sheet];
+  CUR.list=shuffle(raw).map(function(q){return {q:q[0],opts:shuffle(q[1].map(function(o,i){return {t:o,ok:i===0}}))}});
+  CUR.qi=0;CUR.sheetPts=0;
+  $('wBadge').textContent='الندوة '+CUR.s.id+' · '+(CUR.sheet===0?'ورقة العمل ١ (أساسية)':'ورقة العمل ٢ (متقدمة)');
+  $('wTitle').textContent=c.title;
+  show('sWs');renderQ();
+};
+function renderLives(){$('wLives').textContent=(CUR.mis>=1?'🖤':'❤️')+(CUR.mis>=2?'🖤':'❤️')}
+function renderQ(){
+  renderLives();
+  var q=CUR.list[CUR.qi];
+  $('wDots').innerHTML=CUR.list.map(function(x,i){return '<i class="'+(i<CUR.qi?'d':i===CUR.qi?'c':'')+'"></i>'}).join('');
+  $('qNum').textContent='السؤال '+(CUR.qi+1)+' من '+CUR.list.length;
+  $('qTxt').textContent=q.q;
+  $('qOpts').innerHTML=q.opts.map(function(o,i){return '<button class="opt" onclick="answer('+i+',this)">'+esc(o.t)+'</button>'}).join('');
+}
+var busy=false;
+window.answer=function(i,btn){
+  if(busy)return;busy=true;
+  var q=CUR.list[CUR.qi];
+  if(q.opts[i].ok){
+    btn.classList.add('ok');beep(true);CUR.sheetPts+=CUR.sheet===0?PTS.perQ1:PTS.perQ2;
+    setTimeout(function(){busy=false;CUR.qi++;if(CUR.qi<CUR.list.length)renderQ();else sheetDone()},650);
+  }else{
+    btn.classList.add('no');beep(false);CUR.mis++;CUR.misTotal++;renderLives();
+    setTimeout(function(){busy=false;
+      if(CUR.mis===1){
+        modal('<div class="big">❌</div><h3>إجابة غير صحيحة</h3><p>ضلّلك فرصة وحدة 💪<br>رح تعيد ورقة العمل من أولها.<br><small style="color:var(--mut)">وإذا حابب، بتقدر ترجع تحضر الفيديو قبل.</small></p><button class="btn" onclick="closeModal();retrySheet()">🔁 إعادة الحل من الأول</button><button class="btn ghost mt" onclick="closeModal();rewatch(false)">🎬 أرجع للفيديو (اختياري)</button>');
+      }else{
+        modal('<div class="big">🎯</div><h3 class="focus" style="color:#fca5a5">الرجاء التركيز</h3><p>هاي الغلطة التانية.<br>لازم ترجع تحضر الفيديو من جديد، وبعدها بتعيد ورقة العمل.</p><button class="btn" onclick="closeModal();rewatch(true)">🎬 حضور الفيديو</button>');
+      }
+    },700);
+  }
+};
+window.retrySheet=function(){startSheet()};
+window.rewatch=function(forced){CUR.re++;CUR.mis=0;playVideo(forced)};  /* بعد الفيديو بتبلش الغلطات من صفر */
+function sheetDone(){
+  CUR.pts+=CUR.sheetPts+(CUR.sheet===0?PTS.ws1:PTS.ws2);
+  if(CUR.sheet===0){
+    CUR.sheet=1;CUR.mis=0;
+    modal('<div class="big">🌟</div><h3>خلّصت ورقة العمل الأولى!</h3><p>هلّق ورقة العمل التانية — أصعب شوي 🧠<br>نفس القاعدة: مسموح غلطتين.</p><button class="btn" onclick="closeModal();startSheet()">ابدأ ورقة العمل ٢ ⬅</button>');
+    return;
+  }
+  finishSession();
+}
+function finishSession(){
+  var id=CUR.s.id,old=PR[id]||{};
+  var pts=Math.max(PTS.min,CUR.pts-CUR.misTotal*PTS.mistake);
+  var rec={done:1,pts:Math.max(pts,old.pts||0),mis:(old.mis||0)+CUR.misTotal,re:(old.re||0)+CUR.re,tries:(old.tries||0)+1,min:Math.round((Date.now()-CUR.start)/60000),at:Date.now()};
+  var first=!old.done;
+  PR[id]=rec;saveLocal();sync();updTop();
+  $('dTitle').textContent=first?'أحسنت! خلّصت الندوة '+id:'أعدت الندوة '+id+' بنجاح';
+  $('dSub').textContent=CUR.s[group()].title;
+  $('dPts').textContent=pts;$('dMis').textContent=CUR.misTotal;$('dRe').textContent=CUR.re;
+  var nx=nextId();$('dNext').style.display=nx?'block':'none';
+  show('sDone');beep(true);
+  if(!nx)setTimeout(showCert,900);
+}
+window.nextSession=function(){var nx=nextId();if(nx)openSession(nx);else openMap()};
+
+/* ================== الشهادة ================== */
+window.showCert=function(){
+  if(nextId()!==null)return;
+  var d=new Date(),l=lv(ME.level);
+  modal('<div id="certArea" class="cert"><img src="aaipa-logo.png"><h2>شهادة إتمام</h2><div>تشهد أكاديمية الملكية الفكرية بأن</div><div class="nm">'+esc(ME.name)+'</div><div style="line-height:2">قد أتمّ/ت بنجاح دورة «الملكية الفكرية» — '+esc(l.t)+'<br>(١٨ ندوة · ٣٦ ورقة عمل) بمجموع <b>'+totalPts()+'</b> نقطة</div><div style="margin-top:14px;font-size:13px">'+d.getDate()+' / '+(d.getMonth()+1)+' / '+d.getFullYear()+'</div><div style="margin-top:12px;font-weight:900">د. أماني ياسين</div><div style="font-size:12px">رئيسة الجمعية الأمريكية العربية لحماية الملكية الفكرية — فرع فلسطين</div></div><button class="btn mt" onclick="window.print()">🖨️ طباعة / حفظ PDF</button><button class="btn dark mt" onclick="closeModal()">إغلاق</button>');
+};
+
+/* ================== لوحة المدرب ================== */
+var ROWS=[];
+window.trainerLogin=function(){
+  if(sessionStorage.getItem('ipa_t')==='1'){openTrainer();return}
+  modal('<div class="big">👩‍🏫</div><h3>لوحة المدرب</h3><input id="tp" type="password" placeholder="كلمة السر" style="margin-bottom:12px"><div class="err" id="tpe"></div><button class="btn" onclick="checkT()">دخول</button><button class="btn dark mt" onclick="closeModal()">إلغاء</button>');
+  setTimeout(function(){$('tp').focus()},200);
+};
+window.checkT=function(){if($('tp').value.trim()===TEACHER_PASS){sessionStorage.setItem('ipa_t','1');closeModal();openTrainer()}else $('tpe').textContent='كلمة السر غير صحيحة'};
+function openTrainer(){
+  $('tLevel').innerHTML='<option value="">كل المراحل</option>'+LEVELS.map(function(l){return '<option value="'+l.k+'">'+l.t+'</option>'}).join('');
+  show('sTrainer');loadTrainer();
+}
+window.loadTrainer=function(){
+  $('tInfo').textContent='⏳ جاري التحميل…';ROWS=[];
+  (function page(tok){
+    fetch(DOCS+'?pageSize=300&key='+API_KEY+(tok?'&pageToken='+encodeURIComponent(tok):'')).then(function(r){return r.json()}).then(function(j){
+      (j.documents||[]).forEach(function(d){var o=fromFields(d.fields);try{o.pr=JSON.parse(o.progress||'{}')}catch(e){o.pr={}}ROWS.push(o)});
+      if(j.nextPageToken)page(j.nextPageToken);else renderTrainer();
+    }).catch(function(){$('tInfo').textContent='⚠️ تعذّر الاتصال بقاعدة البيانات. تأكدي من الإنترنت.'});
+  })();
+};
+window.renderTrainer=function(){
+  var f=$('tLevel').value,q=$('tSearch').value.trim();
+  var rows=ROWS.filter(function(r){return(!f||r.level===f)&&(!q||(r.name+' '+r.country+' '+r.email).indexOf(q)>-1)}).sort(function(a,b){return(b.points||0)-(a.points||0)});
+  $('tInfo').textContent='عدد المشاركين: '+rows.length+' · أكملوا الدورة: '+rows.filter(function(r){return r.done>=S.length}).length;
+  $('tTbl').innerHTML='<tr><th>#</th><th>الاسم</th><th>المرحلة</th><th>الدولة</th><th>التواصل</th><th>⭐ النقاط</th><th>الندوات</th><th>❌ أخطاء</th><th>🎬 إعادة</th><th>آخر نشاط</th></tr>'+
+    rows.map(function(r,i){
+      var mini='<div class="mini">'+S.map(function(s){return '<i class="'+(r.pr[s.id]&&r.pr[s.id].done?'d':'')+'" title="الندوة '+s.id+(r.pr[s.id]?' · '+(r.pr[s.id].pts||0)+' نقطة · '+(r.pr[s.id].mis||0)+' خطأ':'')+'"></i>'}).join('')+'</div>';
+      var wa=String(r.wa||'').replace(/[^\d]/g,'');
+      return '<tr><td>'+(i+1)+'</td><td><b>'+esc(r.name)+'</b></td><td><span class="chip">'+esc(lv(r.level).t)+'</span></td><td>'+esc(r.country)+'</td><td dir="ltr" style="text-align:left"><a style="color:#86efac" href="https://wa.me/'+wa+'" target="_blank">'+esc(r.wa)+'</a><br><span style="color:var(--mut)">'+esc(r.email)+'</span></td><td><b style="color:var(--gold);font-size:16px">'+(r.points||0)+'</b></td><td>'+(r.done||0)+' / '+S.length+mini+'</td><td>'+(r.mistakes||0)+'</td><td>'+(r.rewatch||0)+'</td><td>'+(r.updated?new Date(+r.updated).toLocaleDateString('ar-EG'):'')+'</td></tr>';
+    }).join('');
+};
+window.exportCSV=function(){
+  var head=['الاسم','المرحلة','الدولة','الواتساب','الإيميل','النقاط','الندوات المكتملة','الأخطاء','إعادة الفيديو'].concat(S.map(function(s){return 'ن'+s.id}));
+  var lines=[head].concat(ROWS.map(function(r){return [r.name,lv(r.level).t,r.country,r.wa,r.email,r.points||0,r.done||0,r.mistakes||0,r.rewatch||0].concat(S.map(function(s){var p=r.pr[s.id];return p&&p.done?p.pts:''}))}));
+  var csv='﻿'+lines.map(function(l){return l.map(function(x){return '"'+String(x==null?'':x).replace(/"/g,'""')+'"'}).join(',')}).join('\n');
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='ملكية-فكرية-المشاركون.csv';a.click();
+};
+
+/* ================== البداية ================== */
+updTop();
+if(ls('ipa_pending'))pushRemote();
+if(/[?&]trainer/.test(location.search))trainerLogin();
+})();
+</script>
+</body>
+</html>
