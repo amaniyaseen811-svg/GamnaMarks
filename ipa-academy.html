@@ -83,7 +83,7 @@ input:focus,select:focus{border-color:var(--gold)}
 .ses.lock::after{content:'🔒';position:absolute;top:5px;left:6px;font-size:13px}
 /* الفيديو والشرح */
 .vbox{position:relative;border-radius:18px;overflow:hidden;background:#000;border:1px solid var(--line)}
-.vbox video{width:100%;display:block;max-height:70vh;background:#000}
+.vbox video{width:100%;display:block;max-height:78vh;background:#000;object-fit:contain}
 .slides{position:relative;min-height:380px;padding:26px 20px;background:radial-gradient(circle at 20% 0%,#2a2210,#0d0d10 70%)}
 .slides .hd{display:flex;align-items:center;gap:10px;margin-bottom:18px}
 .slides .hd .em{font-size:40px}
@@ -395,11 +395,13 @@ function playVideo(forced){
   $('vNext').disabled=true;
   $('vNote').innerHTML=forced?'🎯 <b>الرجاء التركيز</b> — شاهد الشرح للآخر، بعدها بترجع لورقة العمل.':'🎬 شاهد الشرح للآخر، بعدها بتفتح ورقة العمل.';
   show('sVideo');
-  var src=VIDEO_DIR+g+'-'+nn+'.mp4';
+  /* الشاشة الطولية (الجوال) بتاخد النسخة الطولية، والعرضية بتاخد -h إذا موجودة */
+  var wide=window.innerWidth>window.innerHeight;
+  var src=VIDEO_DIR+g+'-'+nn+(wide?'-h':'')+'.mp4';
   var v=document.createElement('video');v.src=src;v.playsInline=true;v.setAttribute('playsinline','');v.controls=true;v.preload='metadata';
   var fell=false;
   function fallback(){if(fell)return;fell=true;runSlides(c,s)}
-  v.onerror=fallback;
+  v.onerror=function(){if(wide&&v.src.indexOf('-h.mp4')>-1){wide=false;v.src=VIDEO_DIR+g+'-'+nn+'.mp4';return}fallback()};
   v.onloadedmetadata=function(){if(fell)return;$('vBox').innerHTML='';$('vBox').appendChild(v);
     var maxT=0;v.ontimeupdate=function(){if(!v.seeking)maxT=Math.max(maxT,v.currentTime)};
     v.onseeking=function(){if(v.currentTime>maxT+1)v.currentTime=maxT}; /* ممنوع تقديم الفيديو */
