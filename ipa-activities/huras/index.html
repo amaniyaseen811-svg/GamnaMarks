@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مغامرة حُرّاس الأفكار</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Amiri:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#f5b81c;--gold2:#ffd966;--navy:#1d2b64;--sky:#3aa0ff;--ok:#22b573;--no:#ff6b6b;--card:#fffdf6}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:'Baloo Bhaijaan 2',Tahoma,sans-serif;background:radial-gradient(circle at 20% 10%,#4b6cff 0,#1d2b64 55%,#121a3f 100%);color:#1d2340;min-height:100vh;overflow-x:hidden}
+.stars{position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(2px 2px at 10% 20%,#fff8,transparent),radial-gradient(2px 2px at 80% 30%,#fff9,transparent),radial-gradient(1.5px 1.5px at 40% 70%,#fff7,transparent),radial-gradient(2px 2px at 65% 85%,#fff8,transparent),radial-gradient(1.5px 1.5px at 25% 55%,#fff6,transparent),radial-gradient(2px 2px at 90% 60%,#fff7,transparent);animation:tw 4s ease-in-out infinite alternate}
+@keyframes tw{to{opacity:.4}}
+.app{max-width:560px;margin:0 auto;padding:14px 14px 40px;position:relative}
+.screen{display:none;animation:in .45s ease}
+.screen.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border-radius:26px;padding:18px;box-shadow:0 12px 40px #0006;border:4px solid var(--gold2)}
+h1{font-size:30px;text-align:center;color:#fff;text-shadow:0 3px 0 #0005;line-height:1.25}
+h2{font-size:22px;color:var(--navy);text-align:center;margin-bottom:8px}
+.sub{color:#ffe9a8;text-align:center;font-size:17px;margin:4px 0 14px}
+p{font-size:18px;line-height:1.7}
+.pic{width:100%;border-radius:18px;display:block;box-shadow:0 6px 18px #0003;background:#fff}
+.btn{display:block;width:100%;border:0;border-radius:18px;padding:14px 16px;font:inherit;font-size:20px;font-weight:800;cursor:pointer;margin-top:12px;box-shadow:0 5px 0 #0003;transition:transform .1s}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #0003}
+.gold{background:linear-gradient(#ffd966,#f5b81c);color:#5a3900}
+.blue{background:linear-gradient(#6bc0ff,#2f86e8);color:#fff}
+.ghost{background:#eef2ff;color:var(--navy)}
+.hub{display:grid;gap:14px}
+.act{display:flex;gap:12px;align-items:center;background:var(--card);border-radius:22px;padding:12px;border:4px solid var(--gold2);cursor:pointer;box-shadow:0 8px 24px #0005;transition:transform .15s}
+.act:hover{transform:scale(1.02)}
+.act img{width:96px;height:96px;object-fit:cover;border-radius:16px;flex:none}
+.act b{font-size:20px;color:var(--navy);display:block}
+.act span{font-size:15px;color:#555}
+.act .done{color:var(--ok);font-weight:800}
+.top{display:flex;justify-content:space-between;align-items:center;color:#fff;margin-bottom:10px;gap:8px}
+.top .home{background:#ffffff22;border:0;color:#fff;font:inherit;font-size:16px;border-radius:12px;padding:6px 12px;cursor:pointer}
+.meter{display:flex;gap:6px;direction:rtl}
+.meter i{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:20px;background:#ffffff1f;filter:grayscale(1);opacity:.55;transition:.4s}
+.meter i.got{filter:none;opacity:1;background:#ffd96655;transform:scale(1.15)}
+.pts{background:#ffd966;color:#5a3900;border-radius:12px;padding:4px 10px;font-weight:800}
+.station{font-size:15px;color:#8a6a00;text-align:center;font-weight:800;letter-spacing:.3px}
+.scene{position:relative;margin:10px 0}
+.tag{position:absolute;bottom:10px;right:10px;background:#1d2b64e6;color:#fff;border-radius:12px;padding:4px 10px;font-size:15px}
+.tag.l{right:auto;left:10px}
+.q{font-size:20px;font-weight:800;color:var(--navy);margin:8px 0 4px;line-height:1.5}
+.opt{display:block;width:100%;text-align:right;border:3px solid #dfe5ff;background:#fff;border-radius:16px;padding:12px 14px;font:inherit;font-size:18px;margin-top:10px;cursor:pointer;transition:.15s}
+.opt:hover{border-color:var(--sky)}
+.opt.ok{border-color:var(--ok);background:#e6fff3}
+.opt.no{border-color:var(--no);background:#fff0f0;animation:shake .4s}
+.opt[disabled]{cursor:default}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.fb{display:none;margin-top:12px;border-radius:16px;padding:12px 14px;font-size:17px;line-height:1.6}
+.fb.ok{display:block;background:#e6fff3;border:2px solid var(--ok)}
+.fb.no{display:block;background:#fff6e0;border:2px solid var(--gold)}
+.guide{display:flex;gap:10px;align-items:flex-start}
+.guide img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none;border:3px solid var(--gold2);background:#fff}
+.say{background:#ffffff26;border:0;border-radius:50%;width:42px;height:42px;font-size:20px;cursor:pointer;flex:none}
+.card .say{background:#eef2ff}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.chest{position:relative;width:220px;margin:6px auto 0}
+.chest img{width:100%;border-radius:20px}
+.locks{display:flex;justify-content:center;gap:8px;margin:10px 0}
+.locks i{font-style:normal;font-size:30px;transition:.5s}
+.locks i.open{transform:rotate(-20deg) scale(1.2)}
+.key{position:fixed;left:50%;top:45%;font-size:90px;transform:translate(-50%,-50%) scale(0);pointer-events:none;z-index:9;filter:drop-shadow(0 0 22px #ffd966)}
+.key.go{animation:key 1.3s ease forwards}
+@keyframes key{30%{transform:translate(-50%,-50%) scale(1.3) rotate(-15deg)}70%{transform:translate(-50%,-50%) scale(1) rotate(10deg);opacity:1}100%{transform:translate(-50%,-260%) scale(.3);opacity:0}}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:8}
+.ev{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.ev button{border:3px dashed #c9d3ff;background:#fff;border-radius:14px;padding:8px 4px;font:inherit;font-size:14px;cursor:pointer;min-height:76px}
+.ev button b{display:block;font-size:26px}
+.ev button.seen{border-style:solid;border-color:var(--sky);background:#eef7ff}
+.zoom{display:none;margin-top:8px;background:#fffbe8;border:2px solid var(--gold2);border-radius:14px;padding:10px;font-size:16px;line-height:1.6}
+.post{background:#fff;border:2px solid #dde3f0;border-radius:14px;padding:10px;font-size:16px;margin:8px 0}
+.post .who{font-weight:800;color:#3b5998}
+.post .x{color:#c33;text-decoration:line-through}
+.label{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+.cardlbl{background:#fff;border:3px solid #dfe5ff;border-radius:12px;padding:8px 12px;font-size:16px;cursor:grab;user-select:none}
+.drop{border:3px dashed var(--gold);border-radius:14px;padding:12px;text-align:center;color:#8a6a00;font-weight:800;margin:8px 0;min-height:52px}
+.drop.ok{border-style:solid;border-color:var(--ok);background:#e6fff3;color:#116b43}
+.cert{background:linear-gradient(135deg,#fffaf0,#fff3c4);border:6px double #c99a12;border-radius:22px;padding:22px 16px;text-align:center;position:relative}
+.cert h3{font-family:'Amiri',serif;font-size:34px;color:#8a5a00}
+.cert .nm{font-family:'Amiri',serif;font-size:30px;color:var(--navy);border-bottom:2px dotted #c99a12;display:inline-block;min-width:60%;margin:10px 0}
+.cert .seal{font-size:54px}
+.cert small{display:block;color:#7a6a3a;margin-top:10px;font-size:14px}
+input.name{width:100%;font:inherit;font-size:20px;padding:10px 14px;border-radius:14px;border:3px solid #dfe5ff;margin-top:8px;text-align:center}
+.slogan{font-family:'Amiri',serif;font-size:24px;color:#8a5a00;text-align:center;margin-top:10px}
+.stamp{display:inline-block;border:4px solid #d13b3b;color:#d13b3b;border-radius:12px;padding:4px 14px;font-weight:800;font-size:22px;transform:rotate(-8deg);animation:stamp .6s ease}
+@keyframes stamp{from{transform:rotate(-8deg) scale(3);opacity:0}}
+.note{color:#cfd8ff;font-size:13px;text-align:center;margin-top:16px;line-height:1.6}
+@media print{body{background:#fff}.stars,.top,.btn,.note{display:none!important}.screen{display:none!important}.screen.on{display:block!important}}
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<canvas class="confetti" id="conf"></canvas>
+<div class="key" id="keyFx">🗝️</div>
+<div class="app">
+
+<!-- ===== الصفحة الرئيسية ===== -->
+<section class="screen on" id="s-hub">
+  <img src="img/1.jpg" alt="" style="width:130px;height:130px;border-radius:26px;display:block;margin:6px auto 10px;box-shadow:0 10px 30px #0007;border:4px solid #ffd966">
+  <h1>مغامرة حُرّاس الأفكار</h1>
+  <p class="sub">الملكية الفكرية بأسلوب اللعب والاكتشاف</p>
+  <div class="card" style="margin-bottom:14px">
+    <div class="row"><p style="font-size:17px">أيها المبدعون الصغار، اليوم لن نبحث عن الذهب، بل عن شيء قد يكون أثمن منه: <b>الفكرة!</b> سنفتح صندوق كنوز الإبداع، ثم نساعد المحقق الصغير في إعادة لوحة إلى صاحبتها.</p>
+    <button class="say" onclick="speak('hub')" aria-label="استمع">🔊</button></div>
+  </div>
+  <div class="hub">
+    <div class="act" onclick="startA()"><img src="img/3.jpg" alt=""><div><b>١. صندوق الأفكار السحري</b><span>اكتشف كنوز العقول المبدعة · ٥ مفاتيح</span><div class="done" id="doneA"></div></div></div>
+    <div class="act" onclick="startB()"><img src="img/2.jpg" alt=""><div><b>٢. المحقق الصغير</b><span>قضية اللوحة المفقودة · ٥ نجوم</span><div class="done" id="doneB"></div></div></div>
+  </div>
+  <p class="note">نشاط توعوي مبسّط وليس رأيًا قانونيًا · أكاديمية الملكية الفكرية — GamnaMarks</p>
+</section>
+
+<!-- ===== النشاط الأول ===== -->
+<section class="screen" id="s-a0">
+  <div class="top"><button class="home" onclick="go('hub')">⟵ الرئيسية</button><span class="pts">⭐ <span class="ptsA">0</span></span></div>
+  <h1>صندوق الأفكار السحري</h1>
+  <p class="sub">اكتشف كنوز العقول المبدعة</p>
+  <div class="card">
+    <div class="chest"><img src="img/3.jpg" alt="الحارس فكري داخل صندوق الكنز"></div>
+    <div class="locks" id="locks0"></div>
+    <div class="row"><p id="introA">أهلًا بك في مملكة الأفكار! أنا «فِكري» حارس الكنز. هذا الصندوق لا يحتوي على الذهب، بل على كنوزٍ صنعها العقل البشري. افتح الأقفال الخمسة لتكتشفها!</p>
+    <button class="say" onclick="speak('introA')">🔊</button></div>
+    <button class="btn gold" onclick="qA(0)">ابدأ المغامرة 🗝️</button>
+  </div>
+</section>
+
+<section class="screen" id="s-aq">
+  <div class="top"><button class="home" onclick="go('hub')">⟵ الرئيسية</button><div class="meter" id="keysA"></div><span class="pts">⭐ <span class="ptsA">0</span></span></div>
+  <div class="card">
+    <div class="station" id="aSt"></div>
+    <div class="scene"><img class="pic" id="aImg" alt=""><span class="tag" id="aTag"></span></div>
+    <div class="row"><div class="q" id="aQ"></div><button class="say" onclick="speakQ('a')">🔊</button></div>
+    <div id="aOpts"></div>
+    <div class="fb" id="aFb"></div>
+    <button class="btn blue" id="aNext" style="display:none" onclick="nextA()">التالي ⟵</button>
+  </div>
+</section>
+
+<section class="screen" id="s-aend">
+  <div class="card" style="text-align:center">
+    <div class="chest"><img src="img/3.jpg" alt=""></div>
+    <div class="locks" id="locksEnd"></div>
+    <h2>انفتح الصندوق! 🎉</h2>
+    <div class="row"><p id="endA">مبروك يا حارس الأفكار! اكتشفت أن القصص والرسومات والموسيقى والاختراعات والعلامات المميزة من كنوز العقول.</p><button class="say" onclick="speak('endA')">🔊</button></div>
+    <p style="font-size:16px;margin-top:8px">اكتب اسمك لتظهر شهادتك:</p>
+    <input class="name" id="nameA" placeholder="اسمي…" oninput="certA.querySelector('.nm').textContent=this.value||'…'">
+    <div class="cert" id="certA" style="margin-top:14px">
+      <div class="seal">🗝️</div><h3>شهادة «حارس الأفكار»</h3><p>تُمنح هذه الشهادة إلى</p><div class="nm">…</div>
+      <p>لأنه فتح الأقفال الخمسة واكتشف كنوز العقول المبدعة</p>
+      <div class="slogan">لكل إبداع قيمة… ولكل مبدع حقوق</div>
+      <small>أكاديمية الملكية الفكرية · الجمعية الأمريكية العربية لحماية الملكية الفكرية</small>
+    </div>
+    <button class="btn blue" onclick="startB()">النشاط التالي: المحقق الصغير 🔍</button>
+    <button class="btn ghost printb" onclick="window.print()">🖨️ اطبع الشهادة</button>
+  </div>
+</section>
+
+<!-- ===== النشاط الثاني ===== -->
+<section class="screen" id="s-b0">
+  <div class="top"><button class="home" onclick="go('hub')">⟵ الرئيسية</button><span class="pts">🌟 <span class="ptsB">0</span></span></div>
+  <h1>المحقق الصغير</h1>
+  <p class="sub">قضية اللوحة المفقودة: من صاحب الإبداع؟</p>
+  <div class="card">
+    <img class="pic" src="img/8.jpg" alt="ليان ترسم">
+    <div class="guide" style="margin-top:12px"><img src="img/8.jpg" alt=""><div class="row" style="flex:1"><p id="introB">«أنا ليان، أحبّ الرسم. رسمتُ لوحةً عن مدينتي وكنتُ سعيدةً بها، لكنني فوجئتُ بأن سامي نشرها وكتب: رسمتي الجديدة! ساعدني يا محقق، كيف نعرف من رسم اللوحة؟»</p><button class="say" onclick="speak('introB')">🔊</button></div></div>
+    <p style="font-size:16px;color:#555;margin-top:8px">🔍 انقر على الأدلة، ثم اختر الإجابة. كل إجابة صحيحة تمنحك نجمة، وبالنجوم الخمس تصل إلى الحكم النهائي.</p>
+    <button class="btn gold" onclick="qB(0)">ابدأ التحقيق 🔍</button>
+  </div>
+</section>
+
+<section class="screen" id="s-bq">
+  <div class="top"><button class="home" onclick="go('hub')">⟵ الرئيسية</button><div class="meter" id="starsB"></div><span class="pts">🌟 <span class="ptsB">0</span></span></div>
+  <div class="card">
+    <div class="station" id="bSt"></div>
+    <div class="scene"><img class="pic" id="bImg" alt=""></div>
+    <div id="bExtra"></div>
+    <div class="row"><div class="q" id="bQ"></div><button class="say" onclick="speakQ('b')">🔊</button></div>
+    <div id="bOpts"></div>
+    <div class="fb" id="bFb"></div>
+    <button class="btn ghost" id="bBack" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ العودة إلى الدليل</button>
+    <button class="btn blue" id="bNext" style="display:none" onclick="nextB()">التالي ⟵</button>
+  </div>
+</section>
+
+<section class="screen" id="s-bend">
+  <div class="card" style="text-align:center">
+    <div style="margin:6px 0 12px"><span class="stamp">✔ تمّ حلّ القضية</span></div>
+    <img class="pic" src="img/2.jpg" alt="" style="max-width:260px;margin:0 auto">
+    <div class="row" style="margin-top:10px"><p id="endB">نجحت في حلّ قضية اللوحة، واكتشفت أن احترام المبدعين يبدأ بالأمانة والاعتراف بحقوقهم.</p><button class="say" onclick="speak('endB')">🔊</button></div>
+    <input class="name" id="nameB" placeholder="اسمي…" oninput="certB.querySelector('.nm').textContent=this.value||'…'">
+    <div class="cert" id="certB" style="margin-top:14px">
+      <div class="seal">🔍</div><h3>شهادة «المحقق الأمين»</h3><p>تُمنح هذه الشهادة إلى</p><div class="nm">…</div>
+      <p>لأنه أعاد اللوحة إلى صاحبتها بالأدلة والإنصاف</p>
+      <div class="slogan">قد تستطيع نسخ العمل… لكنك لا تصبح صاحبه</div>
+      <small>أكاديمية الملكية الفكرية · الجمعية الأمريكية العربية لحماية الملكية الفكرية</small>
+    </div>
+    <button class="btn gold" onclick="go('hub')">العودة إلى المغامرة 🏠</button>
+    <button class="btn ghost printb" onclick="window.print()">🖨️ اطبع الشهادة</button>
+  </div>
+</section>
+
+</div>
+
+<script>
+const A=[
+ {st:'المحطة ١: كنز الكاتب',img:'img/11.jpg',tag:'قصة كتبتها طفلة 📖  ·  حجر طبيعي 🪨',
+  q:'أيّهما يُعدّ عملًا إبداعيًا قد يحميه حقّ المؤلف؟',o:['الحجر الطبيعي','القصة الأصلية التي كتبتها الطفلة'],c:1,
+  ok:'أحسنت! القصة تعبير أصلي من كتابة مؤلفتها، أمّا الحجر الطبيعي فليس عملًا مؤلَّفًا.',
+  no:'فكّر مرة أخرى: الحجر موجود في الطبيعة، ولم يصنعه عقل أحد. أيّهما صنعته الطفلة بخيالها؟'},
+ {st:'المحطة ٢: كنز الرسّام',img:'img/10.jpg',tag:'لوحة رسمتها طفلة 🎨  ·  السماء الحقيقية ☁️',
+  q:'ما الذي قد يكون عملًا فنيًا محميًا؟',o:['اللوحة الأصلية','السماء نفسها'],c:0,
+  ok:'رائع! يستطيع الجميع مشاهدة السماء، لكنّ طريقة رسمها والتعبير عنها قد تكون محمية.',
+  no:'السماء للجميع، ولا يملكها أحد. ما الذي صنعته الرسّامة بيدها وبطريقتها الخاصة؟'},
+ {st:'المحطة ٣: كنز الموسيقي',img:'img/15.jpg',tag:'مقطوعة أصلية 🎻',
+  q:'هل يمكن استخدام تسجيل أغنية في إعلان من دون التحقّق من حقوقه؟',o:['نعم، لأنه موجود على الإنترنت','يجب التحقّق من الترخيص أو الحصول على الإذن المناسب'],c:1,
+  ok:'صحيح! الأغاني والتسجيلات قد تتمتّع بحماية قانونية، وتختلف الأذونات حسب الاستخدام.',
+  no:'وجود الشيء على الإنترنت لا يعني أنه مسموح للجميع. ماذا نفعل قبل أن نستخدم عمل غيرنا؟'},
+ {st:'المحطة ٤: كنز المخترع',img:'img/14.jpg',tag:'ابتكار لريّ النباتات 🌼',
+  q:'ما الذي يمكن أن يحمي بعض الاختراعات الجديدة عند استيفاء شروط الحماية؟',o:['براءة الاختراع','بطاقة المكتبة'],c:0,
+  ok:'ممتاز! بعض الاختراعات تستوفي شروط الحصول على براءة، لكن ليست كل فكرة تُمنح براءة تلقائيًا.',
+  no:'بطاقة المكتبة تساعدنا على استعارة الكتب فقط. ما الوثيقة الخاصة بالاختراعات؟'},
+ {st:'المحطة ٥: كنز العلامة المميّزة',img:'img/13.jpg',tag:'متجر «كوكب المرح» 🪐',
+  q:'لماذا يستخدم المتجر علامة مميّزة؟',o:['لتمييز منتجاته أو خدماته عن غيرها','لمنع الأطفال من دخول المتجر'],c:0,
+  ok:'أحسنت! تساعد العلامة التجارية الناس على معرفة مصدر السلع والخدمات.',
+  no:'المتاجر تحبّ الزبائن الصغار! فكّر: كيف يعرف الناس هذا المتجر من بين كل المتاجر؟'}
+];
+const B=[
+ {st:'المحطة ١: من صاحب اللوحة؟',img:'img/8.jpg',extra:'post1',
+  q:'من رسم اللوحة في قصتنا؟',o:['سامي لأنه نشرها','ليان لأنها رسمتها','الموقع الإلكتروني'],c:1,
+  ok:'صحيح! نشرُ العمل لا يجعل الناشر مؤلفًا له. ⭐ أُضيف اسم «ليان» إلى دفتر التحقيق.',
+  no:'انظر إلى الأدلة: متى رُسمت اللوحة؟ ومتى نُشرت؟ النشر شيء، والرسم شيء آخر.'},
+ {st:'المحطة ٢: ابحث عن الدليل',img:'img/12.jpg',extra:'evidence',
+  q:'أيّ دليل يساعد أكثر على توضيح مراحل إنجاز ليان للوحة؟',o:['المسوّدات والرسومات الأولية المؤرّخة','قلم تلوين غير مرتبط بها','عدد الإعجابات بالمنشور'],c:0,
+  ok:'ممتاز يا محقق! المسوّدات والملفات الأصلية والتواريخ تساعد على توثيق مراحل إنشاء العمل.',
+  no:'انقر على الأدلة الثلاثة واقرأها. أيّها يُظهر خطوات الرسم من البداية؟'},
+ {st:'المحطة ٣: واجه المشكلة بحكمة',img:'img/9.jpg',extra:'sami',
+  q:'ما التصرّف الأفضل الآن؟',o:['يُصرّ على أنها لوحته','يعترف بالخطأ، ويصحّح النسبة، ويستأذن ليان في إبقاء المنشور','يُخفي الأدلة'],c:1,
+  ok:'أحسنت! الاعتراف بالخطأ وإعطاء المبدع حقّه يساعدان في حلّ المشكلة.',
+  no:'الإصرار على الخطأ أو إخفاء الأدلة يزيد المشكلة. ما التصرّف الشجاع والعادل؟'},
+ {st:'المحطة ٤: بطاقة الفنان',img:'img/10.jpg',extra:'label',
+  q:'اسحب العبارة المناسبة وضعها تحت اللوحة في المعرض:',o:['رسمها شخص مجهول','لوحة من إعداد الطالبة ليان','رسمها سامي'],c:1,drag:true,
+  ok:'رائع! ذكر اسم صاحبة اللوحة يمنحها الاعتراف المستحق، وقد يلزم إذنها أيضًا بحسب نوع العرض والاستخدام.',
+  no:'هذه العبارة لا تنصف صاحبة اللوحة. من رسمها حقًّا؟'},
+ {st:'المحطة ٥: الحكم العادل',img:'img/7.jpg',extra:'post2',
+  q:'ما الحكم العادل في هذه القصة؟',o:['يبقى العمل باسم سامي','تُنسب اللوحة إلى ليان، ويُصحَّح المنشور، ويُحترم قرارها بشأن الاستخدام','لا أحد يملك حقّ الاعتراض'],c:1,
+  ok:'حكمٌ عادل! بهذا تصبح نسبة العمل صحيحة، ويُحترم حقّ صاحبته.',
+  no:'الحكم العادل يعيد الحقّ إلى صاحبته. فكّر مرة أخرى.'}
+];
+try{if(window.top!==window)document.write('<style>.printb{display:none}</style>')}catch(e){document.write('<style>.printb{display:none}</style>')}
+const S={a:0,b:0,pa:0,pb:0,ka:0,kb:0,cur:null,tries:0};
+const $=id=>document.getElementById(id);
+function go(n){hush();document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$('s-'+n).classList.add('on');window.scrollTo(0,0)}
+// ---------- صوت ----------
+const VO=new Audio();VO.preload='auto';
+function speak(id){try{VO.pause();VO.src='voice/'+id+'.mp3';VO.currentTime=0;const p=VO.play();if(p&&p.catch)p.catch(()=>{})}catch(e){}}
+function hush(){try{VO.pause()}catch(e){}}
+function speakQ(k){speak(k+S.cur+'q')}
+// ---------- مؤثرات ----------
+function meter(el,n,got,ic){el.innerHTML='';for(let i=0;i<n;i++){const x=document.createElement('i');x.textContent=ic;if(i<got)x.className='got';el.appendChild(x)}}
+function locks(el,open){el.innerHTML='';for(let i=0;i<5;i++){const x=document.createElement('i');x.textContent=i<open?'🔓':'🔒';if(i<open)x.className='open';el.appendChild(x)}}
+function keyFx(ic){const k=$('keyFx');k.textContent=ic;k.classList.remove('go');void k.offsetWidth;k.classList.add('go')}
+function chime(ok){try{const c=new (window.AudioContext||window.webkitAudioContext)();const notes=ok?[523,659,784,1046]:[330,262];notes.forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='triangle';o.frequency.value=f;o.connect(g);g.connect(c.destination);const t=c.currentTime+i*.12;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.25,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.3);o.start(t);o.stop(t+.32)})}catch(e){}}
+function confetti(){const cv=$('conf'),x=cv.getContext('2d');cv.width=innerWidth;cv.height=innerHeight;const P=Array.from({length:140},()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*.5,v:2+Math.random()*4,r:4+Math.random()*6,c:['#ffd966','#ff6b6b','#3aa0ff','#22b573','#c77dff'][Math.random()*5|0],a:Math.random()*6}));let f=0;(function d(){x.clearRect(0,0,cv.width,cv.height);P.forEach(p=>{p.y+=p.v;p.a+=.1;x.fillStyle=p.c;x.save();x.translate(p.x+Math.sin(p.a)*10,p.y);x.rotate(p.a);x.fillRect(-p.r/2,-p.r/2,p.r,p.r*.6);x.restore()});if(++f<200)requestAnimationFrame(d);else x.clearRect(0,0,cv.width,cv.height)})()}
+// ---------- النشاط الأول ----------
+function startA(){S.ka=0;S.pa=0;upd();locks($('locks0'),0);go('a0');setTimeout(()=>speak('introA'),400)}
+function upd(){document.querySelectorAll('.ptsA').forEach(e=>e.textContent=S.pa);document.querySelectorAll('.ptsB').forEach(e=>e.textContent=S.pb)}
+function renderOpts(box,d,k){box.innerHTML='';d.o.forEach((o,i)=>{const b=document.createElement('button');b.className='opt';b.innerHTML='<b>'+'أبج'[i]+'.</b> '+o;b.onclick=()=>answer(k,i,b);box.appendChild(b)})}
+function qA(i){S.cur=i;S.tries=0;const d=A[i];$('aSt').textContent=d.st;$('aImg').src=d.img;$('aTag').textContent=d.tag;$('aQ').textContent=d.q;renderOpts($('aOpts'),d,'a');$('aFb').className='fb';$('aNext').style.display='none';meter($('keysA'),5,S.ka,'🗝️');go('aq');setTimeout(()=>speak('a'+i+'q'),500)}
+function answer(k,i,btn){const d=(k=='a'?A:B)[S.cur],fb=$(k+'Fb'),box=$(k+'Opts');
+ if(i===d.c){box.querySelectorAll('.opt').forEach(b=>b.disabled=true);btn.classList.add('ok');fb.className='fb ok';fb.innerHTML='✅ '+d.ok;chime(1);
+  if(k=='a'){S.ka++;S.pa+=20;meter($('keysA'),5,S.ka,'🗝️');keyFx('🗝️')}else{S.kb++;S.pb+=20;meter($('starsB'),5,S.kb,'⭐');keyFx('⭐')}
+  upd();setTimeout(()=>speak(k+S.cur+'ok'),450);$(k+'Next').style.display='block';$(k+'Next').textContent=S.cur<4?'التالي ⟵':(k=='a'?'افتح الصندوق 🎁':'أعلن الحكم ⚖️')}
+ else{btn.classList.add('no');btn.disabled=true;fb.className='fb no';fb.innerHTML='<div class="guide"><img src="'+(k=='a'?'img/3.jpg':'img/2.jpg')+'" alt=""><div>💡 '+d.no+'<br><b>حاول مرة أخرى!</b></div></div>';chime(0);setTimeout(()=>speak(k+S.cur+'no'),350)}}
+function nextA(){if(S.cur<4)qA(S.cur+1);else{locks($('locksEnd'),5);go('aend');confetti();chime(1);setTimeout(()=>speak('endA'),900);$('doneA').textContent='✔ أنجزت · '+S.pa+' نقطة';try{parent.postMessage({ipaAct:'A',pts:S.pa},'*')}catch(e){}}}
+// ---------- النشاط الثاني ----------
+function startB(){S.kb=0;S.pb=0;upd();go('b0');setTimeout(()=>speak('introB'),400)}
+function extraB(t){const e=$('bExtra');e.innerHTML='';
+ if(t=='post1')e.innerHTML='<div class="post">🗓️ <b>دفتر ليان:</b> لوحة «مدينتي» — رُسمت يوم <b>١ آذار</b></div><div class="post"><span class="who">سامي</span> · نُشر يوم <b>١٠ آذار</b><br>«رسمتي الجديدة! 🎨» ❤️ 48</div>';
+ if(t=='evidence'){e.innerHTML='<p style="font-size:15px;color:#555">🔍 انقر على كل دليل لتكبيره:</p><div class="ev"><button data-z="دفتر مسوّدات ليان: ثلاث رسومات أولية للمدينة، تحت كل واحدة تاريخ: ٢٥ شباط، ٢٧ شباط، ١ آذار. تتطوّر الرسمة خطوة بخطوة!"><b>📒</b>دفتر المسوّدات</button><button data-z="منشور سامي: الصورة النهائية فقط، ومعها 48 إعجابًا. لا توجد أي مسوّدة أو مرحلة سابقة."><b>📱</b>منشور سامي</button><button data-z="قلم تلوين أزرق عادي، موجود في كل الصفوف، ولا يدلّ على من رسم اللوحة."><b>🖍️</b>قلم تلوين</button></div><div class="zoom" id="zoom"></div>';
+  e.querySelectorAll('.ev button').forEach(b=>b.onclick=()=>{b.classList.add('seen');const z=$('zoom');z.style.display='block';z.textContent=b.dataset.z;speak('ev'+[...b.parentNode.children].indexOf(b))})}
+ if(t=='sami')e.innerHTML='<div class="post"><span class="who">سامي يقول:</span> «وجدتُ الصورة جميلة فأردتُ مشاركتها».</div>';
+ if(t=='post2')e.innerHTML='<div class="post"><b>قبل التصحيح:</b><br><span class="x">«رسمتي الجديدة!» — سامي</span></div><div class="post" style="border-color:#22b573"><b>بعد التصحيح:</b><br>«لوحة رائعة من رسم صديقتي <b>ليان</b>، نشرتُها بإذنها 🌷»</div>'}
+function qB(i){S.cur=i;const d=B[i];$('bSt').textContent=d.st;$('bImg').src=d.img;extraB(d.extra);$('bQ').textContent=d.q;$('bFb').className='fb';$('bNext').style.display='none';meter($('starsB'),5,S.kb,'⭐');
+ const box=$('bOpts');
+ if(d.drag){box.innerHTML='<div class="drop" id="drop">⬇️ ضع البطاقة هنا تحت اللوحة</div><div class="label"></div>';const L=box.querySelector('.label');
+  d.o.forEach((o,k)=>{const c=document.createElement('div');c.className='cardlbl';c.textContent='🏷️ '+o;c.draggable=true;c.ondragstart=ev=>ev.dataTransfer.setData('t',k);c.onclick=()=>dropLbl(k,c);L.appendChild(c)});
+  const dr=$('drop');dr.ondragover=ev=>ev.preventDefault();dr.ondrop=ev=>{ev.preventDefault();const k=+ev.dataTransfer.getData('t');dropLbl(k,L.children[k])}}
+ else renderOpts(box,d,'b');
+ go('bq');setTimeout(()=>speak('b'+i+'q'),500)}
+function dropLbl(k,el){const d=B[S.cur],dr=$('drop');if(dr.classList.contains('ok'))return;
+ if(k===d.c){dr.classList.add('ok');dr.textContent='🏷️ '+d.o[k];el.remove();const fb=$('bFb');fb.className='fb ok';fb.innerHTML='✅ '+d.ok;chime(1);S.kb++;S.pb+=20;upd();meter($('starsB'),5,S.kb,'⭐');keyFx('⭐');setTimeout(()=>speak('b3ok'),450);$('bNext').style.display='block'}
+ else{el.style.opacity=.4;el.onclick=null;el.draggable=false;const fb=$('bFb');fb.className='fb no';fb.innerHTML='<div class="guide"><img src="img/2.jpg" alt=""><div>💡 '+d.no+'<br><b>حاول مرة أخرى!</b></div></div>';chime(0);setTimeout(()=>speak('b3no'),350)}}
+function nextB(){if(S.cur<4)qB(S.cur+1);else{go('bend');confetti();chime(1);setTimeout(()=>speak('endB'),900);$('doneB').textContent='✔ أنجزت · '+S.pb+' نقطة';try{parent.postMessage({ipaAct:'B',pts:S.pb},'*')}catch(e){}}}
+</script>
+</body>
+</html>

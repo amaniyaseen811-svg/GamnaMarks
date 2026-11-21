@@ -141,6 +141,8 @@ input:focus,select:focus{border-color:var(--gold)}
 .cert img{width:90px;height:90px;border-radius:50%}
 .cert h2{font-size:26px;margin:8px 0;color:#7a5410}
 .cert .nm{font-size:30px;font-weight:900;color:#2b2112;margin:10px 0;border-bottom:2px solid #b8862f;display:inline-block;padding:0 20px 4px}
+.actChk{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0;font-size:14px}.actChk span{background:#ffffff14;border-radius:10px;padding:6px 10px}.actChk span.ok{background:#22b57333;color:#86efac}
+.actFrame{border-radius:18px;overflow:hidden;border:2px solid #b8862f;background:#1d2b64;height:min(78vh,760px)}.actFrame iframe{width:100%;height:100%;border:0;display:block}
 @media print{body *{visibility:hidden}#certArea,#certArea *{visibility:visible}#certArea{position:fixed;inset:0;margin:auto}}
 </style>
 </head>
@@ -166,7 +168,7 @@ input:focus,select:focus{border-color:var(--gold)}
   </div>
   <button class="btn" onclick="startFlow()">✨ ابدأ رحلتك</button>
   <button class="btn ghost mt" onclick="show('sRestore')">🔑 عندي حساب — أكمل من حيث توقفت</button>
-  <p class="foot">من الأساسيات إلى التفاصيل إلى التطبيق<br>كل ندوة: فيديو شرح ⬅ ورقة عمل ١ ⬅ ورقة عمل ٢ (أصعب)<br><a href="#" onclick="trainerLogin();return false" style="color:#6f6a5f">👩‍🏫 لوحة المدرب</a></p>
+  <p class="foot">من الأساسيات إلى التفاصيل إلى التطبيق<br>كل ندوة: فيديو شرح ⬅ نشاط تنفيذي ⬅ ورقة عمل ١ ⬅ ورقة عمل ٢ (أصعب)<br><a href="#" onclick="trainerLogin();return false" style="color:#6f6a5f">👩‍🏫 لوحة المدرب</a></p>
 </section>
 
 <!-- ٢) اختيار المرحلة -->
@@ -221,7 +223,18 @@ input:focus,select:focus{border-color:var(--gold)}
   <h2 id="vTitle"></h2>
   <div class="vbox" id="vBox"></div>
   <p class="note mt" id="vNote">🎬 شاهد الشرح للآخر، بعدها بتفتح ورقة العمل.</p>
-  <button class="btn mt" id="vNext" disabled onclick="startSheet()">📝 انتقل لورقة العمل</button>
+  <button class="btn mt" id="vNext" disabled onclick="afterVideo()">📝 انتقل لورقة العمل</button>
+  <button class="btn dark mt" onclick="openMap()">→ رجوع للخريطة</button>
+</section>
+
+<!-- ٥ب) النشاط التنفيذي -->
+<section class="scr" id="sAct" style="max-width:640px">
+  <div class="badge" id="aBadge"></div>
+  <h2>🎮 النشاط التنفيذي</h2>
+  <p class="note" id="aNote">العب النشاطين: <b>صندوق الأفكار السحري</b> ثم <b>المحقق الصغير</b>. لما تخلّصهم بتفتح ورقة العمل.</p>
+  <div class="actChk"><span id="aA">⬜ صندوق الأفكار السحري</span><span id="aB">⬜ المحقق الصغير</span></div>
+  <div class="actFrame"><iframe id="aFrame" title="النشاط التنفيذي" allow="autoplay"></iframe></div>
+  <button class="btn mt" id="aNext" disabled onclick="actToSheet()">📝 انتقل لورقة العمل</button>
   <button class="btn dark mt" onclick="openMap()">→ رجوع للخريطة</button>
 </section>
 
@@ -284,7 +297,7 @@ function lsJ(k,d){try{return JSON.parse(ls(k)||'')||d}catch(e){return d}}
 function hash(str){var a=0x811c9dc5,b=0x01000193;for(var i=0;i<str.length;i++){var c=str.charCodeAt(i);a=Math.imul(a^c,16777619)>>>0;b=Math.imul(b^c,2246822519)>>>0}return a.toString(36)+b.toString(36)}
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
 function lv(k){return LEVELS.filter(function(x){return x.k===k})[0]||LEVELS[4]}
-function show(id){Array.prototype.forEach.call(document.querySelectorAll('.scr'),function(s){s.classList.remove('on')});$(id).classList.add('on');window.scrollTo(0,0);stopVideo()}
+function show(id){Array.prototype.forEach.call(document.querySelectorAll('.scr'),function(s){s.classList.remove('on')});$(id).classList.add('on');window.scrollTo(0,0);stopVideo();if(id!=='sAct'){var f=$('aFrame');if(f&&f.src&&f.src.indexOf('about:')<0)f.src='about:blank'}}
 window.show=show;
 window.goHome=function(){location.href='index.html'};
 var AC=null;function beep(ok){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();var o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);var t=AC.currentTime;if(ok){o.frequency.setValueAtTime(660,t);o.frequency.setValueAtTime(990,t+.09)}else{o.type='sawtooth';o.frequency.setValueAtTime(220,t);o.frequency.setValueAtTime(150,t+.12)}g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.001,t+.3);o.start(t);o.stop(t+.32)}catch(e){}}
@@ -341,7 +354,7 @@ window.register=function(){
   fetchDoc(ME.id).then(function(o){if(o&&o.progress){try{PR=JSON.parse(o.progress)||{}}catch(x){PR={}}if(o.created)ME.created=o.created}else PR={};finishReg()}).catch(function(){PR={};finishReg()});
 };
 function finishReg(){saveLocal();sync();openMap();
-  modal('<div class="big">🎉</div><h3>أهلاً '+esc(ME.name.split(' ')[0])+'!</h3><p>دورتك مقسومة على ٣ مراحل، بكل مرحلة ٦ ندوات.<br>كل ندوة: فيديو شرح، بعده ورقتي عمل.<br><b>تذكّر:</b> مسموح غلطتين بس بكل ورقة 🎯</p><button class="btn" onclick="closeModal()">يلا نبدأ!</button>')}
+  modal('<div class="big">🎉</div><h3>أهلاً '+esc(ME.name.split(' ')[0])+'!</h3><p>دورتك مقسومة على ٣ مراحل، بكل مرحلة ٦ ندوات.<br>كل ندوة: فيديو شرح، ونشاط تنفيذي إذا موجود، بعده ورقتي عمل.<br><b>تذكّر:</b> مسموح غلطتين بس بكل ورقة 🎯</p><button class="btn" onclick="closeModal()">يلا نبدأ!</button>')}
 function fetchDoc(id){return fetch(DOCS+'/'+id+'?key='+API_KEY).then(function(r){if(!r.ok)return null;return r.json()}).then(function(j){return j&&j.fields?fromFields(j.fields):null})}
 window.restore=function(){
   var e=$('rEmail').value.trim().toLowerCase();if(!/@/.test(e)){$('rErr').textContent='اكتب بريدك الإلكتروني.';return}
@@ -378,7 +391,7 @@ window.openMap=function(){
 };
 
 /* ================== الندوة: الفيديو ================== */
-var CUR=null;  /* {s, sheet:0|1, mis, re, mode, q, list, ptsLive, misTotal} */
+var CUR=null;window.__ipaCur=function(){return CUR};  /* {s, sheet:0|1, mis, re, mode, q, list, ptsLive, misTotal} */
 window.openSession=function(id){
   var nx=nextId();
   if(nx!==null&&id>nx){beep(false);modal('<div class="big">🔒</div><h3>الندوة مقفلة</h3><p>خلّص الندوة '+nx+' أولاً، الندوات بتنفتح بالترتيب.</p><button class="btn" onclick="closeModal()">تمام</button>');return}
@@ -393,6 +406,7 @@ function playVideo(forced){
   $('vBadge').textContent='الندوة '+s.id+' من '+S.length+' · '+ST[s.stage-1].title;
   $('vTitle').innerHTML=s.icon+' '+esc(c.title);
   $('vNext').disabled=true;
+  $('vNext').textContent=(actFor()&&!CUR.actDone)?'🎮 انتقل للنشاط التنفيذي':'📝 انتقل لورقة العمل';
   $('vNote').innerHTML=forced?'🎯 <b>الرجاء التركيز</b> — شاهد الشرح للآخر، بعدها بترجع لورقة العمل.':'🎬 شاهد الشرح للآخر، بعدها بتفتح ورقة العمل.';
   show('sVideo');
   /* الشاشة الطولية (الجوال) بتاخد النسخة الطولية، والعرضية بتاخد -h إذا موجودة */
@@ -423,6 +437,23 @@ function runSlides(c,s){
     if(el>=total){clearInterval(slideT);$('st'+i).classList.remove('act');$('st'+i).classList.add('seen');$('vNext').disabled=false;
       Array.prototype.forEach.call(document.querySelectorAll('.step'),function(x){x.style.opacity=1})}},250);
 }
+
+/* ================== النشاط التنفيذي (بين الفيديو وورقة العمل) ================== */
+var ACTS={kids:{1:'ipa-activities/huras/index.html'}};
+function actFor(){var a=ACTS[group()];return a&&a[CUR.s.id]}
+window.actToSheet=function(){CUR.actDone=1;startSheet()};
+window.afterVideo=function(){if(actFor()&&!CUR.actDone)openAct();else startSheet()};
+function openAct(){
+  CUR.act={A:0,B:0};
+  $('aBadge').textContent='الندوة '+CUR.s.id+' · بعد الفيديو وقبل ورقة العمل';
+  $('aA').className='';$('aB').className='';$('aA').textContent='⬜ صندوق الأفكار السحري';$('aB').textContent='⬜ المحقق الصغير';
+  $('aNext').disabled=true;$('aFrame').src=actFor();show('sAct');
+}
+window.addEventListener('message',function(e){
+  var d=e.data;if(!d||!d.ipaAct||!CUR||!CUR.act)return;
+  CUR.act[d.ipaAct]=1;var el=$('a'+d.ipaAct);el.className='ok';el.textContent='✅ '+el.textContent.slice(2);
+  if(CUR.act.A&&CUR.act.B){$('aNext').disabled=false;beep(true)}
+});
 
 /* ================== أوراق العمل ================== */
 window.startSheet=function(){
