@@ -94,7 +94,7 @@
     k = k || KEY;
     try{ return get ? localStorage.getItem(k) : localStorage.setItem(k, val); }catch(e){ return null; }
   }
-  var clicked = false, leftAt = 0;
+  var clicked = false, leftAt = 0, codeOk = false;
   var enterBtn = document.getElementById("enterBtn");
   var wait = document.getElementById("wait");
   var enterRow = document.getElementById("enterRow");
@@ -103,8 +103,7 @@
   var codeErr = document.getElementById("codeErr");
   function showEnter(){ wait.style.display = "none"; codeBox.style.display = "none"; document.body.classList.remove("coding"); enterRow.style.display = "flex"; }
   function unlock(noFocus){
-    // إذا كتبت كود هالدورة قبل هيك، ما بنسألها مرة ثانية لحد ما يتغير
-    if (store(true, null, "gm_code_ok") === String(period())) { showEnter(); return; }
+    // الكود مطلوب كل مرة بتنفتح فيها صفحة الدخول (ما بنتذكره على الجهاز)
     wait.style.display = "none"; enterRow.style.display = "none"; codeBox.style.display = "flex"; document.body.classList.add("coding"); if (!noFocus) setTimeout(function(){codeIn.focus();},300);
   }
   // مكان الكود بيطلع على طول أول ما تفتح الرابط (البنت بتاخذ الكود من القناة قبل)
@@ -125,6 +124,7 @@
     if (v && (v === norm(codeFor(period())) || v === TEACHER)) {
       if (v === TEACHER) store(false, "1", "gm_teacher");   // جهاز المعلمة: بيظهر زر 👩‍🏫 بشاشة الألعاب
       store(false, String(period()), "gm_code_ok");
+      codeOk = true;
       store(false, "1");
       showEnter();
     } else {
@@ -135,6 +135,7 @@
   document.getElementById("codeBtn").addEventListener("click", checkCode);
   codeIn.addEventListener("keydown", function(e){ if (e.key === "Enter") checkCode(); });
   enterBtn.addEventListener("click", function(){
+    if (!codeOk) { unlock(); return; }   // ما في دخول بدون الكود الصحيح
     store(false, "1");
     try{ sessionStorage.setItem("gm_entered","1"); }catch(e){}
     location.href = APP_URL;
