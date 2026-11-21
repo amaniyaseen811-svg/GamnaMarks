@@ -36,6 +36,7 @@
          style="display:block;width:100%;max-width:460px;margin:12px auto;border-radius:22px;border:2px solid rgba(252,211,77,.6);box-shadow:0 0 30px rgba(252,211,77,.3);background:#0d0820"></video>
   <div data-gmp-board></div>
 
+  <div id="needChoice" style="display:none;position:fixed;left:12px;right:12px;bottom:78px;max-width:460px;margin:0 auto;padding:10px 12px;border-radius:16px;background:#7f1d1d;border:2px solid #fca5a5;color:#fff;text-align:center;font-weight:800;font-size:15px;z-index:100">⚠️ اختاري طريقة مشاركتك أول (طالبة / Google / زائرة) وبعدين ادخلي التطبيق</div>
   <button class="go" id="go">ادخلي التطبيق 🚀</button>
 
 <script>
@@ -44,6 +45,14 @@
     for(var i=0;i<10;i++){var s=document.createElement('span');s.className='st';s.textContent='✦';
       s.style.cssText='top:'+Math.round(Math.random()*85)+'%;left:'+Math.round(Math.random()*92)+'%;animation-delay:'+(Math.random()*2).toFixed(1)+'s;font-size:'+(10+Math.round(Math.random()*12))+'px';h.appendChild(s);}
     document.getElementById('go').onclick=function(){
+      /* ما بتدخل التطبيق قبل ما تختار طريقة المشاركة (طالبة / Google / زائرة) */
+      var chosen=false;
+      try{ chosen = !!(window.GMPoints && GMPoints.profile().chosen); }catch(e){}
+      if(!chosen){
+        try{ if(window.GMPoints) GMPoints.choose(); }catch(e){}
+        var n=document.getElementById('needChoice'); if(n){ n.style.display='block'; }
+        return;
+      }
       try{sessionStorage.setItem('gm_contest_seen','1')}catch(e){}
       location.href='index.html';
     };
