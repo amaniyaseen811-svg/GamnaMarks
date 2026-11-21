@@ -257,6 +257,7 @@ h1,h2,h3{line-height:1.5}
   <img class="cupImg" src="gm-cup.jpg" alt="الكأس">
   <h2 class="gold" style="margin-top:10px">🏆 مبروك! حصلتِ على 30 نقطة إضافية</h2>
   <p class="mut">أنتِ الآن محققة ملكية فكرية… بقي أن تثبتي ذلك في أوراق العمل</p>
+  <p class="mut" style="line-height:2">📝 ثلاث أوراق عمل متدرجة في الصعوبة: ① أساسية ← ② متقدمة ← ③ تحليلية</p>
   <button class="btn" onclick="openWS(1)">📝 ورقة العمل الأولى</button>
 </div>
 
@@ -273,6 +274,18 @@ h1,h2,h3{line-height:1.5}
   </div>
 </div>
 
+<!-- 13ب) تعلّمي أكثر -->
+<div id="s-more" class="screen center">
+  <img src="aaipa-logo.png" alt="AAIPA" style="width:120px;max-width:40%;border-radius:16px;margin:6px auto">
+  <h2 class="gold">🎓 هل تريدين أن تتعلّمي أكثر؟</h2>
+  <div class="card" style="text-align:right;line-height:2.1">
+    <p>أحسنتِ! أنهيتِ المراحل الست وأوراق العمل الثلاث.</p>
+    <p>إذا أردتِ أن تتعمّقي في عالم الملكية الفكرية، ففي تطبيق <b>GamnaMarks</b> فرعٌ خاص هو <b>«أكاديمية الملكية الفكرية»</b>، يمكّنك من الالتحاق بدورات متدرّجة والحصول على <b>شهادات</b> من جهة مختصة: <b>الجمعية الأمريكية العربية لحماية الملكية الفكرية (AAIPA) – فرع فلسطين</b>.</p>
+  </div>
+  <a class="btn" href="ipa-academy.html">ادخلي إلى الأكاديمية 🎓</a>
+  <button class="btn alt" onclick="showResults()">اعرضي نتيجتي 📊</button>
+</div>
+
 <!-- 14) النتائج -->
 <div id="s-results" class="screen center">
   <h2 class="gold">📊 نتيجتك النهائية</h2>
@@ -281,7 +294,7 @@ h1,h2,h3{line-height:1.5}
     <h2 id="resGrade" style="margin-top:14px"></h2>
   </div>
   <div id="liveRes"></div>
-  <div class="card" style="text-align:center;line-height:2">🏛️ أعجبك عالم الملكية الفكرية؟ في <b>أكاديمية الملكية الفكرية</b> دورات لكل المستويات.<br><a class="btn alt" href="ipa-academy.html">ادخلي إلى الدورات 🎓</a></div>
+  <div class="card" style="text-align:center;line-height:2">🏛️ أعجبك عالم الملكية الفكرية؟ في <b>أكاديمية الملكية الفكرية</b> داخل التطبيق دورات لكل المستويات وشهادات من <b>الجمعية الأمريكية العربية لحماية الملكية الفكرية (AAIPA)</b>.<br><a class="btn alt" href="ipa-academy.html">ادخلي إلى الدورات 🎓</a></div>
   <button class="btn" id="toGenie" onclick="go('s-genie')">🧞 افتحي هدية المارد</button>
   <button class="btn alt" onclick="window.GMReport&&GMReport.finish()">📄 تقريري</button>
   <button class="btn gray" onclick="location.reload()">🔁 العبي مرة أخرى</button>
@@ -583,6 +596,22 @@ const WS2 = [
  ['الترخيص الحصري يعني:',['لا يُمنح الإذن لغير المرخَّص له في النطاق نفسه','الإذن لعدة جهات','نقل الملكية','انتهاء الحماية']]
 ];
 
+const WS3 = [
+ ['كتبت طالبة فكرة قصة في ذهنها ولم تكتبها بعد. هل يحميها حق المؤلف؟',['لا؛ حق المؤلف يحمي التعبير عن الفكرة لا الفكرة المجردة','نعم تلقائيًا','نعم إذا أخبرت صديقاتها','تحتاج إلى براءة اختراع']],
+ ['صمّمت شركة شكلًا جديدًا وجذابًا لزجاجة عطر دون أي وظيفة تقنية. الحماية الأنسب لهذا الشكل:',['تصميم صناعي','براءة اختراع','مؤشر جغرافي','سر تجاري']],
+ ['زيت زيتون من منطقة اشتهر بجودته بسبب مناخها وتربتها. ما الحماية الأنسب لاسم المنطقة على المنتج؟',['مؤشر جغرافي','براءة اختراع','حق مؤلف','سر تجاري']],
+ ['نشرت طالبة صورة التقطتها على الإنترنت، فاستخدمتها شركة في إعلان دون إذنها:',['تعدٍّ على حق المؤلف؛ فالحماية تنشأ تلقائيًا دون تسجيل','مسموح لأن الصورة منشورة على الإنترنت','مسموح لأن الصورة غير مسجلة','لا حق للطالبة لأنها لم تبعها']],
+ ['كتاب انتهت مدة حماية حق المؤلف فيه:',['يدخل الملك العام ويجوز نشره مع نسبته إلى مؤلفه','يبقى محميًا إلى الأبد','يُمنع نشره','يصبح ملكًا للناشر']],
+ ['براءة اختراع انتهت مدتها (20 سنة من الإيداع):',['يصبح الاختراع متاحًا للجميع','تُجدَّد تلقائيًا','تتحول إلى سر تجاري','تبقى ملكًا للمخترع إلى الأبد']],
+ ['مشروع تطبيق له اسم مميز وشعار وكود برمجي مكتوب وخوارزمية سرية. ما التوزيع الصحيح للحماية؟',['الاسم والشعار علامة تجارية، والكود حق مؤلف، والخوارزمية السرية سر تجاري','كلها حق مؤلف','كلها براءة اختراع','لا يُحمى شيء منها']],
+ ['شركتان توصّلتا إلى الاختراع نفسه مستقلتين؛ الأولى أودعت طلبها في مارس والثانية في يناير. وفق مبدأ «من يودِع أولًا»:',['تُمنح البراءة لمن أودع في يناير إذا تحققت الشروط','تُمنح لمن اخترع أولًا ولو أودع لاحقًا','تُمنح للشركتين معًا','لا تُمنح لأحد']],
+ ['استخدمت شركة اسمًا مشابهًا لعلامة مسجلة على منتجات مماثلة، فأصبح المستهلك يخلط بينهما:',['تعدٍّ على العلامة التجارية لأنه يُحدث لبسًا لدى المستهلك','مسموح لأن الاسم غير مطابق تمامًا','مسموح إذا كان السعر أقل','لا مشكلة في ذلك']],
+ ['انتقل موظف إلى شركة منافسة وأخذ معه قائمة العملاء والأسعار السرية:',['استيلاء غير مشروع على سر تجاري','منافسة مشروعة','مسموح بعد الاستقالة','تعدٍّ على علامة تجارية']],
+ ['طالبة اقتبست فقرة قصيرة مع ذكر المصدر في بحثها، وأخرى نسخت بحثًا كاملًا ونسبته إلى نفسها:',['الأولى استخدام مشروع، والثانية انتحال','كلتاهما انتحال','كلتاهما مسموح','الأولى انتحال والثانية مشروعة']],
+ ['تريد شركة منح جهة أخرى ترخيصًا باستخدام شعارها. أهم ما يجب أن يحدده العقد:',['نطاق الاستخدام والمدة والمنطقة الجغرافية والمقابل','لون الشعار فقط','اسم المحامي فقط','لا يلزم تحديد شيء']],
+ ['اكتشفت مخترعة أن شركة تصنّع جهازها المحمي ببراءة سارية دون إذن. الخطوة الأنسب:',['توثيق الأدلة واستشارة مختص، ثم توجيه إنذار أو اللجوء إلى القضاء','نشر الاتهامات على وسائل التواصل','تقليد منتجات الشركة انتقامًا','السكوت لأن الحماية لا فائدة منها']],
+ ['أول خطوة في خطة حماية شاملة لشركة ناشئة:',['حصر أصولها الفكرية وتحديد نوع الحماية المناسب لكل أصل','تسجيل كل شيء براءةَ اختراع','نشر كل أسرارها لإثبات ملكيتها','الانتظار حتى تُسرق فكرة']]
+];
 </script>
 <script>
 /* ===================== منطق اللعبة ===================== */
@@ -599,7 +628,7 @@ const Q_PER_CHAPTER = 5, C_PER_CHAPTER = 5, MAX_MISTAKES = 3, WS_COUNT = 10, TIM
 const G = {
   level:'normal', score:0, ch:0, done:0, cleared:{}, evidence:{}, clues:[],
   qs:[], qi:0, mistakes:0, timeLeft:TIME_LIMIT, timer:null,
-  gameOK:0, gameTotal:0, wsOK:[0,0], ws:null, wi:0, wsN:1, accTries:0, finished:false
+  gameOK:0, gameTotal:0, wsOK:[0,0,0], ws:null, wi:0, wsN:1, accTries:0, finished:false
 };
 const $ = id => document.getElementById(id);
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
@@ -626,7 +655,7 @@ function showHelp(){
    <li>في كل مرحلة اقرئي صفحة المعلومات، ثم أجيبي عن ${Q_PER_CHAPTER} أسئلة وتحدي تصنيف.</li>
    <li>❤️ لديك ${MAX_MISTAKES} محاولات خاطئة في كل مرحلة؛ إذا نفدت تعيدين المرحلة بأسئلة جديدة.</li>
    <li>🔎 بعد كل مرحلة تحصلين على دليل يستبعد مشتبهًا به أو يشير إلى السارق.</li>
-   <li>⚖️ بعد 6 مراحل اتهمي السارق، ثم استلمي الكأس (+30) وحلّي ورقتي العمل.</li>
+   <li>⚖️ بعد 6 مراحل اتهمي السارق، ثم استلمي الكأس (+30) وحلّي أوراق العمل الثلاث بالتسلسل: ① أساسية ← ② متقدمة ← ③ تحليلية (الأصعب).</li>
    <li>⏱️ الوقت الكلي 30 دقيقة، ويمكنك استخدام زر التوقف المؤقت.</li>
    <li>🌐 العبي أونلاين مع صاحباتك (حتى 6 أو أكثر): واحدة تنشئ غرفة وتشارك الكود، والباقيات يدخلن به. 🤝 تعاون أو 🏁 تنافس، والترتيب يظهر للجميع في النهاية.</li>
    <li>🏠 زر الرئيسية يعيدك إلى ألعاب GamnaMarks.</li>
@@ -807,12 +836,14 @@ function accuse(k){
 function showTrophy(){addScore(30);try{GMReport.trophy();}catch(e){}report();go('s-trophy');}
 
 /* ---------- أوراق العمل ---------- */
+const WS_TITLES=['📝 ورقة العمل الأولى (أساسية) · 1 من 3','📝 ورقة العمل الثانية (متقدمة) · 2 من 3','📝 ورقة العمل الثالثة (تحليلية – الأصعب) · 3 من 3'];
+const WS_NEXT=['إلى ورقة العمل الثانية ⬅️','إلى ورقة العمل الثالثة ⬅️','أكملتِ أوراق العمل 🎓'];
 function openWS(n){
   closeModal();$('hud').classList.add('on');
   if(!G.timer&&!G.finished&&G.timeLeft>0)G.timer=setInterval(tick,1000);
   G.wsN=n;G.wi=0;G.wsOK[n-1]=0;
-  G.ws=buildQs(n===1?WS1:WS2,WS_COUNT);
-  $('wTitle').textContent=n===1?'📝 ورقة العمل الأولى (أساسية)':'📝 ورقة العمل الثانية (متقدمة)';
+  G.ws=buildQs([WS1,WS2,WS3][n-1],WS_COUNT);
+  $('wTitle').textContent=WS_TITLES[n-1];
   go('s-ws');showW();
 }
 function showW(){
@@ -830,24 +861,24 @@ function answerW(i){
   if(q.opts[i].c){G.wsOK[G.wsN-1]++;addScore(5);try{GMReport.correct();}catch(e){}$('wFb').className='fb ok';$('wFb').textContent='✅ إجابة صحيحة';}
   else{btns[i].classList.add('no');try{GMReport.wrong();}catch(e){}$('wFb').className='fb no';$('wFb').textContent='❌ الإجابة الصحيحة مظللة بالأخضر';}
   $('wScore').textContent='✔ '+G.wsOK[G.wsN-1]+' / '+G.ws.length;
-  try{GMReport.add(G.wsN===1?'ورقة العمل 1':'ورقة العمل 2',G.wsOK[G.wsN-1],G.ws.length);GMReport.score(G.score);}catch(e){}
+  try{GMReport.add('ورقة العمل '+G.wsN,G.wsOK[G.wsN-1],G.ws.length);GMReport.score(G.score);}catch(e){}
   $('wNext').style.display='inline-block';
-  $('wNext').textContent=G.wi<G.ws.length-1?'التالي ⬅️':(G.wsN===1?'إلى ورقة العمل الثانية ⬅️':'عرض النتيجة 📊');
+  $('wNext').textContent=G.wi<G.ws.length-1?'التالي ⬅️':WS_NEXT[G.wsN-1];
 }
-function nextW(){G.wi++;if(G.wi<G.ws.length)showW();else if(G.wsN===1)openWS(2);else showResults();}
+function nextW(){G.wi++;if(G.wi<G.ws.length)showW();else if(G.wsN<3)openWS(G.wsN+1);else go('s-more');}
 
 /* ---------- النتائج ---------- */
 function showResults(){
   G.finished=true;if(G.timer){clearInterval(G.timer);G.timer=null;}
   const used=TIME_LIMIT-G.timeLeft,m=Math.floor(used/60),s=used%60;
   const gamePct=G.gameTotal?G.gameOK/G.gameTotal:0;
-  const wsPct=(G.wsOK[0]+G.wsOK[1])/(WS_COUNT*2);
+  const wsPct=(G.wsOK[0]+G.wsOK[1]+G.wsOK[2])/(WS_COUNT*3);
   const pct=Math.round((G.gameTotal?(gamePct*.5+wsPct*.5):wsPct)*100);
   const grade=pct>=90?['🥇 ممتاز','#fcd34d']:pct>=80?['🥈 جيد جدًا','#a5b4fc']:pct>=65?['🥉 جيد','#86efac']:pct>=50?['👍 مقبول','#fdba74']:['💪 تحتاجين إلى مراجعة','#f87171'];
   const rank=pct>=90?'محققة ملكية فكرية خبيرة 🕵️‍♀️':pct>=75?'محققة متمكنة 🔍':pct>=50?'محققة مبتدئة 🔎':'متدربة تحقيق 📚';
   $('resGrid').innerHTML=`<div>⭐ النقاط<b>${G.score}</b></div><div>⏱️ الوقت<b>${m}:${String(s).padStart(2,'0')}</b></div>
    <div>🧩 أسئلة المراحل<b>${G.gameOK}/${G.gameTotal}</b></div><div>🎚️ المستوى<b>${G.level==='hard'?'صعب':'عادي'}</b></div>
-   <div>📝 ورقة العمل 1<b>${G.wsOK[0]}/${WS_COUNT}</b></div><div>📝 ورقة العمل 2<b>${G.wsOK[1]}/${WS_COUNT}</b></div>
+   <div>📝 ورقة العمل 1<b>${G.wsOK[0]}/${WS_COUNT}</b></div><div>📝 ورقة العمل 2<b>${G.wsOK[1]}/${WS_COUNT}</b></div><div style="grid-column:1/-1">📝 ورقة العمل 3 (تحليلية)<b>${G.wsOK[2]}/${WS_COUNT}</b></div>
    <div style="grid-column:1/-1">🏅 الرتبة<b style="font-size:1.15rem">${rank}</b></div>`;
   $('resGrade').innerHTML=`<span style="color:${grade[1]}">${grade[0]} — ${pct}%</span>`;
   report();
