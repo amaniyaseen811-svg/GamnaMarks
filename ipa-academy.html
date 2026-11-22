@@ -154,7 +154,7 @@ input:focus,select:focus{border-color:var(--gold)}
 <div class="dust" id="dust"></div>
 
 <div id="top">
-  <img src="aaipa-logo.png" alt="AAIPA">
+  <img src="aaipa-emblem-new.png" alt="AAIPA">
   <div class="tt"><span class="gold">أكاديمية الملكية الفكرية</span><small>AAIPA · فلسطين</small></div>
   <span id="ptsTop"></span>
   <button class="home" onclick="goHome()">🏠 الألعاب</button>
@@ -162,7 +162,7 @@ input:focus,select:focus{border-color:var(--gold)}
 
 <!-- ١) الغلاف -->
 <section class="scr on" id="sCover">
-  <div class="logoWrap"><div class="ring"></div><div class="ring r2"></div><img src="aaipa-logo.png" alt="شعار الجمعية"></div>
+  <div class="logoWrap"><div class="ring"></div><div class="ring r2"></div><img src="aaipa-emblem-new.png" alt="شعار الجمعية"></div>
   <h1 class="gold">أكاديمية الملكية الفكرية</h1>
   <p class="sub">الجمعية الأمريكية العربية لحماية الملكية الفكرية — فرع فلسطين</p>
   <div class="feat">
@@ -529,7 +529,7 @@ window.nextSession=function(){var nx=nextId();if(nx)openSession(nx);else openMap
 window.showCert=function(){
   if(nextId()!==null)return;
   var d=new Date(),l=lv(ME.level);
-  modal('<div id="certArea" class="cert"><img src="aaipa-logo.png"><h2>شهادة إتمام</h2><div>تشهد أكاديمية الملكية الفكرية بأن</div><div class="nm">'+esc(ME.name)+'</div><div style="line-height:2">قد أتمّ/ت بنجاح دورة «الملكية الفكرية» — '+esc(l.t)+'<br>(١٨ ندوة · ٣٦ ورقة عمل) بمجموع <b>'+totalPts()+'</b> نقطة</div><div style="margin-top:14px;font-size:13px">'+d.getDate()+' / '+(d.getMonth()+1)+' / '+d.getFullYear()+'</div><div style="margin-top:12px;font-weight:900">د. أماني ياسين</div><div style="font-size:12px">رئيسة الجمعية الأمريكية العربية لحماية الملكية الفكرية — فرع فلسطين</div></div><button class="btn mt" onclick="window.print()">🖨️ طباعة / حفظ PDF</button><button class="btn dark mt" onclick="closeModal()">إغلاق</button>');
+  modal('<div id="certArea" class="cert"><img src="aaipa-emblem-new.png"><h2>شهادة إتمام</h2><div>تشهد أكاديمية الملكية الفكرية بأن</div><div class="nm">'+esc(ME.name)+'</div><div style="line-height:2">قد أتمّ/ت بنجاح دورة «الملكية الفكرية» — '+esc(l.t)+'<br>(١٨ ندوة · ٣٦ ورقة عمل) بمجموع <b>'+totalPts()+'</b> نقطة</div><div style="margin-top:14px;font-size:13px">'+d.getDate()+' / '+(d.getMonth()+1)+' / '+d.getFullYear()+'</div><div style="margin-top:12px;font-weight:900">د. أماني ياسين</div><div style="font-size:12px">رئيسة الجمعية الأمريكية العربية لحماية الملكية الفكرية — فرع فلسطين</div></div><button class="btn mt" onclick="window.print()">🖨️ طباعة / حفظ PDF</button><button class="btn dark mt" onclick="closeModal()">إغلاق</button>');
 };
 
 /* ================== لوحة المدرب ================== */
@@ -581,15 +581,17 @@ if(/[?&]trainer/.test(location.search))trainerLogin();
 <!-- ===== غلاف شعار AAIPA الذهبي المتحرك (ثلاثي الأبعاد) ===== -->
 <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&display=swap" rel="stylesheet">
 <style>
-  
   #aaipaCover *{box-sizing:border-box}#aaipaCover{font-family:'Cairo',sans-serif}
   #aaipaCover{position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    background:radial-gradient(ellipse at 50% 40%,#2a1d05 0%,#0d0a1c 55%,#04040b 100%);transition:opacity .9s ease}
+    background:#020b18;transition:opacity .9s ease;overflow:hidden}
   #aaipaCover.hide{opacity:0;pointer-events:none}
-  #aaipaCanvas{position:absolute;inset:0;width:100%;height:100%}
+  #aaipaVid{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);height:min(78vh,150vw);width:auto;max-width:none;
+    -webkit-mask-image:radial-gradient(ellipse 46% 36% at 50% 50%,#000 55%,transparent 100%);mask-image:radial-gradient(ellipse 46% 36% at 50% 50%,#000 55%,transparent 100%)}
   .aaipa-glow{position:absolute;left:50%;top:42%;width:70vmin;height:70vmin;transform:translate(-50%,-50%);border-radius:50%;
-    background:radial-gradient(circle,rgba(255,200,80,.35) 0%,rgba(255,170,40,.08) 45%,transparent 70%);animation:aaipaPulse 3.5s ease-in-out infinite;pointer-events:none}
+    background:radial-gradient(circle,rgba(255,200,80,.22) 0%,rgba(255,170,40,.06) 45%,transparent 70%);animation:aaipaPulse 3.5s ease-in-out infinite;pointer-events:none}
   @keyframes aaipaPulse{0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(.95)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}}
+  .aaipa-st{position:absolute;color:#ffd56b;pointer-events:none;animation:aaipaTw 2.6s ease-in-out infinite;text-shadow:0 0 8px #ffb52e}
+  @keyframes aaipaTw{0%,100%{opacity:.15;transform:scale(.6)}50%{opacity:1;transform:scale(1.15)}}
   .aaipa-text{position:absolute;bottom:13vh;left:0;right:0;text-align:center;padding:0 16px;pointer-events:none}
   .aaipa-title{font-family:'Aref Ruqaa',serif;font-size:clamp(22px,5.2vw,46px);line-height:1.5;
     background:linear-gradient(90deg,#a8741a,#ffe08a,#fff6cf,#ffd25a,#a8741a);background-size:250% auto;
@@ -602,91 +604,26 @@ if(/[?&]trainer/.test(location.search))trainerLogin();
     background:linear-gradient(180deg,#fff0b0,#f5c443 55%,#c98d1d);box-shadow:0 0 24px rgba(255,200,70,.55);
     animation:aaipaBtn 2s ease-in-out infinite}
   @keyframes aaipaBtn{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
-  #aaipaLoading{position:absolute;top:42%;color:#f3dca0;font-size:16px}
 </style>
 <div id="aaipaCover">
   <div class="aaipa-glow"></div>
-  <canvas id="aaipaCanvas"></canvas>
-  <div id="aaipaLoading">... جارٍ التحميل</div>
+  <video id="aaipaVid" src="ipa-academy-cover.mp4" poster="ipa-academy-cover.jpg" autoplay muted loop playsinline preload="auto"></video>
   <div class="aaipa-text">
-    <div class="aaipa-title">الجمعية الأمريكية العربية لحماية الملكية الفكرية</div>
-    <div class="aaipa-sub">AAIPA · فرع فلسطين</div>
+    <div class="aaipa-title">أكاديمية الملكية الفكرية</div>
+    <div class="aaipa-sub">الجمعية الأمريكية العربية لحماية الملكية الفكرية · فرع فلسطين</div>
   </div>
   <button id="aaipaEnter">ادخل ←</button>
 </div>
-
-<script type="importmap">
-{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-"three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
-</script>
-<script type="module">
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-
-
-const canvas = document.getElementById('aaipaCanvas');
-const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.15;
-const scene = new THREE.Scene();
-const pmrem = new THREE.PMREMGenerator(renderer);
-scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-
-const camera = new THREE.PerspectiveCamera(35,1,0.1,100);
-camera.position.set(0,0,6.2);
-
-scene.add(new THREE.AmbientLight(0xffffff,0.35));
-const key = new THREE.DirectionalLight(0xfff1cc,2.2); key.position.set(3,4,5); scene.add(key);
-const rim = new THREE.PointLight(0xffb84d,30,20); scene.add(rim);
-
-// sparkles
-const N=260, pos=new Float32Array(N*3), spd=new Float32Array(N);
-for(let i=0;i<N;i++){const r=1.4+Math.random()*2.2,a=Math.random()*Math.PI*2;
-  pos[i*3]=Math.cos(a)*r;pos[i*3+1]=(Math.random()-.5)*4.5;pos[i*3+2]=Math.sin(a)*r-0.5;spd[i]=0.2+Math.random()*0.6;}
-const pg=new THREE.BufferGeometry(); pg.setAttribute('position',new THREE.BufferAttribute(pos,3));
-const sparkles=new THREE.Points(pg,new THREE.PointsMaterial({color:0xffd56b,size:0.045,transparent:true,opacity:.85,
-  blending:THREE.AdditiveBlending,depthWrite:false}));
-scene.add(sparkles);
-
-const pivot = new THREE.Group(); pivot.position.y = 0.45; scene.add(pivot);
-
-const gold = new THREE.MeshStandardMaterial({color:0xf2c14e, metalness:1, roughness:0.22, envMapIntensity:1.3});
-
-new GLTFLoader().load('aaipa-emblem.glb',(g)=>{
-  g.scene.traverse(o=>{ if(o.isMesh){ o.geometry.computeVertexNormals(); o.material=gold; }});
-  pivot.add(g.scene);
-  document.getElementById('aaipaLoading').remove();
-});
-
-function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;
-  camera.position.z = w<h ? 6.2*Math.max(1,(h/w)*0.62) : 6.2; camera.updateProjectionMatrix();}
-addEventListener('resize',resize); resize();
-
-const clock=new THREE.Clock(); let intro=0, running=true;
-function loop(){
-  if(!running) return; const t=clock.getElapsedTime();
-  intro=Math.min(1,intro+0.012); const e=1-Math.pow(1-intro,3);
-  pivot.scale.setScalar(0.3+0.7*e);
-  const P=8, ph=t%P; let ry;
-  if(ph<6.5){ ry=Math.sin(ph/6.5*Math.PI*2)*0.45; }
-  else { const k=(ph-6.5)/1.5, s=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2; ry=s*Math.PI*2; }
-  pivot.rotation.y = ry + (1-e)*6;
-  pivot.rotation.x = Math.sin(t*0.8)*0.08;
-  pivot.position.y = 0.45 + Math.sin(t*1.3)*0.08; // gentle float
-  rim.position.set(Math.cos(t*1.5)*3,1.5,Math.sin(t*1.5)*3);
-  const p=pg.attributes.position.array;
-  for(let i=0;i<N;i++){p[i*3+1]+=spd[i]*0.006; if(p[i*3+1]>2.3)p[i*3+1]=-2.3;}
-  pg.attributes.position.needsUpdate=true; sparkles.rotation.y=t*0.1;
-  renderer.render(scene,camera); requestAnimationFrame(loop);
-}
-loop();
-
-document.getElementById('aaipaEnter').onclick=()=>{
-  const c=document.getElementById('aaipaCover'); c.classList.add('hide');
-  setTimeout(()=>{ c.style.display='none'; running=false; }, 950);
-};
+<script>
+(function(){
+  var c=document.getElementById('aaipaCover');
+  for(var i=0;i<26;i++){var s=document.createElement('span');s.className='aaipa-st';s.textContent='✦';
+    s.style.cssText='left:'+(4+Math.random()*92)+'%;top:'+(4+Math.random()*78)+'%;font-size:'+(8+Math.random()*14)+'px;animation-delay:'+(Math.random()*2.6).toFixed(2)+'s';c.appendChild(s);}
+  var v=document.getElementById('aaipaVid');try{var p=v.play();if(p&&p.catch)p.catch(function(){})}catch(e){}
+  document.getElementById('aaipaEnter').onclick=function(){
+    c.classList.add('hide');setTimeout(function(){c.style.display='none';try{v.pause()}catch(e){}},950);
+  };
+})();
 </script>
 <!-- ===== نهاية الغلاف ===== -->
 </body>
