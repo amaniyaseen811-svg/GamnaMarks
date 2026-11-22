@@ -72,6 +72,10 @@ input:focus,select:focus{border-color:var(--gold)}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 @media(min-width:620px){.grid{grid-template-columns:repeat(6,1fr)}}
 .ses{position:relative;aspect-ratio:1/1.15;border-radius:16px;border:1.5px solid var(--line);background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:var(--txt);padding:6px;transition:.2s}
+.cov{position:relative;display:block;width:100%;padding:0;margin:4px 0 12px;border:2px solid var(--gold);border-radius:16px;overflow:hidden;background:#000;cursor:pointer;box-shadow:0 0 22px rgba(231,194,107,.3)}
+.cov img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+.cov .play{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);width:62px;height:62px;border-radius:50%;background:rgba(0,0,0,.55);border:3px solid #fff;color:#fff;font-size:26px;display:grid;place-items:center;padding-inline-start:4px}
+.cov .ct{position:absolute;bottom:0;inset-inline:0;padding:8px 12px;background:linear-gradient(transparent,rgba(0,0,0,.8));color:#fff;font-weight:800;font-size:14px;text-align:right}
 .ses .n{font-size:12px;color:var(--mut);font-weight:800}
 .ses .e{font-size:28px}
 .ses .t{font-size:11.5px;text-align:center;line-height:1.3;font-weight:700}
@@ -372,6 +376,8 @@ window.doLogout=function(){pushRemote();ME=null;PR={};ls('ipa_profile',null);ls(
 function updTop(){$('ptsTop').textContent=ME?('⭐ '+totalPts()):''}
 
 /* ================== خريطة الدورة ================== */
+var COVERS={kids:{1:'ipa-videos/kids-01-cover.jpg'}};
+function coverFor(stage,g){var c=COVERS[g]||{};for(var i=0;i<S.length;i++){var s=S[i];if(s.stage===stage&&c[s.id])return{id:s.id,img:c[s.id],t:s[g].title}}return null}
 window.openMap=function(){
   if(!ME){show('sCover');return}
   var l=lv(ME.level);$('hAv').textContent=l.ic;$('hName').textContent=ME.name;$('hLevel').textContent=l.t+' · '+ME.country;
@@ -380,7 +386,8 @@ window.openMap=function(){
   $('hPts').textContent='⭐ '+totalPts()+' نقطة';$('hNext').textContent=nx?('التالي: الندوة '+nx):'🎓 أتممت الدورة!';
   var g=group();
   $('stages').innerHTML=ST.map(function(st){
-    return '<div class="stage"><h3>'+st.icon+' <span class="gold">'+st.title+'</span></h3><div class="grid">'+
+    var cv=coverFor(st.n,g);
+    return '<div class="stage"><h3>'+st.icon+' <span class="gold">'+st.title+'</span></h3>'+(cv?('<button class="cov" onclick="openSession('+cv.id+')"><img src="'+cv.img+'" alt="غلاف '+esc(cv.t)+'"><span class="play">▶</span><span class="ct">الندوة '+cv.id+' · '+esc(cv.t)+'</span></button>'):'')+'<div class="grid">'+
       S.filter(function(s){return s.stage===st.n}).map(function(s){
         var p=PR[s.id]||{},cls=p.done?'done':(s.id===nx?'now':(nx!==null&&s.id>nx?'lock':''));
         return '<button class="ses '+cls+'" onclick="openSession('+s.id+')"><span class="n">الندوة '+s.id+'</span><span class="e">'+s.icon+'</span><span class="t">'+esc(s[g].title)+'</span></button>';
@@ -412,7 +419,7 @@ function playVideo(forced){
   /* الشاشة الطولية (الجوال) بتاخد النسخة الطولية، والعرضية بتاخد -h إذا موجودة */
   var wide=window.innerWidth>window.innerHeight;
   var src=VIDEO_DIR+g+'-'+nn+(wide?'-h':'')+'.mp4';
-  var v=document.createElement('video');v.src=src;v.playsInline=true;v.setAttribute('playsinline','');v.controls=true;v.preload='metadata';
+  var v=document.createElement('video');v.src=src;v.playsInline=true;v.setAttribute('playsinline','');v.controls=true;v.preload='metadata';var pc=(COVERS[g]||{})[s.id];if(pc)v.poster=pc;
   var fell=false;
   function fallback(){if(fell)return;fell=true;runSlides(c,s)}
   v.onerror=function(){if(wide&&v.src.indexOf('-h.mp4')>-1){wide=false;v.src=VIDEO_DIR+g+'-'+nn+'.mp4';return}fallback()};
