@@ -51,6 +51,23 @@
   #gmpBoard{scroll-margin-top:52px}
   .shake{animation:shake .4s}
   @keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+  /* أعلى بنتين بالنقاط هالشهر: جوّا الصورة تحت البطاقة (بدون ما يتحرك أي إشي) */
+  #topTwo{position:absolute;left:3%;right:3%;top:93.2%;height:6.5%;display:none;align-items:center;justify-content:center;gap:3%;pointer-events:none;direction:rtl}
+  #topTwo .chip{position:relative;flex:1;max-width:49%;height:100%;border-radius:18px;overflow:hidden;display:flex;align-items:center;justify-content:center;
+       box-shadow:0 0 12px rgba(252,211,77,.55);animation:pop .6s ease}
+  #topTwo .chip::before{content:"";position:absolute;left:50%;top:50%;width:300%;aspect-ratio:1;transform:translate(-50%,-50%);
+       background:conic-gradient(#fcd34d,#f472b6,#8b5cf6,#38bdf8,#f97316,#fcd34d);animation:ttSpin 3s linear infinite}
+  #topTwo .chip.c2::before{animation-duration:4.2s;animation-direction:reverse}
+  #topTwo .chip::after{content:"";position:absolute;inset:2px;border-radius:16px;background:#160c35}
+  #topTwo .in{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;line-height:1.2;white-space:nowrap;font-size:min(3vw,13px);font-weight:800;color:#fff}
+  #topTwo .l2{font-size:.85em}
+  #topTwo .p{color:#fff;opacity:.95}
+  #topTwo .star{display:inline-block;filter:drop-shadow(0 0 4px #fcd34d);animation:ttGlow 1.4s ease-in-out infinite}
+  @keyframes ttGlow{50%{transform:scale(1.3) rotate(20deg);filter:drop-shadow(0 0 8px #fcd34d)}}
+  #topTwo .m{display:inline-block;animation:ttFloat 2.4s ease-in-out infinite}
+  #topTwo .k{color:#fcd34d}
+  @keyframes ttSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+  @keyframes ttFloat{50%{transform:translateY(-2px) rotate(-8deg)}}
 </style>
 </head>
 <body>
@@ -58,6 +75,7 @@
   <img src="subscribe-card.jpg" alt="اشتركي بقناة GamnaMarks على يوتيوب وفعّلي الجرس">
   <div class="logoSpin"><video autoplay muted loop playsinline preload="auto"><source src="gamnamarks-logo.mp4" type="video/mp4"></video></div>
   <div class="pulse"></div>
+  <div id="topTwo"></div>
   <a id="ytBtn"   class="hot sub" href="https://www.youtube.com/@GamnaMarks?sub_confirmation=1" target="_blank" rel="noopener" aria-label="اشتركي بالقناة"></a>
   <a id="bellBtn" class="hot sub" href="https://www.youtube.com/@GamnaMarks?sub_confirmation=1" target="_blank" rel="noopener" aria-label="فعّلي الجرس"></a>
   <a id="bellNote" class="hot sub" href="https://www.youtube.com/@GamnaMarks?sub_confirmation=1" target="_blank" rel="noopener" aria-label="فعّلي الجرس"></a>
@@ -145,6 +163,46 @@
     try{ sessionStorage.setItem("gm_entered","1"); }catch(e){}
     location.href = APP_URL;
   });
+</script>
+<script>
+/* أعلى بنتين (طالبات العمرية) بالنقاط المرصودة هالشهر، وجنب كل وحدة صفها وشعبتها */
+(function(){
+  if(!window.fetch) return;
+  var URL='https://firestore.googleapis.com/v1/projects/cursed-castle-bb43b/databases/(default)/documents:runQuery?key=AIzaSyADxQ7-3UDxYD3VTOoVrn7d6516_5bqd5Y';
+  var d=new Date(), mk='m'+d.getFullYear()+(d.getMonth()<9?'0':'')+(d.getMonth()+1);
+  function val(v){ if(!v) return null; if('stringValue' in v) return v.stringValue; if('integerValue' in v) return +v.integerValue;
+    if('doubleValue' in v) return +v.doubleValue; if('booleanValue' in v) return v.booleanValue; return null; }
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function hash(str){ var a=0x811c9dc5,b=0x01000193;
+    for(var i=0;i<str.length;i++){ var c=str.charCodeAt(i); a=Math.imul(a^c,16777619)>>>0; b=Math.imul(b^c,2246822519)>>>0; }
+    return a.toString(36)+b.toString(36); }
+  /* اسم البنت + اسم العيلة: أول كلمة وآخر كلمة من اسمها بقائمة الشعبة */
+  function shortFull(n){ var w=String(n||'').trim().split(/\s+/); return w.length>1 ? w[0]+' '+w[w.length-1] : w[0]||''; }
+  var rosterP=fetch('https://firestore.googleapis.com/v1/projects/cursed-castle-bb43b/databases/(default)/documents/gm_roster/current?key=AIzaSyADxQ7-3UDxYD3VTOoVrn7d6516_5bqd5Y')
+    .then(function(r){return r.ok?r.json():null;}).then(function(j){
+      var map={}; try{ var R=JSON.parse(j.fields.data.stringValue);
+        (R.sections||[]).forEach(function(sec){ (sec.students||[]).forEach(function(n){ map['st_'+hash(sec.name+'|'+n)]=n; }); });
+      }catch(e){} return map; }).catch(function(){ return {}; });
+  Promise.all([rosterP, fetch(URL,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({structuredQuery:{from:[{collectionId:'gm_points'}],orderBy:[{field:{fieldPath:mk},direction:'DESCENDING'}],limit:60}})})
+  .then(function(r){return r.ok?r.json():[];})]).then(function(res){
+    var names=res[0]||{}, rows=res[1];
+    var top=(rows||[]).filter(function(x){return x.document;}).map(function(x){
+      var f=x.document.fields||{};
+      var pid=x.document.name.split('/').pop();
+      return {name:names[pid]?shortFull(names[pid]):val(f.display),klass:val(f.klass),type:val(f.type),banned:val(f.banned),pts:val(f[mk])||0};
+    }).filter(function(o){return o.type==='student' && !o.banned && o.pts>0 && o.name;}).slice(0,2);
+    if(!top.length) return;
+    var box=document.getElementById('topTwo'); if(!box) return;
+    box.innerHTML=top.map(function(o,i){
+      return '<div class="chip c'+(i+1)+'"><div class="in">'+
+        '<div><span class="m">'+(i?'🥈':'🥇')+'</span> '+esc(o.name)+' <span class="star">🌟</span></div>'+
+        '<div class="l2">'+(o.klass?'<span class="k">'+esc(o.klass)+'</span> · ':'')+'<span class="p">'+o.pts+' نقطة</span></div>'+
+        '</div></div>';
+    }).join('');
+    box.style.display='flex';
+  }).catch(function(){});
+})();
 </script>
 </body>
 </html>
