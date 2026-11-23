@@ -408,18 +408,21 @@ window.openSession=function(id){
 };
 var slideT=null;
 function stopVideo(){clearInterval(slideT);var v=document.querySelector('#vBox video');if(v)try{v.pause()}catch(e){}}
+/* ندوات إلها أكتر من فيديو (قصتين تعريف): الجزء الأول kids-01، والتاني kids-01b */
+var PARTS={kids:{1:['01','01b']}};
+function partsFor(){var g=group(),nn=(CUR.s.id<10?'0':'')+CUR.s.id;return ((PARTS[g]||{})[CUR.s.id])||[nn]}
 function playVideo(forced){
-  var s=CUR.s,g=group(),c=s[g],nn=(s.id<10?'0':'')+s.id;
+  var s=CUR.s,g=group(),c=s[g],P=partsFor(),pi=Math.min(CUR.part||0,P.length-1),nn=P[pi],more=pi<P.length-1;
   $('vBadge').textContent='الندوة '+s.id+' من '+S.length+' · '+ST[s.stage-1].title;
-  $('vTitle').innerHTML=s.icon+' '+esc(c.title);
+  $('vTitle').innerHTML=s.icon+' '+esc(c.title)+(P.length>1?' <small style="opacity:.75">· القصة '+(pi+1)+' من '+P.length+'</small>':'');
   $('vNext').disabled=true;
-  $('vNext').textContent=(actFor()&&!CUR.actDone)?'🎮 انتقل للنشاط التنفيذي':'📝 انتقل لورقة العمل';
+  $('vNext').textContent=more?'▶ شاهد القصة '+(pi+2)+' من '+P.length:(actFor()&&!CUR.actDone)?'🎮 انتقل للنشاط التنفيذي':'📝 انتقل لورقة العمل';
   $('vNote').innerHTML=forced?'🎯 <b>الرجاء التركيز</b> — شاهد الشرح للآخر، بعدها بترجع لورقة العمل.':'🎬 شاهد الشرح للآخر، بعدها بتفتح ورقة العمل.';
   show('sVideo');
   /* الشاشة الطولية (الجوال) بتاخد النسخة الطولية، والعرضية بتاخد -h إذا موجودة */
   var wide=window.innerWidth>window.innerHeight;
   var src=VIDEO_DIR+g+'-'+nn+(wide?'-h':'')+'.mp4';
-  var v=document.createElement('video');v.src=src;v.playsInline=true;v.setAttribute('playsinline','');v.controls=true;v.preload='metadata';var pc=(COVERS[g]||{})[s.id];if(pc)v.poster=pc;
+  var v=document.createElement('video');v.src=src;v.playsInline=true;v.setAttribute('playsinline','');v.controls=true;v.preload='metadata';var pc=pi?VIDEO_DIR+g+'-'+nn+'-cover.jpg':(COVERS[g]||{})[s.id];if(pc)v.poster=pc;
   var fell=false;
   function fallback(){if(fell)return;fell=true;runSlides(c,s)}
   v.onerror=function(){if(wide&&v.src.indexOf('-h.mp4')>-1){wide=false;v.src=VIDEO_DIR+g+'-'+nn+'.mp4';return}fallback()};
@@ -449,7 +452,7 @@ function runSlides(c,s){
 var ACTS={kids:{1:'ipa-activities/huras/index.html'}};
 function actFor(){var a=ACTS[group()];return a&&a[CUR.s.id]}
 window.actToSheet=function(){CUR.actDone=1;startSheet()};
-window.afterVideo=function(){if(actFor()&&!CUR.actDone)openAct();else startSheet()};
+window.afterVideo=function(){var P=partsFor();if((CUR.part||0)<P.length-1){CUR.part=(CUR.part||0)+1;playVideo();return}if(actFor()&&!CUR.actDone)openAct();else startSheet()};
 function openAct(){
   CUR.act={A:0,B:0};
   $('aBadge').textContent='الندوة '+CUR.s.id+' · بعد الفيديو وقبل ورقة العمل';
