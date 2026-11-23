@@ -24,6 +24,7 @@ button.del{background:rgba(255,90,90,.18);border:1px solid rgba(255,120,120,.5)}
 .ok{color:var(--ok)} .no{color:var(--no)}
 .codes{font-size:14px;line-height:1.9;margin-top:8px}
 .codes b{font-family:monospace;letter-spacing:3px;font-size:16px;color:#ffd34d}
+.codes .cin{width:80px;font-family:monospace;letter-spacing:3px;font-size:16px;color:#ffd34d;background:#2a2f5a;border:1px solid #555;border-radius:6px;padding:2px 6px;text-align:center;margin:2px 0}
 #lock{max-width:360px;margin:60px auto;text-align:center}
 #sheet{display:none}
 @media print{
@@ -131,7 +132,13 @@ button.del{background:rgba(255,90,90,.18);border:1px solid rgba(255,120,120,.5)}
     if(a==='newc'){if(!confirm('رح تتغير رموز كل طالبات '+D.sections[i].name+' والكشف القديم ما بيعود يشتغل. متأكدة؟'))return;
       var used={};D.sections[i].codes=D.sections[i].students.map(function(){var c;do{c=rnd4()}while(used[c]);used[c]=1;return c});render();st('تغيرت الرموز — اضغطي حفظ واطبعي الكشف الجديد');return}
     if(a==='codes'){render();var s=D.sections[i],el=$('codes'+i);el.style.display='block';
-      el.innerHTML=s.students.map(function(n,j){return (j+1)+'. '+esc(n)+' — <b>'+s.codes[j]+'</b>'}).join('<br>')}
+      el.innerHTML=s.students.map(function(n,j){return (j+1)+'. '+esc(n)+' — <input class="cin" aria-label="رمز '+esc(n)+'" data-i="'+i+'" data-j="'+j+'" value="'+s.codes[j]+'" maxlength="4" inputmode="numeric">'}).join('<br>')+
+        '<div class="note">بتقدري تغيّري أي رمز (٤ أرقام) وبعدين اضغطي «حفظ».</div>'}
+  });
+  $('secs').addEventListener('input',function(e){
+    var t=e.target;if(!t.classList||!t.classList.contains('cin'))return;
+    var v=t.value.replace(/[٠-٩]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'.indexOf(d)}).replace(/\D/g,'').slice(0,4);t.value=v;
+    if(v.length===4){D.sections[+t.getAttribute('data-i')].codes[+t.getAttribute('data-j')]=v;st('تغيّر الرمز — اضغطي «حفظ»')}
   });
   $('addSec').onclick=function(){readUI();D.sections.push({grade:9,name:'',students:[],codes:[]});render();
     var t=document.querySelectorAll('.sec .sname');t[t.length-1].focus()};
