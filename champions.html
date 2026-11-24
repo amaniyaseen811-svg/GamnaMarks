@@ -199,9 +199,12 @@ h1{margin:0;font-family:Amiri,serif;font-weight:700;line-height:1.15;animation:u
   Promise.race([load(),new Promise(function(r){setTimeout(function(){r([]);},2500);})]).then(render,function(){render([]);});
 
   /* الموسيقى: المتصفح أحياناً بيمنع الصوت التلقائي، فبيطلع زر 🔊 */
-  var mus=document.getElementById('mus'),snd=document.getElementById('snd');mus.volume=.8;
+  var EMBED=Q.get('embed')==='1', pm=null;
+  /* لما الشاشة مفتوحة فوق صفحة الكود، بنستعمل نفس الموسيقى اللي شغّالة هناك (ما بتوقف) */
+  try{ if(EMBED&&parent!==window) pm=parent.document.getElementById('gmMus'); }catch(e){}
+  var mus=pm||document.getElementById('mus'),snd=document.getElementById('snd'); if(!pm) mus.volume=.8;
   /* نكمل الموسيقى من وين وقفت بصفحة الكود */
-  try{var st=parseFloat(sessionStorage.getItem('gm_mus_t')||'0');if(st>0){mus.currentTime=st;mus.addEventListener('loadedmetadata',function(){if(mus.currentTime<st)mus.currentTime=st;},{once:true});}}catch(e){}
+  if(!pm)try{var st=parseFloat(sessionStorage.getItem('gm_mus_t')||'0');if(st>0){mus.currentTime=st;mus.addEventListener('loadedmetadata',function(){if(mus.currentTime<st)mus.currentTime=st;},{once:true});}}catch(e){}
   var tap=document.getElementById('tap');
   function begin(){ tap.style.display='none'; startRes(); }
   var p=mus.play();
@@ -218,10 +221,10 @@ h1{margin:0;font-family:Amiri,serif;font-weight:700;line-height:1.15;animation:u
     pvv.src=(innerHeight>innerWidth)?'gm-prizes-v.mp4':'gm-prizes-h.mp4';
     pv.style.display='flex'; pvv.play().catch(function(){});
   };
-  function closePv(){pvv.pause();pv.style.display='none';}
+  function closePv(){pvv.pause();pv.style.display='none';mus.play().catch(function(){});}
   document.getElementById('pvx').onclick=closePv; pvv.onended=closePv;
   var left=false;
-  function go(){if(left)return;left=true;location.href=NEXT;}
+  function go(){if(left)return;left=true;try{if(EMBED&&parent!==window){parent.location.href=NEXT;return;}}catch(e){}location.href=NEXT;}
   document.getElementById('go').onclick=go;
   if(!STAY) started.then(function(){
     var bar=document.getElementById('bar'),t0=Date.now();
