@@ -376,7 +376,7 @@ window.doLogout=function(){pushRemote();ME=null;PR={};ls('ipa_profile',null);ls(
 function updTop(){$('ptsTop').textContent=ME?('⭐ '+totalPts()):''}
 
 /* ================== خريطة الدورة ================== */
-var COVERS={kids:{1:'ipa-videos/kids-01-cover.jpg'}};
+var COVERS={kids:{1:'ipa-videos/kids-01-cover.jpg',3:'ipa-videos/kids-03-cover.jpg'}};
 function coverFor(stage,g){var c=COVERS[g]||{};for(var i=0;i<S.length;i++){var s=S[i];if(s.stage===stage&&c[s.id])return{id:s.id,img:c[s.id],t:s[g].title}}return null}
 window.openMap=function(){
   if(!ME){show('sCover');return}
