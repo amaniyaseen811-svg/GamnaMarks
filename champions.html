@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>أبطال GamnaMarks</title>
+<!-- شاشة البطلات: بتطلع بعد كود الدخول وقبل التطبيق — تصميم وإعداد د. أماني ياسين (شحروري) -->
+<script>/* لازم تمر من صفحة الكود أول */try{if(!/[?&](demo|stay)=/.test(location.search)&&sessionStorage.getItem("gm_entered")!=="1"){location.replace("subscribe.html");}}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Aref+Ruqaa:wght@700&family=Cairo:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#F2CF6B}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#070B22}
+body{font-family:Cairo,Tahoma,sans-serif;color:#FFF7E2}
+#st{position:fixed;inset:0;overflow:hidden;background:#0A1030 url(gm-champ-bg.jpg) center/cover no-repeat}
+#st::before{content:"";position:absolute;inset:0;background:radial-gradient(80% 60% at 50% 45%,rgba(30,45,110,.35),rgba(5,8,28,.65))}
+.fr{position:absolute;inset:1.6vmin;border:.35vmin solid #D9B157;border-radius:.6vmin;box-shadow:0 0 2vmin rgba(242,207,107,.3);pointer-events:none}
+.fr2{position:absolute;inset:2.8vmin;border:1px solid #9C7A34;pointer-events:none}
+.cn{position:absolute;width:24vmin;pointer-events:none;z-index:3}
+.cn.tl{top:0;left:0}.cn.tr{top:0;right:0;transform:scaleX(-1)}.cn.bl{bottom:0;left:0;transform:scaleY(-1)}.cn.br{bottom:0;right:0;transform:scale(-1,-1)}
+.spk{position:absolute;border-radius:50%;background:radial-gradient(circle,#FFF1B8,rgba(242,200,90,.8) 40%,rgba(242,200,90,0) 70%);animation:tw 2.6s ease-in-out infinite;pointer-events:none}
+@keyframes tw{0%,100%{opacity:.15;transform:scale(.6)}50%{opacity:1;transform:scale(1.15)}}
+.fall{position:absolute;top:-4vmin;width:1vmin;height:1vmin;border-radius:50%;background:#FFE08A;box-shadow:0 0 1.2vmin #FFD25A;animation:fall linear infinite;pointer-events:none}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+
+#wrap{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;z-index:2}
+#crown{animation:crownIn 1.2s cubic-bezier(.2,1.3,.4,1) both,float 3.5s 1.2s ease-in-out infinite;filter:drop-shadow(0 0 2.5vmin rgba(255,215,110,.55))}
+@keyframes crownIn{from{transform:translateY(-40vh) scale(.6);opacity:0}}
+@keyframes float{50%{transform:translateY(-1.2vmin)}}
+.gold{background:linear-gradient(180deg,#FFF3C4 0%,#F2CF6B 32%,#C8962F 58%,#F7DC86 78%,#B8862A 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 .3vmin .4vmin rgba(0,0,0,.5))}
+h1{margin:0;font-family:Amiri,serif;font-weight:700;line-height:1.15;animation:up .8s .5s both}
+.sub{margin:0;font-weight:800;color:#FFF7E2;animation:up .8s .8s both;text-shadow:0 .3vmin .6vmin rgba(0,0,0,.6)}
+@keyframes up{from{opacity:0;transform:translateY(3vmin)}}
+
+#medals{display:flex;justify-content:center;align-items:flex-end}
+.m{display:flex;flex-direction:column;align-items:center;opacity:0}
+.m.show{animation:pop .9s cubic-bezier(.2,1.4,.4,1) forwards}
+@keyframes pop{0%{opacity:0;transform:scale(.3) rotate(-25deg)}100%{opacity:1;transform:none}}
+.disc{position:relative;width:100%;aspect-ratio:1}
+.disc img{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 1.5vmin 2.5vmin rgba(0,0,0,.55)) drop-shadow(0 0 2vmin rgba(255,210,100,.35))}
+.m.show .disc img{animation:spinIn 1.1s ease-out}
+@keyframes spinIn{from{transform:rotateY(540deg)}}
+.shine{position:absolute;inset:16%;border-radius:50%;overflow:hidden;pointer-events:none}
+.shine::after{content:"";position:absolute;top:-20%;bottom:-20%;width:35%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.75),transparent);transform:skewX(-15deg);animation:sweep 3.2s 1.2s ease-in-out infinite}
+@keyframes sweep{0%{left:-60%}45%,100%{left:130%}}
+.disc img.mini{inset:auto;height:auto;position:absolute;left:50%;top:-14%;width:42%;transform:translateX(-50%);filter:drop-shadow(0 0 1.5vmin rgba(255,215,110,.7))}
+.rib{position:absolute;left:10%;right:10%;top:57%;padding:.35em .4em;border-radius:1.2em;text-align:center;
+  background:linear-gradient(180deg,rgba(14,22,58,.92),rgba(8,13,40,.95));box-shadow:0 0 0 .18em #D9B157,0 .5em 1em rgba(0,0,0,.45)}
+.nm{display:block;font-family:"Aref Ruqaa",Amiri,serif;font-weight:700;line-height:1.15;color:#FFE7A3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nm.wait{font-family:Cairo,sans-serif;font-size:.7em;color:#E9DDB8;font-weight:600}
+.lab{margin-top:.25em;display:flex;align-items:center;gap:.35em;font-family:Amiri,serif;font-weight:700;line-height:1.1}
+.lab img{height:.75em}
+.info{font-weight:800;color:#FFF7E2;white-space:nowrap;text-shadow:0 .2em .4em rgba(0,0,0,.6)}
+.info .p{color:var(--gold)}
+
+#foot{display:flex;flex-direction:column;align-items:center;gap:.6vmin;animation:up .8s 4.4s both}
+#foot .fl{width:34vmin}
+#tag{margin:0;font-family:Amiri,serif;font-weight:700;color:#E9C870}
+#go{border:none;cursor:pointer;font-family:Cairo,sans-serif;font-weight:800;color:#1A1330;border-radius:999px;
+  background:linear-gradient(180deg,#FFF0B0,#F2CF6B 45%,#C8962F);box-shadow:0 0 0 .3vmin #8A6420,0 0 2.5vmin rgba(242,207,107,.6);position:relative;overflow:hidden}
+#go i{position:absolute;inset:auto 0 0 0;height:.5vmin;background:#1A1330;opacity:.35;transform-origin:right;transform:scaleX(0)}
+#prz{border:.3vmin solid #D9B157;cursor:pointer;font-family:Cairo,sans-serif;font-weight:800;color:#F2CF6B;border-radius:999px;background:rgba(10,16,48,.85);padding:inherit;font-size:inherit}
+#btns{display:flex;gap:2vmin;flex-wrap:wrap;justify-content:center;align-items:center}
+#pv{position:fixed;inset:0;z-index:20;background:#000;display:none;align-items:center;justify-content:center}
+#pv video{width:100%;height:100%;object-fit:contain}
+#pvx{position:absolute;top:2vmin;left:2vmin;z-index:21;border:.3vmin solid #D9B157;border-radius:999px;background:rgba(10,16,48,.9);color:#F2CF6B;font-family:Cairo,sans-serif;font-weight:800;font-size:2.6vmin;padding:1vmin 3vmin;cursor:pointer}
+#snd{position:absolute;z-index:5;top:3.5vmin;left:27vmin;width:7vmin;height:7vmin;border-radius:50%;border:.3vmin solid #D9B157;background:rgba(10,16,48,.8);color:#F2CF6B;font-size:3.4vmin;cursor:pointer;display:none}
+
+/* ===== أفقي ===== */
+@media (min-aspect-ratio:1/1){
+  #wrap{padding-top:2.5vh}
+  #crown{width:17vh}
+  h1{font-size:7.4vh}
+  .sub{font-size:3vh;margin-top:.3vh}
+  #medals{gap:6vw;margin-top:2vh;flex-direction:row}
+  .m.r1{order:2;--w:36vh}
+  .m.r2{order:1;--w:28vh}
+  .m.r3{order:3;--w:28vh}
+  #foot{margin-top:auto;padding-bottom:4.5vh}
+  #foot .fl{width:26vh}
+  #tag{font-size:2.4vh}
+  #go,#prz{font-size:2.8vh;padding:.9vh 4vh}
+}
+/* ===== عمودي (الموبايل) ===== */
+@media (max-aspect-ratio:1/1){
+  #wrap{padding-top:4.5vh}
+  #crown{width:min(34vw,13vh)}
+  h1{font-size:min(10.5vw,5vh)}
+  .sub{font-size:min(4vw,2vh);margin-top:.6vh;text-align:center;padding:0 6vw}
+  #medals{flex-wrap:wrap;gap:1.6vh 9vw;margin-top:2vh;width:100%}
+  .m.r1{--w:min(52vw,19.5vh);flex-basis:100%}
+  .m.r2{order:2;--w:min(36vw,14.5vh)}
+  .m.r3{order:3;--w:min(36vw,14.5vh)}
+  #foot{margin-top:auto;padding-bottom:3.5vh}
+  #foot .fl{width:min(40vw,18vh)}
+  #tag{font-size:min(4vw,2vh)}
+  #go,#prz{font-size:min(4.4vw,2.2vh);padding:1vh 0;width:min(62vw,30vh)}
+  #btns{flex-direction:column;gap:1.2vh}
+  .cn{width:17vmin}
+  .sub{font-size:min(3.6vw,1.9vh)}
+}
+.m{width:var(--w);font-size:calc(var(--w)*.085)}
+.m.r1 .disc{width:var(--w)}
+.nm{font-size:1.45em}
+.lab{font-size:1.75em}
+.info{font-size:1em;line-height:1.35;text-align:center}
+</style>
+</head>
+<body>
+<div id="st">
+  <div id="fx"></div>
+  <div class="fr"></div><div class="fr2"></div>
+  <img class="cn tl" src="gm-champ-corner.webp" alt=""><img class="cn tr" src="gm-champ-corner.webp" alt="">
+  <img class="cn bl" src="gm-champ-corner.webp" alt=""><img class="cn br" src="gm-champ-corner.webp" alt="">
+  <div id="wrap">
+    <img id="crown" src="gm-champ-crown.webp" alt="">
+    <h1 class="gold">أبطال GamnaMarks</h1>
+    <p class="sub" id="sub">المتصدّرات في مسابقة النقاط</p>
+    <div id="medals"></div>
+    <div id="foot">
+      <img class="fl" src="gm-champ-flourish.webp" alt="">
+      <p id="tag">GamnaMarks • التميّز والارتقاء</p>
+      <div id="btns"><button id="prz" type="button">🎁 شوفي الجوائز</button><button id="go" type="button">ادخلي التطبيق ←<i id="bar"></i></button></div>
+    </div>
+  </div>
+  <button id="snd" type="button" aria-label="تشغيل الموسيقى">🔊</button>
+</div>
+<div id="pv"><video id="pvv" playsinline controls preload="none"></video><button id="pvx" type="button">✕ رجوع</button></div>
+<audio id="mus" src="gm-champ-music.mp3" preload="auto"></audio>
+<script>
+(function(){
+  var Q=new URLSearchParams(location.search);
+  var NEXT=Q.get('next')||'contest.html';       /* بعد شاشة البطلات */
+  var STAY=Q.get('stay')==='1', DEMO=Q.get('demo')==='1';
+  var WAIT=12000;                                /* مدة الشاشة قبل الدخول التلقائي */
+  var MONTHS=['كانون الثاني','شباط','آذار','نيسان','أيار','حزيران','تموز','آب','أيلول','تشرين الأول','تشرين الثاني','كانون الأول'];
+  var d=new Date(), mk='m'+d.getFullYear()+(d.getMonth()<9?'0':'')+(d.getMonth()+1);
+  document.getElementById('sub').textContent='المتصدّرات في مسابقة النقاط · '+MONTHS[d.getMonth()]+' '+d.getFullYear();
+  var AR=function(n){return String(n).replace(/\d/g,function(x){return '٠١٢٣٤٥٦٧٨٩'[x];});};
+  function esc(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+  /* لمعات ونجوم ذهبية */
+  var fx=document.getElementById('fx'),h='';
+  for(var i=0;i<40;i++){var s=(0.6+Math.random()*1.6).toFixed(2);h+='<div class="spk" style="left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;width:'+s+'vmin;height:'+s+'vmin;animation-delay:'+(Math.random()*2.6).toFixed(2)+'s"></div>';}
+  fx.innerHTML=h;
+  function rain(){var r='';for(var i=0;i<46;i++){r+='<div class="fall" style="left:'+(Math.random()*100)+'%;animation-duration:'+(3+Math.random()*3).toFixed(2)+'s;animation-delay:'+(Math.random()*2).toFixed(2)+'s;opacity:'+(.5+Math.random()*.5).toFixed(2)+'"></div>';}fx.insertAdjacentHTML('beforeend',r);}
+
+  var LABELS=['الأولى','الثانية','الثالثة'];
+  function render(top){
+    var box=document.getElementById('medals'),html='';
+    for(var k=0;k<3;k++){
+      var o=top[k];
+      html+='<div class="m r'+(k+1)+'" id="m'+(k+1)+'"><div class="disc"><img src="gm-champ-medal'+(k+1)+'.webp" alt="">'+
+        '<div class="shine"></div>'+(k===0?'<img class="mini" src="gm-champ-crown.webp" alt="" style="inset:auto;height:auto">':'')+
+        '<div class="rib">'+(o?'<span class="nm">'+esc(o.name)+'</span>':'<span class="nm wait">بانتظار البطلة…</span>')+'</div></div>'+
+        '<div class="lab gold"><img src="gm-champ-fleur.webp" alt="">'+LABELS[k]+'<img src="gm-champ-fleur.webp" alt=""></div>'+
+        (o?'<div class="info">'+(o.klass?esc(o.klass)+'<br>':'')+'<span class="p">'+AR(o.pts)+' نقطة</span></div>':'<div class="info">&nbsp;<br>&nbsp;</div>')+'</div>';
+    }
+    box.innerHTML=html;
+    /* تشويق: الثالثة، بعدين الثانية، وآخر إشي البطلة */
+    setTimeout(function(){document.getElementById('m3').classList.add('show');},1300);
+    setTimeout(function(){document.getElementById('m2').classList.add('show');},2200);
+    setTimeout(function(){document.getElementById('m1').classList.add('show');rain();},3200);
+  }
+
+  function load(){
+    if(DEMO) return Promise.resolve([{name:'اسم الطالبة',klass:'العاشر أ',pts:540},{name:'اسم الطالبة',klass:'التاسع ب',pts:465},{name:'اسم الطالبة',klass:'العاشر ج',pts:410}]);
+    if(!window.fetch) return Promise.resolve([]);
+    var BASE='https://firestore.googleapis.com/v1/projects/cursed-castle-bb43b/databases/(default)/documents';
+    var KEY='?key=AIzaSyADxQ7-3UDxYD3VTOoVrn7d6516_5bqd5Y';
+    function val(v){if(!v)return null;if('stringValue' in v)return v.stringValue;if('integerValue' in v)return +v.integerValue;if('doubleValue' in v)return +v.doubleValue;if('booleanValue' in v)return v.booleanValue;return null;}
+    function hash(str){var a=0x811c9dc5,b=0x01000193;for(var i=0;i<str.length;i++){var c=str.charCodeAt(i);a=Math.imul(a^c,16777619)>>>0;b=Math.imul(b^c,2246822519)>>>0;}return a.toString(36)+b.toString(36);}
+    function shortFull(n){var w=String(n||'').trim().split(/\s+/);return w.length>1?w[0]+' '+w[w.length-1]:w[0]||'';}
+    var rosterP=fetch(BASE+'/gm_roster/current'+KEY).then(function(r){return r.ok?r.json():null;}).then(function(j){
+      var map={};try{var R=JSON.parse(j.fields.data.stringValue);(R.sections||[]).forEach(function(sec){(sec.students||[]).forEach(function(n){map['st_'+hash(sec.name+'|'+n)]=n;});});}catch(e){}return map;}).catch(function(){return {};});
+    var topP=fetch(BASE+':runQuery'+KEY,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({structuredQuery:{from:[{collectionId:'gm_points'}],orderBy:[{field:{fieldPath:mk},direction:'DESCENDING'}],limit:60}})})
+      .then(function(r){return r.ok?r.json():[];}).catch(function(){return [];});
+    return Promise.all([rosterP,topP]).then(function(res){
+      var names=res[0]||{};
+      return (res[1]||[]).filter(function(x){return x.document;}).map(function(x){
+        var f=x.document.fields||{},pid=x.document.name.split('/').pop();
+        return {name:names[pid]?shortFull(names[pid]):val(f.display),klass:val(f.klass),type:val(f.type),banned:val(f.banned),pts:val(f[mk])||0};
+      }).filter(function(o){return o.type==='student'&&!o.banned&&o.pts>0&&o.name;}).slice(0,3);
+    });
+  }
+  if(DEMO) document.getElementById('st').insertAdjacentHTML('beforeend','<div style="position:absolute;z-index:6;top:3.5vmin;right:27vmin;background:rgba(10,16,48,.85);border:1px solid #D9B157;color:#F2CF6B;border-radius:999px;padding:.4vmin 2vmin;font-size:2vmin;font-weight:800">عرض تجريبي</div>');
+  /* أقصى وقت انتظار للنت: 2.5 ثانية، وبعدها بنعرض اللي عنا */
+  Promise.race([load(),new Promise(function(r){setTimeout(function(){r([]);},2500);})]).then(render,function(){render([]);});
+
+  /* الموسيقى: المتصفح أحياناً بيمنع الصوت التلقائي، فبيطلع زر 🔊 */
+  var mus=document.getElementById('mus'),snd=document.getElementById('snd');mus.volume=.8;
+  var p=mus.play(); if(p&&p.catch)p.catch(function(){if(!DEMO)snd.style.display='block';});
+  snd.onclick=function(){mus.play();snd.style.display='none';};
+
+  /* فيديو الجوائز: عمودي للموبايل وأفقي للشاشات العريضة */
+  var pv=document.getElementById('pv'),pvv=document.getElementById('pvv'),paused=false;
+  document.getElementById('prz').onclick=function(){
+    paused=true; mus.pause();
+    pvv.src=(innerHeight>innerWidth)?'gm-prizes-v.mp4':'gm-prizes-h.mp4';
+    pv.style.display='flex'; pvv.play().catch(function(){});
+  };
+  function closePv(){pvv.pause();pv.style.display='none';}
+  document.getElementById('pvx').onclick=closePv; pvv.onended=closePv;
+  var left=false;
+  function go(){if(left)return;left=true;location.href=NEXT;}
+  document.getElementById('go').onclick=go;
+  if(!STAY){
+    var bar=document.getElementById('bar'),t0=Date.now();
+    (function tick(){if(paused){bar.style.transform='scaleX(0)';return;}var k=Math.min(1,(Date.now()-t0)/WAIT);bar.style.transform='scaleX('+k+')';if(k<1)requestAnimationFrame(tick);else go();})();
+  }
+})();
+</script>
+</body>
+</html>
