@@ -63,6 +63,10 @@ h1{margin:0;font-family:Amiri,serif;font-weight:700;line-height:1.15;animation:u
 #go i{position:absolute;inset:auto 0 0 0;height:.5vmin;background:#1A1330;opacity:.35;transform-origin:right;transform:scaleX(0)}
 #prz{border:.3vmin solid #D9B157;cursor:pointer;font-family:Cairo,sans-serif;font-weight:800;color:#F2CF6B;border-radius:999px;background:rgba(10,16,48,.85);padding:inherit;font-size:inherit}
 #btns{display:flex;gap:2vmin;flex-wrap:wrap;justify-content:center;align-items:center}
+#tap{position:fixed;inset:0;z-index:15;display:none;flex-direction:column;align-items:center;justify-content:center;gap:2vmin;background:rgba(6,10,32,.78);cursor:pointer;text-align:center}
+#tap img{width:min(46vw,26vh);animation:float 2.2s ease-in-out infinite;filter:drop-shadow(0 0 3vmin rgba(255,215,110,.7))}
+#tap p{margin:0;font-family:Amiri,serif;font-weight:700;font-size:min(9vw,6vh);color:#F2CF6B;animation:tw 1.8s ease-in-out infinite}
+#tap span{font-family:Cairo,sans-serif;font-weight:800;color:#FFF7E2;font-size:min(4.5vw,2.6vh)}
 #pv{position:fixed;inset:0;z-index:20;background:#000;display:none;align-items:center;justify-content:center}
 #pv video{width:100%;height:100%;object-fit:contain}
 #pvx{position:absolute;top:2vmin;left:2vmin;z-index:21;border:.3vmin solid #D9B157;border-radius:999px;background:rgba(10,16,48,.9);color:#F2CF6B;font-family:Cairo,sans-serif;font-weight:800;font-size:2.6vmin;padding:1vmin 3vmin;cursor:pointer}
@@ -127,6 +131,7 @@ h1{margin:0;font-family:Amiri,serif;font-weight:700;line-height:1.15;animation:u
   </div>
   <button id="snd" type="button" aria-label="تشغيل الموسيقى">🔊</button>
 </div>
+<div id="tap" role="button" aria-label="اضغطي لتكشفي البطلات"><img src="gm-champ-crown.webp" alt=""><p>اضغطي لتكشفي البطلات</p><span>🎵 مع الموسيقى</span></div>
 <div id="pv"><video id="pvv" playsinline controls preload="none"></video><button id="pvx" type="button">✕ رجوع</button></div>
 <audio id="mus" src="gm-champ-music.mp3" preload="auto" loop></audio>
 <script>
@@ -147,6 +152,7 @@ h1{margin:0;font-family:Amiri,serif;font-weight:700;line-height:1.15;animation:u
   fx.innerHTML=h;
   function rain(){var r='';for(var i=0;i<46;i++){r+='<div class="fall" style="left:'+(Math.random()*100)+'%;animation-duration:'+(3+Math.random()*3).toFixed(2)+'s;animation-delay:'+(Math.random()*2).toFixed(2)+'s;opacity:'+(.5+Math.random()*.5).toFixed(2)+'"></div>';}fx.insertAdjacentHTML('beforeend',r);}
 
+  var startRes, started=new Promise(function(r){startRes=r;});
   var LABELS=['الأولى','الثانية','الثالثة'];
   function render(top){
     var box=document.getElementById('medals'),html='';
@@ -160,9 +166,11 @@ h1{margin:0;font-family:Amiri,serif;font-weight:700;line-height:1.15;animation:u
     }
     box.innerHTML=html;
     /* تشويق: الثالثة، بعدين الثانية، وآخر إشي البطلة */
+    started.then(function(){
     setTimeout(function(){document.getElementById('m3').classList.add('show');},1300);
     setTimeout(function(){document.getElementById('m2').classList.add('show');},2200);
     setTimeout(function(){document.getElementById('m1').classList.add('show');rain();},3200);
+    });
   }
 
   function load(){
@@ -194,7 +202,12 @@ h1{margin:0;font-family:Amiri,serif;font-weight:700;line-height:1.15;animation:u
   var mus=document.getElementById('mus'),snd=document.getElementById('snd');mus.volume=.8;
   /* نكمل الموسيقى من وين وقفت بصفحة الكود */
   try{var st=parseFloat(sessionStorage.getItem('gm_mus_t')||'0');if(st>0){mus.currentTime=st;mus.addEventListener('loadedmetadata',function(){if(mus.currentTime<st)mus.currentTime=st;},{once:true});}}catch(e){}
-  var p=mus.play(); if(p&&p.catch)p.catch(function(){if(!DEMO)snd.style.display='block';});
+  var tap=document.getElementById('tap');
+  function begin(){ tap.style.display='none'; startRes(); }
+  var p=mus.play();
+  if(p&&p.then){ p.then(begin,function(){ if(DEMO){begin();return;} tap.style.display='flex'; }); } else begin();
+  /* المتصفح منع الصوت التلقائي: لمسة وحدة بتشغّل الموسيقى وبتكشف البطلات */
+  tap.onclick=function(){ mus.play().catch(function(){}); begin(); };
   snd.onclick=function(){mus.play();snd.style.display='none';};
   ['pointerdown','touchstart','keydown'].forEach(function(ev){document.addEventListener(ev,function(){if(mus.paused&&pv.style.display!=='flex'){mus.play().then(function(){snd.style.display='none';}).catch(function(){});}},{passive:true});});
 
@@ -210,10 +223,10 @@ h1{margin:0;font-family:Amiri,serif;font-weight:700;line-height:1.15;animation:u
   var left=false;
   function go(){if(left)return;left=true;location.href=NEXT;}
   document.getElementById('go').onclick=go;
-  if(!STAY){
+  if(!STAY) started.then(function(){
     var bar=document.getElementById('bar'),t0=Date.now();
     (function tick(){if(paused){bar.style.transform='scaleX(0)';return;}var k=Math.min(1,(Date.now()-t0)/WAIT);bar.style.transform='scaleX('+k+')';if(k<1)requestAnimationFrame(tick);else go();})();
-  }
+  });
 })();
 </script>
 </body>
