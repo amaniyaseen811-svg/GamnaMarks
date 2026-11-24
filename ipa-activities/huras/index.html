@@ -92,6 +92,11 @@ input.name{width:100%;font:inherit;font-size:20px;padding:10px 14px;border-radiu
 @keyframes stamp{from{transform:rotate(-8deg) scale(3);opacity:0}}
 .note{color:#cfd8ff;font-size:13px;text-align:center;margin-top:16px;line-height:1.6}
 @media print{body{background:#fff}.stars,.top,.btn,.note{display:none!important}.screen{display:none!important}.screen.on{display:block!important}}
+.stWrap{position:relative}.stNum{position:absolute;top:10px;right:10px;background:var(--gold2,#f0c45a);color:#2a1a05;font-weight:800;border-radius:50%;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 2px 8px #0004}
+.stTxt{font-size:21px;line-height:1.7;font-weight:700;min-height:3.4em;margin:12px 4px 6px;text-align:center}
+.stDots{display:flex;gap:6px;justify-content:center;margin:6px 0 10px}.stDots i{width:9px;height:9px;border-radius:50%;background:#0002}.stDots i.on{background:var(--gold2,#f0c45a);transform:scale(1.3)}
+.stNav{display:flex;gap:8px;align-items:center}.stNav .btn{flex:1;margin:0}.stSkip{background:none;border:0;color:#888;font-size:15px;margin-top:10px;cursor:pointer;text-decoration:underline;width:100%}
+#stImg{animation:stIn .5s}@keyframes stIn{from{opacity:.2;transform:scale(.97)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
@@ -165,11 +170,23 @@ input.name{width:100%;font:inherit;font-size:20px;padding:10px 14px;border-radiu
 <section class="screen" id="s-b0">
   <div class="top"><button class="home" onclick="go('hub')">⟵ الرئيسية</button><span class="pts">🌟 <span class="ptsB">0</span></span></div>
   <h1>المحقق الصغير</h1>
-  <p class="sub">قضية اللوحة المفقودة: من صاحب الإبداع؟</p>
-  <div class="card">
-    <img class="pic" src="img/8.jpg" alt="ليان ترسم">
-    <div class="guide" style="margin-top:12px"><img src="img/8.jpg" alt=""><div class="row" style="flex:1"><p id="introB">«أنا ليان، أحبّ الرسم. رسمتُ لوحةً عن مدينتي وكنتُ سعيدةً بها، لكنني فوجئتُ بأن سامي نشرها وكتب: رسمتي الجديدة! ساعدني يا محقق، كيف نعرف من رسم اللوحة؟»</p><button class="say" onclick="speak('introB')">🔊</button></div></div>
+  <p class="sub">قصة لوحة ليان</p>
+  <div class="card" id="stCard">
+    <div class="stWrap"><img class="pic" id="stImg" alt=""><span class="stNum" id="stNum"></span></div>
+    <p class="stTxt" id="stTxt"></p>
+    <div class="stDots" id="stDots"></div>
+    <div class="stNav">
+      <button class="btn ghost" id="stPrev" onclick="stGo(stI-1)">→ السابق</button>
+      <button class="say" onclick="speak('st'+(stI+1))">🔊</button>
+      <button class="btn gold" id="stNext" onclick="stGo(stI+1)">التالي ←</button>
+    </div>
+    <button class="stSkip" onclick="stEnd()">تخطَّ القصة</button>
+  </div>
+  <div class="card" id="caseCard" style="display:none">
+    <img class="pic" src="story/st6.webp" alt="ليان حزينة">
+    <div class="guide" style="margin-top:12px"><img src="story/st3.webp" alt=""><div class="row" style="flex:1"><p id="introB">«أنا ليان، أحبّ الرسم. رسمتُ لوحةً عن مدينتي وكنتُ سعيدةً بها، لكنني فوجئتُ بأن سامي نشرها وكتب: رسمتي الجديدة! ساعدني يا محقق، كيف نعرف من رسم اللوحة؟»</p><button class="say" onclick="speak('introB')">🔊</button></div></div>
     <p style="font-size:16px;color:#555;margin-top:8px">🔍 انقر على الأدلة، ثم اختر الإجابة. كل إجابة صحيحة تمنحك نجمة، وبالنجوم الخمس تصل إلى الحكم النهائي.</p>
+    <button class="btn ghost" onclick="stStart()">↺ أعد مشاهدة القصة</button>
     <button class="btn gold" onclick="qB(0)">ابدأ التحقيق 🔍</button>
   </div>
 </section>
@@ -231,23 +248,23 @@ const A=[
   no:'المتاجر تحبّ الزبائن الصغار! فكّر: كيف يعرف الناس هذا المتجر من بين كل المتاجر؟'}
 ];
 const B=[
- {st:'المحطة ١: من صاحب اللوحة؟',img:'img/8.jpg',extra:'post1',
+ {st:'المحطة ١: من صاحب اللوحة؟',img:'story/st5.webp',extra:'post1',
   q:'من رسم اللوحة في قصتنا؟',o:['سامي لأنه نشرها','ليان لأنها رسمتها','الموقع الإلكتروني'],c:1,
   ok:'صحيح! نشرُ العمل لا يجعل الناشر مؤلفًا له. ⭐ أُضيف اسم «ليان» إلى دفتر التحقيق.',
   no:'انظر إلى الأدلة: متى رُسمت اللوحة؟ ومتى نُشرت؟ النشر شيء، والرسم شيء آخر.'},
- {st:'المحطة ٢: ابحث عن الدليل',img:'img/12.jpg',extra:'evidence',
+ {st:'المحطة ٢: ابحث عن الدليل',img:'story/st7.webp',extra:'evidence',
   q:'أيّ دليل يساعد أكثر على توضيح مراحل إنجاز ليان للوحة؟',o:['المسوّدات والرسومات الأولية المؤرّخة','قلم تلوين غير مرتبط بها','عدد الإعجابات بالمنشور'],c:0,
   ok:'ممتاز يا محقق! المسوّدات والملفات الأصلية والتواريخ تساعد على توثيق مراحل إنشاء العمل.',
   no:'انقر على الأدلة الثلاثة واقرأها. أيّها يُظهر خطوات الرسم من البداية؟'},
- {st:'المحطة ٣: واجه المشكلة بحكمة',img:'img/9.jpg',extra:'sami',
+ {st:'المحطة ٣: واجه المشكلة بحكمة',img:'story/st8.webp',extra:'sami',
   q:'ما التصرّف الأفضل الآن؟',o:['يُصرّ على أنها لوحته','يعترف بالخطأ، ويصحّح النسبة، ويستأذن ليان في إبقاء المنشور','يُخفي الأدلة'],c:1,
   ok:'أحسنت! الاعتراف بالخطأ وإعطاء المبدع حقّه يساعدان في حلّ المشكلة.',
   no:'الإصرار على الخطأ أو إخفاء الأدلة يزيد المشكلة. ما التصرّف الشجاع والعادل؟'},
- {st:'المحطة ٤: بطاقة الفنان',img:'img/10.jpg',extra:'label',
+ {st:'المحطة ٤: بطاقة الفنان',img:'story/st10.webp',extra:'label',
   q:'اسحب العبارة المناسبة وضعها تحت اللوحة في المعرض:',o:['رسمها شخص مجهول','لوحة من إعداد الطالبة ليان','رسمها سامي'],c:1,drag:true,
   ok:'رائع! ذكر اسم صاحبة اللوحة يمنحها الاعتراف المستحق، وقد يلزم إذنها أيضًا بحسب نوع العرض والاستخدام.',
   no:'هذه العبارة لا تنصف صاحبة اللوحة. من رسمها حقًّا؟'},
- {st:'المحطة ٥: الحكم العادل',img:'img/7.jpg',extra:'post2',
+ {st:'المحطة ٥: الحكم العادل',img:'story/st11.webp',extra:'post2',
   q:'ما الحكم العادل في هذه القصة؟',o:['يبقى العمل باسم سامي','تُنسب اللوحة إلى ليان، ويُصحَّح المنشور، ويُحترم قرارها بشأن الاستخدام','لا أحد يملك حقّ الاعتراض'],c:1,
   ok:'حكمٌ عادل! بهذا تصبح نسبة العمل صحيحة، ويُحترم حقّ صاحبته.',
   no:'الحكم العادل يعيد الحقّ إلى صاحبته. فكّر مرة أخرى.'}
@@ -279,7 +296,15 @@ function answer(k,i,btn){const d=(k=='a'?A:B)[S.cur],fb=$(k+'Fb'),box=$(k+'Opts'
  else{btn.classList.add('no');btn.disabled=true;fb.className='fb no';fb.innerHTML='<div class="guide"><img src="'+(k=='a'?'img/3.jpg':'img/2.jpg')+'" alt=""><div>💡 '+d.no+'<br><b>حاول مرة أخرى!</b></div></div>';chime(0);setTimeout(()=>speak(k+S.cur+'no'),350)}}
 function nextA(){if(S.cur<4)qA(S.cur+1);else{locks($('locksEnd'),5);go('aend');confetti();chime(1);setTimeout(()=>speak('endA'),900);$('doneA').textContent='✔ أنجزت · '+S.pa+' نقطة';try{parent.postMessage({ipaAct:'A',pts:S.pa},'*')}catch(e){}}}
 // ---------- النشاط الثاني ----------
-function startB(){S.kb=0;S.pb=0;upd();go('b0');setTimeout(()=>speak('introB'),400)}
+function startB(){S.kb=0;S.pb=0;upd();go('b0');setTimeout(stStart,400)}
+const ST=["نظرت ليان من النافذة إلى مدينتها الجميلة، فخطرت لها فكرة لوحة.", "رسمت ليان في البيت ليلًا، وكانت متعبة، لكنّها أصرّت على إكمال لوحتها.", "ثمّ رسمت لوحةً جميلةً لمدينتها في غرفة الفنّ بالمدرسة.", "صوّر سامي لوحة ليان سرًّا، حين لم تكن في الصفّ.", "نشر سامي صورة اللوحة على هاتفه، فصُدمت ليان وحزنت.", "رأت ليان المنشور على الهاتف فبكت، وأخذت صديقاتها يواسينها.", "أشارت ليان إلى رسوماتها الأولى في الدفتر، وكلّ رسمةٍ تُثبت أنّها صاحبة اللوحة.", "شرح سامي ما حدث وهو محرَج، واستمعت إليه ليان، والمعلّمة تقف بينهما.", "قارنت المعلّمة دفتر الرسم بالهاتف، فاعترف سامي بالحقيقة.", "في المعرض، عُلّقت لوحة ليان في إطارٍ جميل، ووقفت بجانبها فخورة.", "تصالح سامي وليان وتصافحا، والنجمة الذهبيّة تلمع فوقهما.", "ورسمت ليان وسامي معًا لوحةً جديدة، وعادا صديقين."];let stI=0,stTimer=null;
+function stShow(){const im=$('stImg');im.style.animation='none';void im.offsetWidth;im.style.animation='';im.src='story/st'+(stI+1)+'.webp';$('stTxt').textContent=ST[stI];$('stNum').textContent=(stI+1).toLocaleString('ar-EG');
+ $('stDots').innerHTML=ST.map((_,i)=>'<i class="'+(i==stI?'on':'')+'"></i>').join('');$('stPrev').style.visibility=stI?'visible':'hidden';$('stNext').textContent=stI==ST.length-1?'إلى القضية ←':'التالي ←';
+ clearTimeout(stTimer);speak('st'+(stI+1));VO.onended=()=>{stTimer=setTimeout(()=>{if($('s-b0').classList.contains('on')&&$('stCard').style.display!='none')stGo(stI+1)},1600)}}
+function stGo(i){if(i<0)return;if(i>=ST.length)return stEnd();stI=i;stShow()}
+function stStart(){$('caseCard').style.display='none';$('stCard').style.display='';stI=0;stShow()}
+function stEnd(){clearTimeout(stTimer);VO.onended=null;hush();$('stCard').style.display='none';$('caseCard').style.display='';setTimeout(()=>speak('introB'),300)}
+
 function extraB(t){const e=$('bExtra');e.innerHTML='';
  if(t=='post1')e.innerHTML='<div class="post">🗓️ <b>دفتر ليان:</b> لوحة «مدينتي» — رُسمت يوم <b>١ آذار</b></div><div class="post"><span class="who">سامي</span> · نُشر يوم <b>١٠ آذار</b><br>«رسمتي الجديدة! 🎨» ❤️ 48</div>';
  if(t=='evidence'){e.innerHTML='<p style="font-size:15px;color:#555">🔍 انقر على كل دليل لتكبيره:</p><div class="ev"><button data-z="دفتر مسوّدات ليان: ثلاث رسومات أولية للمدينة، تحت كل واحدة تاريخ: ٢٥ شباط، ٢٧ شباط، ١ آذار. تتطوّر الرسمة خطوة بخطوة!"><b>📒</b>دفتر المسوّدات</button><button data-z="منشور سامي: الصورة النهائية فقط، ومعها 48 إعجابًا. لا توجد أي مسوّدة أو مرحلة سابقة."><b>📱</b>منشور سامي</button><button data-z="قلم تلوين أزرق عادي، موجود في كل الصفوف، ولا يدلّ على من رسم اللوحة."><b>🖍️</b>قلم تلوين</button></div><div class="zoom" id="zoom"></div>';
