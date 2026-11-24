@@ -181,6 +181,9 @@ h1{margin:0;font-family:Amiri,serif;font-weight:700;line-height:1.15;animation:u
     function val(v){if(!v)return null;if('stringValue' in v)return v.stringValue;if('integerValue' in v)return +v.integerValue;if('doubleValue' in v)return +v.doubleValue;if('booleanValue' in v)return v.booleanValue;return null;}
     function hash(str){var a=0x811c9dc5,b=0x01000193;for(var i=0;i<str.length;i++){var c=str.charCodeAt(i);a=Math.imul(a^c,16777619)>>>0;b=Math.imul(b^c,2246822519)>>>0;}return a.toString(36)+b.toString(36);}
     function shortFull(n){var w=String(n||'').trim().split(/\s+/);return w.length>1?w[0]+' '+w[w.length-1]:w[0]||'';}
+    /* تعديل أسماء بطلب المعلمة: الاسم كما يظهر ← الاسم المطلوب */
+    var FIX={'صبا وضحو':'صبا'};
+    function fixName(n){n=String(n||'').trim();return FIX[n]||n;}
     var rosterP=fetch(BASE+'/gm_roster/current'+KEY).then(function(r){return r.ok?r.json():null;}).then(function(j){
       var map={};try{var R=JSON.parse(j.fields.data.stringValue);(R.sections||[]).forEach(function(sec){(sec.students||[]).forEach(function(n){map['st_'+hash(sec.name+'|'+n)]=n;});});}catch(e){}return map;}).catch(function(){return {};});
     var topP=fetch(BASE+':runQuery'+KEY,{method:'POST',headers:{'Content-Type':'application/json'},
@@ -190,7 +193,7 @@ h1{margin:0;font-family:Amiri,serif;font-weight:700;line-height:1.15;animation:u
       var names=res[0]||{};
       return (res[1]||[]).filter(function(x){return x.document;}).map(function(x){
         var f=x.document.fields||{},pid=x.document.name.split('/').pop();
-        return {name:names[pid]?shortFull(names[pid]):val(f.display),klass:val(f.klass),type:val(f.type),banned:val(f.banned),pts:val(f[mk])||0};
+        return {name:fixName(names[pid]?shortFull(names[pid]):val(f.display)),klass:val(f.klass),type:val(f.type),banned:val(f.banned),pts:val(f[mk])||0};
       }).filter(function(o){return o.type==='student'&&!o.banned&&o.pts>0&&o.name;}).slice(0,3);
     });
   }
