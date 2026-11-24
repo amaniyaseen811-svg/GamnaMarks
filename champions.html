@@ -46,9 +46,9 @@ h1{margin:0;font-family:Amiri,serif;font-weight:700;line-height:1.15;animation:u
 .shine::after{content:"";position:absolute;top:-20%;bottom:-20%;width:35%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.75),transparent);transform:skewX(-15deg);animation:sweep 3.2s 1.2s ease-in-out infinite}
 @keyframes sweep{0%{left:-60%}45%,100%{left:130%}}
 .disc img.mini{inset:auto;height:auto;position:absolute;left:50%;top:-14%;width:42%;transform:translateX(-50%);filter:drop-shadow(0 0 1.5vmin rgba(255,215,110,.7))}
-.rib{position:absolute;left:10%;right:10%;top:57%;padding:.35em .4em;border-radius:1.2em;text-align:center;
+.rib{position:absolute;left:4%;right:4%;top:55%;padding:.4em .35em;border-radius:1.2em;text-align:center;
   background:linear-gradient(180deg,rgba(14,22,58,.92),rgba(8,13,40,.95));box-shadow:0 0 0 .18em #D9B157,0 .5em 1em rgba(0,0,0,.45)}
-.nm{display:block;font-family:"Aref Ruqaa",Amiri,serif;font-weight:700;line-height:1.15;color:#FFE7A3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nm{display:block;font-family:Cairo,Tahoma,sans-serif;font-weight:800;font-size:1.55em;line-height:1.25;color:#FFF3C4;text-shadow:0 .08em .15em #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em}
 .nm.wait{font-family:Cairo,sans-serif;font-size:.7em;color:#E9DDB8;font-weight:600}
 .lab{margin-top:.25em;display:flex;align-items:center;gap:.35em;font-family:Amiri,serif;font-weight:700;line-height:1.1}
 .lab img{height:.75em}
@@ -107,7 +107,7 @@ h1{margin:0;font-family:Amiri,serif;font-weight:700;line-height:1.15;animation:u
 }
 .m{width:var(--w);font-size:calc(var(--w)*.085)}
 .m.r1 .disc{width:var(--w)}
-.nm{font-size:1.45em}
+
 .lab{font-size:1.75em}
 .info{font-size:1em;line-height:1.35;text-align:center}
 </style>
@@ -181,9 +181,6 @@ h1{margin:0;font-family:Amiri,serif;font-weight:700;line-height:1.15;animation:u
     function val(v){if(!v)return null;if('stringValue' in v)return v.stringValue;if('integerValue' in v)return +v.integerValue;if('doubleValue' in v)return +v.doubleValue;if('booleanValue' in v)return v.booleanValue;return null;}
     function hash(str){var a=0x811c9dc5,b=0x01000193;for(var i=0;i<str.length;i++){var c=str.charCodeAt(i);a=Math.imul(a^c,16777619)>>>0;b=Math.imul(b^c,2246822519)>>>0;}return a.toString(36)+b.toString(36);}
     function shortFull(n){var w=String(n||'').trim().split(/\s+/);return w.length>1?w[0]+' '+w[w.length-1]:w[0]||'';}
-    /* تعديل أسماء بطلب المعلمة: الاسم كما يظهر ← الاسم المطلوب */
-    var FIX={'صبا وضحو':'صبا'};
-    function fixName(n){n=String(n||'').trim();return FIX[n]||n;}
     var rosterP=fetch(BASE+'/gm_roster/current'+KEY).then(function(r){return r.ok?r.json():null;}).then(function(j){
       var map={};try{var R=JSON.parse(j.fields.data.stringValue);(R.sections||[]).forEach(function(sec){(sec.students||[]).forEach(function(n){map['st_'+hash(sec.name+'|'+n)]=n;});});}catch(e){}return map;}).catch(function(){return {};});
     var topP=fetch(BASE+':runQuery'+KEY,{method:'POST',headers:{'Content-Type':'application/json'},
@@ -193,7 +190,7 @@ h1{margin:0;font-family:Amiri,serif;font-weight:700;line-height:1.15;animation:u
       var names=res[0]||{};
       return (res[1]||[]).filter(function(x){return x.document;}).map(function(x){
         var f=x.document.fields||{},pid=x.document.name.split('/').pop();
-        return {name:fixName(names[pid]?shortFull(names[pid]):val(f.display)),klass:val(f.klass),type:val(f.type),banned:val(f.banned),pts:val(f[mk])||0};
+        return {name:names[pid]?shortFull(names[pid]):val(f.display),klass:val(f.klass),type:val(f.type),banned:val(f.banned),pts:val(f[mk])||0};
       }).filter(function(o){return o.type==='student'&&!o.banned&&o.pts>0&&o.name;}).slice(0,3);
     });
   }
