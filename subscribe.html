@@ -204,5 +204,17 @@
   }).catch(function(){});
 })();
 </script>
+<audio id="gmMus" src="gm-champ-music.mp3" loop preload="auto"></audio>
+<script>
+/* موسيقى الأبطال من أول صفحة، وبتكمل على شاشة البطلات من نفس المكان */
+(function(){
+  var m=document.getElementById('gmMus'); if(!m) return; m.volume=.8;
+  function go(){ var p=m.play(); if(p&&p.catch)p.catch(function(){}); }
+  go(); /* إذا المتصفح منع الصوت التلقائي، بيشتغل أول ما البنت تلمس الشاشة أو تكتب */
+  ['pointerdown','touchstart','keydown'].forEach(function(ev){ document.addEventListener(ev,function f(){ if(m.paused)go(); },{passive:true}); });
+  function save(){ try{ sessionStorage.setItem('gm_mus_t', String(m.currentTime||0)); }catch(e){} }
+  window.addEventListener('pagehide',save); window.addEventListener('beforeunload',save);
+})();
+</script>
 </body>
 </html>
