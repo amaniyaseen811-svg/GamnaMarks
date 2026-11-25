@@ -213,12 +213,38 @@
   }
 
   /* ---------- ربط اللاعبة بالتقرير ---------- */
+  /* طالبة دخلت باسمها ورمزها على جهاز كان عليه نقاط زائرة ⬅️ النقاط بتنتقل لإلها، والزائرة بتختفي من الترتيب */
+  function moveGuestPoints(g, st) {
+    var gl = lsJ(logKey(g.pid), []);
+    var move = function (srv) {
+      var all = mergeLogs(gl, srv || []);
+      if (!all.length) return;
+      ls(logKey(st.pid), JSON.stringify(mergeLogs(lsJ(logKey(st.pid), []), all)));
+      ls(logKey(g.pid), '[]');
+      gl = [];
+      renderAll();
+      var out = { log: '[]', months: '{}', total: 0, moved: st.pid, updated: new Date().toISOString() };
+      out['m' + monthKey()] = 0; out['m' + prevMonthKey()] = 0;
+      if (window.fetch) patchDoc(g.pid, out).catch(function () {});
+      scheduleSync(800);
+      toast('⭐ نقاطك كزائرة (' + (g.nick || '') + ') انتقلت لاسمك');
+    };
+    if (!window.fetch) { move([]); return; }
+    getDoc(g.pid).then(function (doc) {
+      var srv = []; try { srv = JSON.parse(doc.log || '[]'); } catch (e) {}
+      move(srv);
+    }, function () { move([]); });
+  }
+
   /* بتنادى من gm-report.js لما الطالبة تدخل */
   function onPlayer(name, klass, isRoster) {
     var p = lsJ(LS_PROF, null);
     if (isRoster) {
       var np = { pid: 'st_' + hash(klass + '|' + name), type: 'student', name: name, klass: klass, nick: p && p.nick, chosen: true };
-      if (!p || p.pid !== np.pid) saveProfile(np);
+      if (!p || p.pid !== np.pid) {
+        if (p && p.type === 'guest' && p.pid) moveGuestPoints(p, np);
+        saveProfile(np);
+      }
       return;
     }
     /* لعبة بدون قوائم: إذا الجهاز لطالبة واسم اللاعبة مختلف، بنحسبها زائرة (جهاز مشترك) */
