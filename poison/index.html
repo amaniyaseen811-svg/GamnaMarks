@@ -138,6 +138,39 @@ function start() {
   }).catch(fail);
 }
 </script>
+<script>
+(function () {
+  // على الجوال: نحوّل لمس الشاشة لكبسات ماوس، لأن اللعبة بتفهم الماوس بس (اختيار العضو بجسم د. كريم)
+  var cv = document.getElementById('unity-canvas'); if (!cv || window.__gmTouchFix) return; window.__gmTouchFix = 1;
+  var id = null;
+  function fire(type, t, btns) {
+    cv.dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, view: window, clientX: t.clientX, clientY: t.clientY, screenX: t.screenX, screenY: t.screenY, button: 0, buttons: btns }));
+  }
+  function find(list) { for (var i = 0; i < list.length; i++) if (list[i].identifier === id) return list[i]; return null; }
+  function onStart(e) {
+    if (e.target !== cv) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    if (id !== null) return;
+    var t = e.changedTouches[0]; id = t.identifier;
+    fire('mousemove', t, 0); fire('mousedown', t, 1);
+  }
+  function onMove(e) {
+    if (id === null) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    var t = find(e.changedTouches); if (t) fire('mousemove', t, 1);
+  }
+  function onEnd(e) {
+    if (id === null) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    var t = find(e.changedTouches); if (!t) return;
+    fire('mouseup', t, 0); id = null;
+  }
+  window.addEventListener('touchstart', onStart, { capture: true, passive: false });
+  window.addEventListener('touchmove', onMove, { capture: true, passive: false });
+  window.addEventListener('touchend', onEnd, { capture: true, passive: false });
+  window.addEventListener('touchcancel', onEnd, { capture: true, passive: false });
+})();
+</script>
 <script src="../gm-report.js" data-game="لغز السمّ الصامت"></script>
 <script src="poison-end.js"></script>
 </body>
