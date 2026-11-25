@@ -901,7 +901,7 @@ function wsQ(){const[q,o,a]=W.list[W.i];$('#wsBar').style.width=(W.i/W.list.leng
   $('#wsq').innerHTML=`<div class="muted" style="font-size:14px">سؤال ${W.i+1} من ${W.list.length}${S.teams?` · <span class="turn">الدور: ${S.teams[S.turn].n}</span>`:''}</div><div class="qq" style="font-weight:800;margin:6px 0 12px">${q}</div><div class="opts">${o.map((x,i)=>`<button class="opt" data-i="${i}">${x}</button>`).join('')}</div><div id="wsN"></div>`;
   $('#wsq').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;$('#wsq').querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(+x.dataset.i===a)x.classList.add('ok');});if(i===a){sfx.ok();add(W.pts);W.ok++;}else{sfx.no();b.classList.add('no');}if(window.GMReport)GMReport.add('ورقة العمل '+W.n,W.ok,W.list.length);
     $('#wsN').innerHTML=`<button class="btn next">${W.i<W.list.length-1?'السؤال التالي':(W.n===1?'ورقة العمل الثانية':'تقرير المحقق')}</button>`;
-    $('#wsN').firstChild.onclick=()=>{if(S.teams)S.turn=1-S.turn;W.i++;if(W.i<W.list.length)wsQ();else if(W.n===1)startWs(2);else results();};});}
+    $('#wsN').firstChild.onclick=()=>{if(S.teams)S.turn=1-S.turn;W.i++;if(W.i<W.list.length)wsQ();else if(W.n===1)startWs(2);else{results();if(window.GMHardWS)GMHardWS.unlock();}};});}
 $('#toWs1').onclick=()=>startWs(1);
 
 /* ---------- RESULTS ---------- */
@@ -1015,5 +1015,6 @@ $('#backBtn').onclick=()=>{sfx.click();if(RZP)return;const prev=HIST.pop();
 })();
 </script>
 <script src="gm-report.js"></script>
+<script src="gm-hardws.js" data-bank="microscope" data-manual="1"></script>
 </body>
 </html>
