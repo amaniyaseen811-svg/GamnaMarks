@@ -32,8 +32,27 @@
     <div class="t">العبي، حلّي أوراق العمل، واجمعي نقاط<br>وكل ما تجمعي أكثر بتربحي أكثر! ✨</div>
   </div>
 
-  <video id="promoVid" src="winner-promo.mp4" autoplay muted playsinline loop controls preload="auto"
-         style="display:block;width:100%;max-width:460px;margin:12px auto;border-radius:22px;border:2px solid rgba(252,211,77,.6);box-shadow:0 0 30px rgba(252,211,77,.3);background:#0d0820"></video>
+  <div style="position:relative;max-width:460px;margin:12px auto">
+  <video id="promoVid" src="winner-promo.mp4" playsinline loop controls preload="auto"
+         style="display:block;width:100%;border-radius:22px;border:2px solid rgba(252,211,77,.6);box-shadow:0 0 30px rgba(252,211,77,.3);background:#0d0820"></video>
+  <button id="soundOn" style="display:none;position:absolute;top:12px;left:50%;transform:translateX(-50%);padding:10px 18px;border:2px solid #fcd34d;border-radius:30px;background:rgba(13,8,32,.85);color:#fcd34d;font-family:inherit;font-size:17px;font-weight:800;cursor:pointer;z-index:5;animation:cup 1.6s ease-in-out infinite">🔊 اضغطي لتشغيل الموسيقى</button>
+  </div>
+<script>
+  /* الفيديو يشتغل مع الموسيقى. إذا المتصفح منع الصوت التلقائي، بيشتغل بدون صوت
+     وبيطلع زر «تشغيل الموسيقى»، وأول لمسة بالصفحة بتشغّل الصوت */
+  (function(){
+    var v=document.getElementById('promoVid'), b=document.getElementById('soundOn');
+    v.volume=1;
+    function withSound(){ v.muted=false; b.style.display='none'; var p=v.play(); if(p&&p.catch)p.catch(function(){}); }
+    function fallback(){ v.muted=true; var p=v.play(); if(p&&p.catch)p.catch(function(){}); b.style.display='block'; }
+    try{ v.muted=false; var p=v.play(); if(p&&p.then){ p.then(function(){ if(v.muted) b.style.display='block'; }).catch(fallback); } }catch(e){ fallback(); }
+    b.onclick=function(e){ e.stopPropagation(); withSound(); };
+    function first(){ if(v.muted) withSound(); document.removeEventListener('pointerdown',first,true); document.removeEventListener('touchstart',first,true); }
+    document.addEventListener('pointerdown',first,true);
+    document.addEventListener('touchstart',first,true);
+    v.addEventListener('volumechange',function(){ if(!v.muted) b.style.display='none'; });
+  })();
+</script>
   <div data-gmp-board></div>
 
   <div id="needChoice" style="display:none;position:fixed;left:12px;right:12px;bottom:78px;max-width:460px;margin:0 auto;padding:10px 12px;border-radius:16px;background:#7f1d1d;border:2px solid #fca5a5;color:#fff;text-align:center;font-weight:800;font-size:15px;z-index:100">⚠️ اختاري طريقة مشاركتك أول (طالبة / Google / زائرة) وبعدين ادخلي التطبيق</div>
