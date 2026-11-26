@@ -2577,7 +2577,7 @@ window.addEventListener('load',function(){
         o.disabled=true;var l=o.parentElement;
         if(parseInt(o.value)===ans[i]){l.style.background='rgba(76,175,80,.25)';l.style.borderColor='#4caf50';l.style.color='#a5d6a7';}
         else if(o.checked){l.style.background='rgba(244,67,54,.25)';l.style.borderColor='#f44336';l.style.color='#ef9a9a';}});
-      if(val===ans[i]){score++;fb.textContent='✅ '+exp[i];fb.className='wf ok';}else{fb.textContent='❌ '+exp[i];fb.className='wf ng';}
+      if(val===ans[i]){score++;fb.textContent='✅ '+exp[i];fb.className='wf ok';}else{fb.textContent='❌ '+exp[i];fb.className='wf ng';try{(function(fb,pfx,i,ai,ex){var wt=fb.parentElement.querySelector('.wt');if(!window.GMAltQ||!wt||!GMAltQ.find(wt.textContent))return;var cl=document.querySelector("input[name='"+pfx+i+"'][value='"+ai+"']").parentElement,sv=cl.getAttribute('style')||'';cl.style.background='';cl.style.borderColor='';cl.style.color='';fb.textContent='❌ إجابة خاطئة — جاوبي السؤال البديل تحت 👇';GMAltQ.mount(fb,wt.textContent,n,function(){cl.setAttribute('style',sv);fb.textContent='❌ '+ex;});})(fb,pfx,i,ans[i],exp[i]);}catch(e){}}
     }
     G.ws[n]=score;if(window.GMReport)GMReport.add('ورقة العمل '+n,score,10);
     var q=function(id){return document.querySelector('#'+pid+' [id="'+id+'"]');};
@@ -2592,6 +2592,7 @@ window.addEventListener('load',function(){
   window.rtWS=function(n){
     var pid=n===1?'p12':'p13';
     document.querySelectorAll('#'+pid+' input').forEach(function(o){o.disabled=false;o.checked=false;});
+    document.querySelectorAll('#'+pid+' .gmaq').forEach(function(x){x.remove();});if(window.GMAltQ)GMAltQ.reset(n);
     buildWS(n);
   };
 
@@ -2722,4 +2723,6 @@ window.addEventListener('load',function(){
 </script>
 
 <script src="gm-report.js"></script>
+<script src="altq/island.js"></script>
+<script src="gm-altq.js"></script>
 <script src="gm-hardws.js" data-bank="plantcell"></script>
