@@ -11,6 +11,7 @@
      mgmt.js: mgmtfunc · mgmtschools · directing · fashion          hum.js: canaan · forgive · ip
      lang-math.js: diminutive · grammar · ifclauses · letters · numbers · multiply · pythagoras
    data-soft="1" = اللعبة ما بتبعت علامة الورقة الثانية، فبيطلع زر 🔥 بعد الكأس
+   hardws/basic.js = أوراق أساسية للألعاب اللي كان ناقصها (المصنع 47: الأولى والثانية؛ القصر والبرج والقفل: الثانية)
    data-after="3" = اللعبة فيها 3 أوراق أصلاً، فالجديدات بيصيروا الرابعة والخامسة
    data-manual="1" = اللعبة بتنادي GMHardWS.unlock() بنفسها لما تخلص الورقة الثانية
    للتجربة: افتحي اللعبة وفي آخر الرابط  ?hwtest=1  */
@@ -296,13 +297,32 @@
     BANK = BANKS[BANK_KEY] || ext[BANK_KEY] || null;
     return BANK;
   }
-  var N1 = AFTER + 1, N2 = AFTER + 2;
-  var SHEETS = [
-    { key: 's3', num: N1, title: '🔥 ورقة العمل ' + ORD[N1] + ' — صعبة', label: 'ورقة العمل ' + ORD[N1] + ' (إضافية — صعبة)',
-      sub: 'أسئلة تطبيق وتحليل: مواقف وتجارب من الدرس. فكّري منيح قبل ما تختاري.' },
-    { key: 's4', num: N2, title: '💎 ورقة العمل ' + ORD[N2] + ' — الأصعب (تحدّي العباقرة)', label: 'ورقة العمل ' + ORD[N2] + ' (إضافية — الأصعب)',
-      sub: 'هون التحدي الحقيقي: استنتاج وحساب وربط أكثر من معلومة. بعد التسليم بتشوفي شرح كل سؤال.' }
-  ];
+  /* الأوراق اللي بتطلع: الأساسية الناقصة (من hardws/basic.js) ثم الصعبة والأصعب */
+  var SHEETS = [];
+  function sheets() {
+    if (SHEETS.length) return SHEETS;
+    var basic = (window.GMHardWSBasic || {})[BANK_KEY] || {};
+    var n = AFTER;
+    ['s1', 's2'].forEach(function (k, i) {
+      if (i + 1 <= AFTER || !basic[k]) return;
+      n++;
+      SHEETS.push({ key: k, qs: basic[k], num: n, kind: 'basic',
+        title: (i === 0 ? '📝' : '✏️') + ' ورقة العمل ' + ORD[n] + (i === 0 ? ' — أساسية' : ' — متوسطة'),
+        label: 'ورقة العمل ' + ORD[n],
+        tag: i === 0 ? 'أساسية' : 'متوسطة',
+        sub: i === 0 ? 'أسئلة أساسية على الدرس. اقري كل سؤال منيح قبل ما تختاري.' : 'أسئلة متوسطة: فهم وتطبيق على الدرس.' });
+    });
+    [['s3', '🔥', 'صعبة', 'صعبة: تطبيق وتحليل', 'أسئلة تطبيق وتحليل: مواقف وتجارب من الدرس. فكّري منيح قبل ما تختاري.'],
+     ['s4', '💎', 'الأصعب (تحدّي العباقرة)', 'الأصعب: تحدّي العباقرة', 'هون التحدي الحقيقي: استنتاج وحساب وربط أكثر من معلومة. بعد التسليم بتشوفي شرح كل سؤال.']].forEach(function (x) {
+      n++;
+      SHEETS.push({ key: x[0], num: n, kind: 'hard', title: x[1] + ' ورقة العمل ' + ORD[n] + ' — ' + x[2],
+        label: 'ورقة العمل ' + ORD[n] + ' (إضافية — ' + (x[0] === 's3' ? 'صعبة' : 'الأصعب') + ')', tag: x[3], sub: x[4] });
+    });
+    return SHEETS;
+  }
+  function sheetQs(sh) { return sh.qs || getBank()[sh.key]; }
+  function nextIdx() { var L = sheets(); for (var i = 0; i < L.length; i++) if (S.sc[L[i].key] == null) return i; return -1; }
+  function hasBasic() { return sheets().some(function (x) { return x.kind === 'basic'; }); }
 
   /* ---------------- أدوات ---------------- */
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
@@ -356,17 +376,17 @@
     '#hwRoot .hw-btn{display:inline-block;margin:6px;padding:13px 24px;border:0;border-radius:40px;font-size:18px;font-weight:800;cursor:pointer;font-family:inherit;' +
     'color:#3a1660;background:linear-gradient(180deg,#ffe38a,#f5b800);box-shadow:0 6px 18px rgba(245,184,0,.35)}' +
     '#hwRoot .hw-ghost{background:rgba(255,255,255,.12);color:#fff;box-shadow:none;border:1px solid rgba(255,255,255,.3);font-size:16px}' +
-    '#hwRoot .hw-card{max-width:520px;margin:12vh auto 0;text-align:center;background:rgba(255,255,255,.07);border:2px solid rgba(255,215,106,.4);border-radius:22px;padding:24px 18px}' +
+    '#hwRoot .hw-card{max-width:520px;margin:6vh auto 0;text-align:center;background:rgba(255,255,255,.07);border:2px solid rgba(255,215,106,.4);border-radius:22px;padding:24px 18px}' +
     '#hwRoot .hw-big{font-size:60px;line-height:1.1}' +
-    '#hwRoot .hw-lvls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:14px 0}' +
-    '#hwRoot .hw-lvl{flex:1 1 200px;max-width:240px;background:rgba(0,0,0,.25);border-radius:16px;padding:12px;font-size:15px;line-height:1.6}' +
-    '#hwRoot .hw-lvl b{display:block;font-size:26px;color:#ffd76a}' +
+    '#hwRoot .hw-lvls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0}' +
+    '#hwRoot .hw-lvl{flex:1 1 40%;max-width:48%;background:rgba(0,0,0,.25);border-radius:16px;padding:10px 8px;font-size:14px;line-height:1.5}' +
+    '#hwRoot .hw-lvl b{display:block;font-size:22px;color:#ffd76a}' +
     '#hwFab{position:fixed;left:14px;bottom:84px;z-index:2147483645;border:0;border-radius:40px;padding:12px 18px;font-size:16px;font-weight:800;cursor:pointer;' +
     'font-family:Tahoma,Arial,sans-serif;color:#3a1660;background:linear-gradient(180deg,#ffe38a,#f5b800);box-shadow:0 6px 20px rgba(245,184,0,.5);animation:hwPulse 1.6s infinite;display:none}' +
     '@keyframes hwPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}' +
     '@media print{#hwRoot,#hwFab{display:none!important}}';
 
-  var root, fab, S = { unlocked: false, cur: null, qs: null, s3: null, s4: null };
+  var root, fab, S = { unlocked: false, cur: null, qs: null, sc: {} };
 
   function stopBubble(el) {
     ['click', 'pointerdown', 'pointerup', 'touchstart', 'touchend', 'mousedown', 'mouseup', 'keydown', 'keyup', 'keypress', 'wheel'].forEach(function (ev) {
@@ -382,7 +402,7 @@
     document.body.appendChild(root);
     stopBubble(root);
     fab = document.createElement('button'); fab.id = 'hwFab'; fab.type = 'button';
-    fab.textContent = '🔥 الأوراق الأصعب';
+    fab.textContent = hasBasic() ? '📝 أوراق العمل' : '🔥 الأوراق الأصعب';
     document.body.appendChild(fab);
     stopBubble(fab);
     fab.onclick = function () { openNext(); };
@@ -397,37 +417,38 @@
   }
   function hideRoot() {
     root.style.display = 'none';
-    fab.style.display = (S.s4 === null) ? 'block' : 'none';
+    fab.style.display = nextIdx() >= 0 ? 'block' : 'none';
   }
 
-  /* شاشة الدعوة للتحدي */
+  /* شاشة الدعوة */
   function invite() {
     build();
-    var done3 = S.s3 !== null;
+    var L = sheets(), ni = nextIdx(), started = ni > 0;
+    var basic = hasBasic();
     showRoot(
       '<div class="hw-card">' +
-      '<div class="hw-big">🔥</div>' +
-      '<h2>' + (done3 ? 'باقي آخر تحدّي!' : 'فتحتِ تحدّي الأوراق الأصعب!') + '</h2>' +
-      '<p class="hw-sub">' + (S.fromWs ? 'أحسنتِ في أوراق العمل. ' : 'أحسنتِ! ') + 'هلّق في ورقتين أصعب وأصعب في درس «' + esc(getBank().name) + '»، وكل وحدة بتعطيكِ نقاط إضافية بمسابقة GamnaMarks.</p>' +
-      '<div class="hw-lvls">' +
-      '<div class="hw-lvl"><b>' + (S.s3 === null ? NUM[N1] : S.s3 + '/10') + '</b>ورقة العمل ' + ORD[N1] + '<br>صعبة: تطبيق وتحليل</div>' +
-      '<div class="hw-lvl"><b>' + (S.s4 === null ? NUM[N2] : S.s4 + '/10') + '</b>ورقة العمل ' + ORD[N2] + '<br>الأصعب: تحدّي العباقرة</div>' +
-      '</div>' +
-      '<button class="hw-btn" id="hwGo">' + (done3 ? '💎 ابدئي ورقة العمل ' + ORD[N2] : '🔥 ابدئي ورقة العمل ' + ORD[N1]) + '</button><br>' +
+      '<div class="hw-big">' + (basic ? '📝' : '🔥') + '</div>' +
+      '<h2>' + (started ? 'كمّلي الأوراق!' : basic ? 'وقت أوراق العمل!' : 'فتحتِ تحدّي الأوراق الأصعب!') + '</h2>' +
+      '<p class="hw-sub">' + (S.fromWs ? 'أحسنتِ في أوراق العمل. ' : 'أحسنتِ! ') + (basic ? 'هلّق في أوراق عمل على درس «' + esc(getBank().name) + '»، كل ورقة أصعب من اللي قبلها' : 'هلّق في ورقتين أصعب وأصعب في درس «' + esc(getBank().name) + '»') + '، وكل وحدة بتعطيكِ نقاط بمسابقة GamnaMarks.</p>' +
+      '<div class="hw-lvls">' + L.map(function (x) {
+        var v = S.sc[x.key];
+        return '<div class="hw-lvl"><b>' + (v == null ? NUM[x.num] : v + '/10') + '</b>ورقة العمل ' + ORD[x.num] + '<br>' + x.tag + '</div>';
+      }).join('') + '</div>' +
+      '<button class="hw-btn" id="hwGo">' + (L[ni].kind === 'basic' ? '📝' : ni === L.length - 1 ? '💎' : '🔥') + ' ابدئي ورقة العمل ' + ORD[L[ni].num] + '</button><br>' +
       '<button class="hw-btn hw-ghost" id="hwLater">⏳ بعدين</button>' +
       '</div>');
-    root.querySelector('#hwGo').onclick = function () { start(done3 ? 1 : 0); };
+    root.querySelector('#hwGo').onclick = function () { start(ni); };
     root.querySelector('#hwLater').onclick = hideRoot;
   }
 
   function openNext() {
-    if (S.s3 === null || S.s4 === null) invite(); else summary();
+    if (nextIdx() >= 0) invite(); else summary();
   }
 
   function start(i) {
-    var sh = SHEETS[i];
+    var sh = sheets()[i];
     S.cur = i;
-    S.qs = pick(getBank()[sh.key], PER);
+    S.qs = pick(sheetQs(sh), PER);
     showRoot(
       '<h2>' + sh.title + '</h2><p class="hw-sub">' + esc(sh.sub) + '</p>' +
       '<div class="hw-bar"><i id="hwBar"></i></div><div class="hw-cnt" id="hwCnt"></div>' +
@@ -483,34 +504,35 @@
       fb.style.color = ok ? '#86efac' : '#fca5a5';
       if (q.why) qd.querySelector('.hw-why').textContent = '💡 ' + q.why;
     });
-    var sh = SHEETS[S.cur];
-    S[sh.key] = score;
+    var L = sheets(), sh = L[S.cur];
+    S.sc[sh.key] = score;
     if (!TEST) report(function (R) { R.correct(score); R.wrong(S.qs.length - score); R.add(sh.label, score, S.qs.length); });
     sound(score >= 6);
     root.querySelector('#hwNote').textContent = '';
     root.querySelector('#hwScore').textContent = 'علامتك: ' + score + ' من ' + S.qs.length + ' ' + (score >= 9 ? '🌟 عبقرية!' : score >= 7 ? '👏 ممتاز' : score >= 5 ? '💪 حلو' : '📖 راجعي الشرح وجرّبي كمان مرة');
     root.querySelector('#hwSubmit').style.display = 'none';
-    var nx = root.querySelector('#hwNext');
-    nx.textContent = S.cur === 0 ? '💎 ورقة العمل ' + ORD[N2] + ' (الأصعب)' : '🏆 نتيجة التحدي';
-    nx.onclick = function () { if (S.cur === 0) start(1); else summary(); };
+    var nx = root.querySelector('#hwNext'), ni = S.cur + 1;
+    nx.textContent = ni < L.length ? (ni === L.length - 1 ? '💎 ' : L[ni].kind === 'hard' ? '🔥 ' : '✏️ ') + 'ورقة العمل ' + ORD[L[ni].num] : '🏆 النتيجة';
+    nx.onclick = function () { if (ni < L.length) start(ni); else summary(); };
     nx.style.display = '';
     root.querySelector('#hwScore').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   function summary() {
-    var t = (S.s3 || 0) + (S.s4 || 0);
-    var medal = t >= 18 ? '🏆' : t >= 14 ? '🥇' : t >= 10 ? '🥈' : '🥉';
-    var msg = t >= 18 ? 'عبقرية الدرس! جاوبتِ على أصعب الأسئلة بتميّز.' : t >= 14 ? 'أداء قوي جداً في الأسئلة الصعبة.' : t >= 10 ? 'شغل حلو! راجعي الشرح للأسئلة اللي غلطتِ فيها.' : 'التحدي صعب، وهاد طبيعي. اقري الشرح وجرّبي مرة تانية بأسئلة جديدة.';
+    var L = sheets(), t = 0;
+    L.forEach(function (x) { t += S.sc[x.key] || 0; });
+    var pct = t / (L.length * 10);
+    var medal = pct >= 0.9 ? '🏆' : pct >= 0.7 ? '🥇' : pct >= 0.5 ? '🥈' : '🥉';
+    var msg = pct >= 0.9 ? 'عبقرية الدرس! جاوبتِ بتميّز.' : pct >= 0.7 ? 'أداء قوي جداً.' : pct >= 0.5 ? 'شغل حلو! راجعي الشرح للأسئلة اللي غلطتِ فيها.' : 'الأسئلة صعبة، وهاد طبيعي. اقري الشرح وجرّبي مرة تانية بأسئلة جديدة.';
     showRoot(
       '<div class="hw-card"><div class="hw-big">' + medal + '</div>' +
-      '<h2>نتيجة تحدّي الأوراق الأصعب</h2>' +
-      '<div class="hw-lvls">' +
-      '<div class="hw-lvl"><b>' + (S.s3 || 0) + '/10</b>ورقة العمل ' + ORD[N1] + ' (صعبة)</div>' +
-      '<div class="hw-lvl"><b>' + (S.s4 || 0) + '/10</b>ورقة العمل ' + ORD[N2] + ' (الأصعب)</div>' +
-      '</div><p class="hw-sub">' + msg + '<br>العلامات انضافت لتقريرك عند المعلمة.</p>' +
-      '<button class="hw-btn" id="hwRetry">🔁 أعيدي التحدي بأسئلة جديدة</button><br>' +
+      '<h2>نتيجة أوراق العمل</h2>' +
+      '<div class="hw-lvls">' + L.map(function (x) {
+        return '<div class="hw-lvl"><b>' + (S.sc[x.key] || 0) + '/10</b>ورقة العمل ' + ORD[x.num] + '<br>' + x.tag + '</div>';
+      }).join('') + '</div><p class="hw-sub">' + msg + '<br>العلامات انضافت لتقريرك عند المعلمة.</p>' +
+      '<button class="hw-btn" id="hwRetry">🔁 أعيدي الأوراق بأسئلة جديدة</button><br>' +
       '<button class="hw-btn hw-ghost" id="hwBack">↩ رجوع لنتيجة اللعبة</button></div>');
-    root.querySelector('#hwRetry').onclick = function () { start(0); };
+    root.querySelector('#hwRetry').onclick = function () { S.sc = {}; start(0); };
     root.querySelector('#hwBack').onclick = function () { root.style.display = 'none'; fab.style.display = 'none'; };
     sound(true);
   }
@@ -525,7 +547,7 @@
   function softUnlock() {
     if (S.unlocked || S.soft || !getBank()) return;
     S.soft = true;
-    setTimeout(function () { build(); if (root.style.display !== 'block' && S.s4 === null) fab.style.display = 'block'; }, 4000);
+    setTimeout(function () { build(); if (root.style.display !== 'block' && nextIdx() >= 0) fab.style.display = 'block'; }, 4000);
   }
 
   var LAST_RE = AFTER === 1 ? /ورقة\s*العمل\s*(1|١|الأولى)(?!\s*\()/ : AFTER === 3 ? /ورقة\s*العمل\s*(3|٣|الثالثة)(?!\s*\()/ : /ورقة\s*العمل\s*(2|٢|الثانية|المتقدمة)/;
