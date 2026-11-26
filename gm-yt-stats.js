@@ -1,6 +1,6 @@
 /* أرقام قناة GamnaMarks على يوتيوب (المشتركين + المشاهدات) — بتتحدّث لحالها
    ضعي مفتاح YouTube Data API v3 بين علامتي التنصيص في السطر التالي: */
-var GM_YT_KEY = "";
+var GM_YT_KEY = "AIzaSyDrShjOuJfLwdupvDl4YSHdYDhVAklEeW0";
 var GM_YT_HANDLE = "GamnaMarks";
 
 (function(){
