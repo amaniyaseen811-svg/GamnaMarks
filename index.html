@@ -82,9 +82,16 @@ body{
 }
 .stat span{font-weight:900;color:var(--gold)}
 /* أرقام مضيئة */
-.stats-bar .stat{border:1.5px solid rgba(252,211,77,.55);background:rgba(252,211,77,.08);
-  box-shadow:0 0 10px rgba(252,211,77,.35),inset 0 0 8px rgba(252,211,77,.15);animation:statGlow 2.4s ease-in-out infinite}
+.stats-bar .stat{position:relative;overflow:hidden;isolation:isolate;border:none;background:transparent;
+  box-shadow:0 0 10px rgba(252,211,77,.35);animation:statGlow 2.4s ease-in-out infinite}
+/* خط سحري بيدور حوالين كل رقم */
+.stats-bar .stat::before{content:'';position:absolute;left:50%;top:50%;width:420px;height:420px;margin:-210px 0 0 -210px;z-index:-2;
+  background:conic-gradient(from 0deg,transparent 0 45%,#fcd34d 62%,#f472b6 78%,#a78bfa 90%,transparent 100%);
+  animation:statSpin 3s linear infinite}
+.stats-bar .stat::after{content:'';position:absolute;inset:3px;border-radius:30px;z-index:-1;background:#1a1036}
+.stats-bar .stat:nth-child(2n)::before{animation-delay:-1.5s}
 .stats-bar .stat:nth-child(2n){animation-delay:1.2s}
+@keyframes statSpin{to{transform:rotate(360deg)}}
 .stats-bar .stat span{text-shadow:0 0 8px rgba(252,211,77,.9)}
 @keyframes statGlow{0%,100%{box-shadow:0 0 8px rgba(252,211,77,.3),inset 0 0 6px rgba(252,211,77,.12)}
   50%{box-shadow:0 0 22px rgba(252,211,77,.75),inset 0 0 12px rgba(252,211,77,.3)}}
