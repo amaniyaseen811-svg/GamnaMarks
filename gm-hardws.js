@@ -20,7 +20,7 @@
   var BANK_KEY = (sc && sc.getAttribute('data-bank')) || 'organelles';
   var MANUAL = !!(sc && sc.getAttribute('data-manual') === '1');
   var SOFT = !!(sc && sc.getAttribute('data-soft') === '1');
-  var AFTER = parseInt((sc && sc.getAttribute('data-after')) || '2', 10) || 2;
+  var AFTER = parseInt((sc && sc.getAttribute('data-after')) || '2', 10); if (isNaN(AFTER)) AFTER = 2;
   var ORD = ['', 'الأولى', 'الثانية', 'الثالثة', 'الرابعة', 'الخامسة', 'السادسة'];
   var NUM = ['', '١', '٢', '٣', '٤', '٥', '٦'];
   var TEST = /[?&]hwtest=1/.test(location.search);
@@ -528,7 +528,7 @@
     setTimeout(function () { build(); if (root.style.display !== 'block' && S.s4 === null) fab.style.display = 'block'; }, 4000);
   }
 
-  var LAST_RE = AFTER === 3 ? /ورقة\s*العمل\s*(3|٣|الثالثة)(?!\s*\()/ : /ورقة\s*العمل\s*(2|٢|الثانية|المتقدمة)/;
+  var LAST_RE = AFTER === 1 ? /ورقة\s*العمل\s*(1|١|الأولى)(?!\s*\()/ : AFTER === 3 ? /ورقة\s*العمل\s*(3|٣|الثالثة)(?!\s*\()/ : /ورقة\s*العمل\s*(2|٢|الثانية|المتقدمة)/;
   function hook() {
     var R = window.GMReport;
     if (!R || R.__hw) return !!(R && R.__hw);
