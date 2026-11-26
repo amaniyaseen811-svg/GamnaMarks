@@ -60,7 +60,7 @@ GMHardWSBanks.grammar = { name: 'قواعد اللغة العربية', s3: [
 ]};
 
 /* ===== أكاديمية إلمورا — If Clauses ===== */
-GMHardWSBanks.ifclauses = { name: 'If Clauses (الجمل الشرطية)', s3: [
+GMHardWSBanks.ifclauses = { name: 'If Clauses (الجمل الشرطية)', ltr: true, s3: [
 ['If you heat ice, it ______. (Type 0)', 'melts', 'will melted', 'would melt', 'melted', 'Type 0: present + present for facts.'],
 ['If it rains tomorrow, we ______ at home. (Type 1)', 'will stay', 'stayed', 'would stay', 'stay', 'Type 1: present + will.'],
 ['If I ______ a bird, I would fly. (Type 2)', 'were', 'am', 'will be', 'be', 'Type 2 uses «were» for all subjects.'],

@@ -432,9 +432,10 @@
       '<h2>' + sh.title + '</h2><p class="hw-sub">' + esc(sh.sub) + '</p>' +
       '<div class="hw-bar"><i id="hwBar"></i></div><div class="hw-cnt" id="hwCnt"></div>' +
       '<div id="hwList">' + S.qs.map(function (q, k) {
-        return '<div class="hw-q" data-i="' + k + '"><div class="hw-qt"><span>' + (k + 1) + '</span><div>' + esc(q.q) + '</div></div>' +
-          q.opts.map(function (o, j) { return '<button type="button" class="hw-op" data-j="' + j + '">' + esc(o) + '</button>'; }).join('') +
-          '<div class="hw-fb"></div><div class="hw-why"></div></div>';
+        var d = getBank().ltr ? ' dir="ltr" style="text-align:left;flex:1"' : '';
+        return '<div class="hw-q" data-i="' + k + '"><div class="hw-qt"><span>' + (k + 1) + '</span><div' + d + '>' + esc(q.q) + '</div></div>' +
+          q.opts.map(function (o, j) { return '<button type="button" class="hw-op" data-j="' + j + '"' + d + '>' + esc(o) + '</button>'; }).join('') +
+          '<div class="hw-fb"' + d + '></div><div class="hw-why"' + d + '></div></div>';
       }).join('') + '</div>' +
       '<div class="hw-foot"><div class="hw-note" id="hwNote"></div><div class="hw-score" id="hwScore"></div>' +
       '<button class="hw-btn" id="hwSubmit">✅ تسليم الورقة</button>' +
@@ -478,7 +479,7 @@
         else if (j === q.chosen) b.classList.add('hw-bad');
       });
       var fb = qd.querySelector('.hw-fb');
-      fb.textContent = ok ? '✔ إجابة صحيحة' : '✘ الإجابة الصحيحة: ' + q.right;
+      fb.textContent = getBank().ltr ? (ok ? '✔ Correct' : '✘ Correct answer: ' + q.right) : (ok ? '✔ إجابة صحيحة' : '✘ الإجابة الصحيحة: ' + q.right);
       fb.style.color = ok ? '#86efac' : '#fca5a5';
       if (q.why) qd.querySelector('.hw-why').textContent = '💡 ' + q.why;
     });
