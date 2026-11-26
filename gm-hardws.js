@@ -5,7 +5,13 @@
    - كل ورقة 10 أسئلة بتنختار عشوائياً من بنك أكبر، فالأسئلة بتتغير كل مرة
    - العلامات بتنضاف لتقرير المعلمة (gm-report) وبتعطي نقاط إضافية بمسابقة النقاط
    سطر الإضافة بأي لعبة:  <script src="gm-hardws.js" data-bank="nutrients" defer></script>
-   البنوك: nutrients · digestive · microscope · organelles · plantcell · animalcell · nucleus
+   البنوك داخل هالملف: nutrients · digestive · microscope · organelles · plantcell · animalcell · nucleus
+   وباقي البنوك بملفات مجلد hardws/ (بينحط سطرها قبل هالسطر):
+     sci-a.js: protista · malerepro · buoyancy · elecload · ph      sci-b.js: mole · mendel1 · mendel2
+     mgmt.js: mgmtfunc · mgmtschools · directing · fashion          hum.js: canaan · forgive · ip
+     lang-math.js: diminutive · grammar · ifclauses · letters · numbers · multiply · pythagoras
+   data-soft="1" = اللعبة ما بتبعت علامة الورقة الثانية، فبيطلع زر 🔥 بعد الكأس
+   data-after="3" = اللعبة فيها 3 أوراق أصلاً، فالجديدات بيصيروا الرابعة والخامسة
    data-manual="1" = اللعبة بتنادي GMHardWS.unlock() بنفسها لما تخلص الورقة الثانية
    للتجربة: افتحي اللعبة وفي آخر الرابط  ?hwtest=1  */
 (function () {
@@ -13,6 +19,10 @@
   var sc = document.currentScript;
   var BANK_KEY = (sc && sc.getAttribute('data-bank')) || 'organelles';
   var MANUAL = !!(sc && sc.getAttribute('data-manual') === '1');
+  var SOFT = !!(sc && sc.getAttribute('data-soft') === '1');
+  var AFTER = parseInt((sc && sc.getAttribute('data-after')) || '2', 10) || 2;
+  var ORD = ['', 'الأولى', 'الثانية', 'الثالثة', 'الرابعة', 'الخامسة', 'السادسة'];
+  var NUM = ['', '١', '٢', '٣', '٤', '٥', '٦'];
   var TEST = /[?&]hwtest=1/.test(location.search);
   var PER = 10;
 
@@ -278,11 +288,19 @@
     }
   };
 
-  var BANK = BANKS[BANK_KEY] || BANKS.organelles;
+  /* بنوك الألعاب الثانية بتيجي من ملفات مجلد hardws/ (window.GMHardWSBanks) */
+  var BANK = null;
+  function getBank() {
+    if (BANK) return BANK;
+    var ext = window.GMHardWSBanks || {};
+    BANK = BANKS[BANK_KEY] || ext[BANK_KEY] || null;
+    return BANK;
+  }
+  var N1 = AFTER + 1, N2 = AFTER + 2;
   var SHEETS = [
-    { key: 's3', num: 3, title: '🔥 ورقة العمل الثالثة — صعبة', label: 'ورقة العمل الثالثة (إضافية — صعبة)',
+    { key: 's3', num: N1, title: '🔥 ورقة العمل ' + ORD[N1] + ' — صعبة', label: 'ورقة العمل ' + ORD[N1] + ' (إضافية — صعبة)',
       sub: 'أسئلة تطبيق وتحليل: مواقف وتجارب من الدرس. فكّري منيح قبل ما تختاري.' },
-    { key: 's4', num: 4, title: '💎 ورقة العمل الرابعة — الأصعب (تحدّي العباقرة)', label: 'ورقة العمل الرابعة (إضافية — الأصعب)',
+    { key: 's4', num: N2, title: '💎 ورقة العمل ' + ORD[N2] + ' — الأصعب (تحدّي العباقرة)', label: 'ورقة العمل ' + ORD[N2] + ' (إضافية — الأصعب)',
       sub: 'هون التحدي الحقيقي: استنتاج وحساب وربط أكثر من معلومة. بعد التسليم بتشوفي شرح كل سؤال.' }
   ];
 
@@ -390,12 +408,12 @@
       '<div class="hw-card">' +
       '<div class="hw-big">🔥</div>' +
       '<h2>' + (done3 ? 'باقي آخر تحدّي!' : 'فتحتِ تحدّي الأوراق الأصعب!') + '</h2>' +
-      '<p class="hw-sub">أحسنتِ في ورقتي العمل. هلّق في ورقتين أصعب وأصعب في درس «' + esc(BANK.name) + '»، وكل وحدة بتعطيكِ نقاط إضافية بمسابقة GamnaMarks.</p>' +
+      '<p class="hw-sub">' + (S.fromWs ? 'أحسنتِ في أوراق العمل. ' : 'أحسنتِ! ') + 'هلّق في ورقتين أصعب وأصعب في درس «' + esc(getBank().name) + '»، وكل وحدة بتعطيكِ نقاط إضافية بمسابقة GamnaMarks.</p>' +
       '<div class="hw-lvls">' +
-      '<div class="hw-lvl"><b>' + (S.s3 === null ? '٣' : S.s3 + '/10') + '</b>ورقة العمل الثالثة<br>صعبة: تطبيق وتحليل</div>' +
-      '<div class="hw-lvl"><b>' + (S.s4 === null ? '٤' : S.s4 + '/10') + '</b>ورقة العمل الرابعة<br>الأصعب: تحدّي العباقرة</div>' +
+      '<div class="hw-lvl"><b>' + (S.s3 === null ? NUM[N1] : S.s3 + '/10') + '</b>ورقة العمل ' + ORD[N1] + '<br>صعبة: تطبيق وتحليل</div>' +
+      '<div class="hw-lvl"><b>' + (S.s4 === null ? NUM[N2] : S.s4 + '/10') + '</b>ورقة العمل ' + ORD[N2] + '<br>الأصعب: تحدّي العباقرة</div>' +
       '</div>' +
-      '<button class="hw-btn" id="hwGo">' + (done3 ? '💎 ابدئي ورقة العمل الرابعة' : '🔥 ابدئي ورقة العمل الثالثة') + '</button><br>' +
+      '<button class="hw-btn" id="hwGo">' + (done3 ? '💎 ابدئي ورقة العمل ' + ORD[N2] : '🔥 ابدئي ورقة العمل ' + ORD[N1]) + '</button><br>' +
       '<button class="hw-btn hw-ghost" id="hwLater">⏳ بعدين</button>' +
       '</div>');
     root.querySelector('#hwGo').onclick = function () { start(done3 ? 1 : 0); };
@@ -409,7 +427,7 @@
   function start(i) {
     var sh = SHEETS[i];
     S.cur = i;
-    S.qs = pick(BANK[sh.key], PER);
+    S.qs = pick(getBank()[sh.key], PER);
     showRoot(
       '<h2>' + sh.title + '</h2><p class="hw-sub">' + esc(sh.sub) + '</p>' +
       '<div class="hw-bar"><i id="hwBar"></i></div><div class="hw-cnt" id="hwCnt"></div>' +
@@ -472,7 +490,7 @@
     root.querySelector('#hwScore').textContent = 'علامتك: ' + score + ' من ' + S.qs.length + ' ' + (score >= 9 ? '🌟 عبقرية!' : score >= 7 ? '👏 ممتاز' : score >= 5 ? '💪 حلو' : '📖 راجعي الشرح وجرّبي كمان مرة');
     root.querySelector('#hwSubmit').style.display = 'none';
     var nx = root.querySelector('#hwNext');
-    nx.textContent = S.cur === 0 ? '💎 ورقة العمل الرابعة (الأصعب)' : '🏆 نتيجة التحدي';
+    nx.textContent = S.cur === 0 ? '💎 ورقة العمل ' + ORD[N2] + ' (الأصعب)' : '🏆 نتيجة التحدي';
     nx.onclick = function () { if (S.cur === 0) start(1); else summary(); };
     nx.style.display = '';
     root.querySelector('#hwScore').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -486,8 +504,8 @@
       '<div class="hw-card"><div class="hw-big">' + medal + '</div>' +
       '<h2>نتيجة تحدّي الأوراق الأصعب</h2>' +
       '<div class="hw-lvls">' +
-      '<div class="hw-lvl"><b>' + (S.s3 || 0) + '/10</b>ورقة العمل الثالثة (صعبة)</div>' +
-      '<div class="hw-lvl"><b>' + (S.s4 || 0) + '/10</b>ورقة العمل الرابعة (الأصعب)</div>' +
+      '<div class="hw-lvl"><b>' + (S.s3 || 0) + '/10</b>ورقة العمل ' + ORD[N1] + ' (صعبة)</div>' +
+      '<div class="hw-lvl"><b>' + (S.s4 || 0) + '/10</b>ورقة العمل ' + ORD[N2] + ' (الأصعب)</div>' +
       '</div><p class="hw-sub">' + msg + '<br>العلامات انضافت لتقريرك عند المعلمة.</p>' +
       '<button class="hw-btn" id="hwRetry">🔁 أعيدي التحدي بأسئلة جديدة</button><br>' +
       '<button class="hw-btn hw-ghost" id="hwBack">↩ رجوع لنتيجة اللعبة</button></div>');
@@ -498,33 +516,42 @@
 
   /* بتنفتح بعد ما تخلص ورقة العمل الثانية */
   function unlock() {
-    if (S.unlocked) return;
-    S.unlocked = true;
+    if (S.unlocked || !getBank()) return;
+    S.unlocked = true; S.fromWs = true;
     setTimeout(function () { build(); invite(); }, 2200);
   }
+  /* الألعاب اللي ما بتبعت علامة ورقة العمل: بعد الكأس بيطلع زر 🔥 بس (بدون ما يقاطع اللعبة) */
+  function softUnlock() {
+    if (S.unlocked || S.soft || !getBank()) return;
+    S.soft = true;
+    setTimeout(function () { build(); if (root.style.display !== 'block' && S.s4 === null) fab.style.display = 'block'; }, 4000);
+  }
 
-  var WS2_RE = /ورقة\s*العمل\s*(2|٢|الثانية|المتقدمة)/;
+  var LAST_RE = AFTER === 3 ? /ورقة\s*العمل\s*(3|٣|الثالثة)(?!\s*\()/ : /ورقة\s*العمل\s*(2|٢|الثانية|المتقدمة)/;
   function hook() {
     var R = window.GMReport;
     if (!R || R.__hw) return !!(R && R.__hw);
-    var orig = R.add;
+    var orig = R.add, origT = R.trophy;
     R.add = function (label) {
       var r = orig.apply(this, arguments);
-      try { if (!MANUAL && WS2_RE.test(String(label || ''))) unlock(); } catch (e) {}
+      try { if (!MANUAL && LAST_RE.test(String(label || ''))) unlock(); } catch (e) {}
+      return r;
+    };
+    R.trophy = function () {
+      var r = origT ? origT.apply(this, arguments) : undefined;
+      try { if (SOFT) softUnlock(); } catch (e) {}
       return r;
     };
     R.__hw = true;
     return true;
   }
 
-  window.GMHardWS = { unlock: unlock, open: function () { build(); openNext(); }, bank: BANK_KEY };
+  window.GMHardWS = { unlock: unlock, open: function () { if (!getBank()) return; build(); openNext(); }, bank: BANK_KEY };
 
   function init() {
-    if (!MANUAL) {
-      var n = 0;
-      (function tryHook() { if (!hook() && n++ < 120) setTimeout(tryHook, 500); })();
-    }
-    if (TEST) setTimeout(function () { S.unlocked = true; build(); invite(); }, 800);
+    var n = 0;
+    (function tryHook() { if (!hook() && n++ < 120) setTimeout(tryHook, 500); })();
+    if (TEST) setTimeout(function () { if (!getBank()) return; S.unlocked = true; build(); invite(); }, 800);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

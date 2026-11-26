@@ -1135,7 +1135,7 @@ if(i===13) renderQ('q3',Q3,'nb3');
 if(i===14) renderQ('q4',Q4,'nb4');
 if(i===15) renderQ('q5',Q5,'nb5');
 if(i===30) renderQ('qws',QWS,'nbws');
-if(i===31) resetPrize();
+if(i===31){resetPrize();if(window.GMHardWS)GMHardWS.unlock();}
 if(i===0){finalAttempts=0;pauseUsed=false;timerPaused=false;}var tbar=document.getElementById('toolBar');if(tbar)tbar.style.display=(i===0?'none':'flex');
 window.scrollTo(0,0);
 }
@@ -1428,4 +1428,6 @@ window.addEventListener('load',function(){
 <script>window.PVKIT_CONFIG={homeUrl:'index.html',gameMinutes:30,homeBtn:false,breakBtn:false};</script>
 <script src="pvkit.js"></script>
 <script src="gm-report.js"></script>
+<script src="hardws/sci-a.js"></script>
+<script src="gm-hardws.js" data-bank="malerepro" data-manual="1"></script>
 </body></html>

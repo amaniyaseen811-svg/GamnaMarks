@@ -2850,7 +2850,7 @@ function updateWS2Score(){
   var sc=Object.values(ws2Answered).filter(Boolean).length;
   document.getElementById('ws2Score').textContent=sc;
   if(window.GMReport)GMReport.add('ورقة العمل 2',sc,WS2.length);
-  if(Object.keys(ws2Answered).length===WS2.length){
+  if(Object.keys(ws2Answered).length===WS2.length){if(window.GMHardWS)GMHardWS.unlock();
     document.getElementById('ws2Final').textContent=sc;
     document.getElementById('ws2Done').style.display='block';
     document.getElementById('ws2Done').scrollIntoView({behavior:'smooth'});
@@ -3516,5 +3516,7 @@ window.tSetNeed=function(){
 <script>window.PVKIT_CONFIG={homeUrl:'index.html',breakSec:20,breakMax:1,gameMinutes:30,homeBtn:false,breakBtn:true};</script>
 <script src="pvkit.js"></script>
 <script src="gm-report.js"></script>
+<script src="hardws/sci-b.js"></script>
+<script src="gm-hardws.js" data-bank="mendel1" data-manual="1"></script>
 </body>
 </html>

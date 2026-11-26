@@ -865,7 +865,7 @@ function answerW(i){
   $('wNext').style.display='inline-block';
   $('wNext').textContent=G.wi<G.ws.length-1?'التالي ⬅️':WS_NEXT[G.wsN-1];
 }
-function nextW(){G.wi++;if(G.wi<G.ws.length)showW();else if(G.wsN<3)openWS(G.wsN+1);else go('s-more');}
+function nextW(){G.wi++;if(G.wi<G.ws.length)showW();else if(G.wsN<3)openWS(G.wsN+1);else{go('s-more');if(window.GMHardWS)GMHardWS.unlock();}}
 
 /* ---------- النتائج ---------- */
 function showResults(){
@@ -933,5 +933,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 </script>
 <script src="gm-report.js"></script>
+<script src="hardws/hum.js"></script>
+<script src="gm-hardws.js" data-bank="ip" data-manual="1" data-after="3"></script>
 </body>
 </html>
