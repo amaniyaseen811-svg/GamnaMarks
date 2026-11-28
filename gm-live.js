@@ -103,7 +103,10 @@
       '.gml-hl li{background:rgba(255,255,255,.05);border:1px solid rgba(79,195,247,.25);border-radius:12px;padding:8px 11px;margin-bottom:7px;font-size:.9rem;line-height:1.7}',
       '.gml-hl b{color:#ffd54f}',
       '.gml-box{width:100%;max-width:520px;max-height:94vh;overflow:auto;background:linear-gradient(160deg,#10233a,#070d1c);border:2px solid #29b6f6;border-radius:20px;padding:18px 16px;color:#fff;box-shadow:0 0 40px rgba(41,182,246,.25);text-align:center}',
-      '.gml-h{font-family:Amiri,serif;font-size:clamp(1.25rem,5vw,1.7rem);color:#4fc3f7;margin-bottom:6px;text-shadow:0 0 16px rgba(79,195,247,.5)}',
+      '.gml-q+.gml-h{margin-top:34px}' +
+    '.gml-tm{display:flex;gap:8px;margin:8px 0}.gml-tm button{flex:1;padding:9px;border-radius:12px;font:800 .95rem inherit;font-family:inherit;cursor:pointer;border:2px solid var(--t);background:rgba(255,255,255,.06);color:#fff}.gml-tm button.sel{background:var(--t);color:#0a1128}' +
+    '.gml-tbar{display:flex;gap:6px;margin:4px 0 6px}.gml-tbar div{flex:1;border-radius:10px;padding:4px 8px;font-weight:800;font-size:.8rem;background:rgba(255,255,255,.07);border:1.5px solid var(--t);color:#fff;position:relative;overflow:hidden}.gml-tbar div i{position:absolute;inset:0;width:0;background:var(--t);opacity:.35}.gml-tbar div span{position:relative}' +
+    '.gml-h{font-family:Amiri,serif;font-size:clamp(1.25rem,5vw,1.7rem);color:#4fc3f7;margin-bottom:6px;text-shadow:0 0 16px rgba(79,195,247,.5)}',
       '.gml-sub{font-size:.92rem;color:rgba(220,240,255,.85);margin:4px 0 10px;line-height:1.7}',
       '.gml-in{width:100%;padding:11px 14px;margin:5px 0;border-radius:12px;border:2px solid rgba(79,195,247,.45);background:rgba(0,0,0,.35);color:#fff;font-family:inherit;font-size:1.05rem;text-align:center;box-sizing:border-box}',
       '.gml-code-in{font-size:1.8rem;letter-spacing:8px;font-weight:900}',
@@ -232,6 +235,8 @@
       '<li>⏳ <b>٤. غرفة الانتظار:</b> بتشوفوا صور وأسماء بعض. صاحبة الغرفة بتضغط «▶️ يلا نبلّش كلنا!» وبتبلّشوا مع بعض بعد العدّ 3، 2، 1.</li>' +
       '<li>🤝 <b>تعاون:</b> كلكم فريق واحد — كل إجابة صح من أي وحدة ' + esc(W('build')) + ' ' + esc(W('bridge')) + '، والفوز لما الكل ' + esc(W('all')) + '.</li>' +
       '<li>🏁 <b>تنافس:</b> سباق — كل وحدة بتجاوب أسئلتها، والأسرع ' + esc(W('goN')) + ' هي الفائزة.</li>' +
+      ((S.cfg.modes || []).indexOf('teams') > -1 ? '<li>🛡️ <b>فرق ضد فرق:</b> كل بنت بتختار 🔵 الأزرق أو 🔴 الأحمر بغرفة الانتظار، وكل إجابة صح بتقدّم فريقها — الفريق اللي بيوصل أبعد بيفوز.</li>' : '') +
+      ((S.cfg.modes || []).indexOf('duel') > -1 ? '<li>⚔️ <b>تحدّي ١ ضد ١:</b> غرفة لطالبتين بس، كل وحدة على جهازها، والأسرع بتفوز.</li>' : '') +
       '<li>👀 <b>مسار السباق:</b> فوق الأسئلة بتشوفي كل وحدة بصورتها وين واصلة، ومركزك من الكل. اضغطي على المسار أو الشارة فوق عشان تشوفي الترتيب الكامل.</li>' +
       '<li>🔔 <b>تنبيهات:</b> بتطلعلك رسالة لما وحدة تسبقك، أو تجاوب صح، أو ترجع من البداية.</li>' +
       '<li>👩‍🏫 <b>للمعلمة:</b> وهي بتعمل الغرفة بتعلّم على «أنا المعلمة، بتابع بس وما بلعب» — بتفتحلها لوحة «متابعة الغرفة مباشرة» بالترتيب والنقاط والأخطاء، وبتقدر تعرضها على شاشة الصف.</li>' +
@@ -244,7 +249,21 @@
   }
   function hide() { ov.classList.remove('on'); }
   function err(m) { var e = $('gmlErr'); if (e) e.textContent = m || ''; }
-  function modeName(m) { return m === 'race' ? '🏁 تنافس' : '🤝 تعاون'; }
+  function modeName(m) { return m === 'race' ? '🏁 تنافس' : m === 'teams' ? '🛡️ فرق ضد فرق' : m === 'duel' ? '⚔️ تحدّي ١ ضد ١' : '🤝 تعاون'; }
+  function isRace() { return S.mode === 'race' || S.mode === 'duel'; }
+  var TEAMS = { A: { n: 'الفريق الأزرق', e: '🔵', c: '#29b6f6' }, B: { n: 'الفريق الأحمر', e: '🔴', c: '#ef5350' } };
+  function teamOf(p) { return p && TEAMS[p.tm] ? p.tm : 'A'; }
+  function teamStats() {
+    var pl = playersArr().filter(function (p) { return !p.spec; }), o = { A: [], B: [] };
+    pl.forEach(function (p) { o[teamOf(p)].push(p); });
+    var r = {}; ['A', 'B'].forEach(function (t) { var pts = 0; o[t].forEach(function (p) { pts += p.pts || 0; });
+      r[t] = { pl: o[t], pct: teamPct(o[t]), pts: pts, done: o[t].length > 0 && o[t].every(function (p) { return p.done; }) }; });
+    return r;
+  }
+  function teamWinner() { var t = teamStats(); if (!t.A.pl.length || !t.B.pl.length) return ''; if (!(t.A.done && t.B.done)) return '';
+    if (t.A.pct !== t.B.pct) return t.A.pct > t.B.pct ? 'A' : 'B'; if (t.A.pts !== t.B.pts) return t.A.pts > t.B.pts ? 'A' : 'B'; return 'tie'; }
+  function teamBarHTML() { var t = teamStats(); return '<div class="gml-tbar">' + ['A', 'B'].map(function (k) {
+      return '<div style="--t:' + TEAMS[k].c + '"><i style="width:' + t[k].pct + '%"></i><span>' + TEAMS[k].e + ' ' + TEAMS[k].n + ' · ' + t[k].pct + '% · ' + t[k].pl.length + '</span></div>'; }).join('') + '</div>'; }
   function lvlName(l) { return l === 'hard' ? '🔥 صعب' : (l === 'easy' ? '🟢 سهل' : '🙂 عادي'); }
 
   /* ---------------- screen 1: name + character ---------------- */
@@ -286,6 +305,8 @@
       '<div class="gml-grid">' +
       '<button class="gml-card sel" data-m="coop"><div class="e">🤝</div><b>تعاون</b><span>كلنا فريق واحد، وكل إجابة صح ' + W('build') + ' ' + W('bridge') + '</span></button>' +
       '<button class="gml-card" data-m="race"><div class="e">🏁</div><b>تنافس</b><span>سباق! مين أول وحدة ' + W('go') + '</span></button>' +
+      ((S.cfg.modes || []).indexOf('teams') > -1 ? '<button class="gml-card" data-m="teams"><div class="e">🛡️</div><b>فرق ضد فرق</b><span>🔵 الفريق الأزرق ضد 🔴 الفريق الأحمر — الفريق الأسرع والأدق بيفوز</span></button>' : '') +
+      ((S.cfg.modes || []).indexOf('duel') > -1 ? '<button class="gml-card" data-m="duel"><div class="e">⚔️</div><b>تحدّي ١ ضد ١</b><span>طالبتين بس، كل وحدة على جهازها — مين الأسرع؟</span></button>' : '') +
       '</div>' +
       '<div class="gml-sub">المستوى: <span class="gml-tag">' + lvlName(S.lvl) + '</span></div>' +
       '<label class="gml-chk"><input type="checkbox" id="gmlSpec"> 👩‍🏫 أنا المعلمة، بتابع بس وما بلعب</label>' +
@@ -344,6 +365,11 @@
         var r = d.data();
         if (r.game && S.cfg.game && r.game !== S.cfg.game) { btn.disabled = false; err('هاي الغرفة للعبة ثانية'); return; }
         if (r.state === 'end') { btn.disabled = false; err('هاي الغرفة خلصت'); return; }
+        if (r.mode === 'duel') {
+          var cnt = 0, pls = await withStore(function () { return f.getDocs(f.collection(f.db, S.st.coll, S.st.pre + code, 'players')); });
+          pls.forEach(function (x) { var p = x.data(); if (!p.spec) cnt++; });
+          if (cnt >= 2) { btn.disabled = false; err('هاي غرفة تحدّي ١ ضد ١ وفيها لاعبتين ⚔️'); return; }
+        }
         S.code = code; S.host = false; S.spec = false; S.mode = r.mode; S.lvl = r.lvl || 'normal';
         /* رقم اللاعبة محفوظ لهاي الصفحة بس، عشان لو حدّثت الصفحة ترجع بنفس مكانها */
         var ssk = 'gml_pid_' + code, sp = '';
@@ -377,6 +403,12 @@
         if (free.length) { S.av = free[0].id; me.av = S.av; lsSet('gml_av', S.av); S.avMoved = true; writeMe(false); }
       }
     }
+    if (S.mode === 'teams' && me && !S.spec && !S.tmSet) {
+      var ca = players.filter(function (p) { return p.id !== S.pid && teamOf(p) === 'A'; }).length, cb = players.filter(function (p) { return p.id !== S.pid && teamOf(p) === 'B'; }).length;
+      S.tm = ca <= cb ? 'A' : 'B'; S.tmSet = true; me.tm = S.tm; writeMe(false);
+    }
+    var tmPick = (S.mode === 'teams' && me && !S.spec) ? '<div class="gml-sub" style="margin:8px 0 0">🛡️ فريقك:</div><div class="gml-tm">' +
+      ['A', 'B'].map(function (k) { return '<button type="button" data-t="' + k + '" style="--t:' + TEAMS[k].c + '" class="' + (S.tm === k ? 'sel' : '') + '">' + TEAMS[k].e + ' ' + TEAMS[k].n + ' (' + players.filter(function (p) { return teamOf(p) === k; }).length + ')</button>'; }).join('') + '</div>' : '';
     var pick = (me && !S.spec) ?
       '<div class="gml-sub" style="margin:8px 0 2px">🎭 شخصيتك (المقفولة 🔒 أخدتها صاحبتك):</div>' +
       (S.avMoved ? '<div class="gml-note">شخصيتك كانت مأخوذة، فاخترنالك وحدة ثانية — بتقدري تغيّريها 👇</div>' : '') +
@@ -391,14 +423,19 @@
       '<div class="gml-code">' + esc(S.code) + '</div>' +
       '<div><span class="gml-tag">' + modeName(S.mode) + '</span><span class="gml-tag">' + lvlName(S.lvl) + '</span><span class="gml-tag">👥 ' + players.length + '</span></div>' +
       '<div class="gml-pl">' + pl.map(function (p) {
-        return '<div class="gml-pc" style="--c:' + p.c + '"><div class="e">' + (p.spec ? '👩‍🏫' : avHTML(p.av)) + '</div><div class="n">' + esc(p.n) + (p.id === S.pid ? ' (أنا)' : '') + '</div>' +
+        return '<div class="gml-pc" style="--c:' + (S.mode === 'teams' && !p.spec ? TEAMS[teamOf(p)].c : p.c) + '"><div class="e">' + (p.spec ? '👩‍🏫' : avHTML(p.av)) + '</div><div class="n">' + (S.mode === 'teams' && !p.spec ? TEAMS[teamOf(p)].e + ' ' : '') + esc(p.n) + (p.id === S.pid ? ' (أنا)' : '') + '</div>' +
           (p.host ? '<div style="font-size:.65rem;color:#ffc107">👑 صاحبة الغرفة</div>' : '') + '</div>';
-      }).join('') + '</div>' + pick +
-      '<div class="gml-sub" style="font-size:.82rem">' + (S.mode === 'race'
+      }).join('') + '</div>' + tmPick + pick +
+      '<div class="gml-sub" style="font-size:.82rem">' + (S.mode === 'teams'
+        ? '🛡️ كل فريق بيتقدّم بإجابات بناته: الفريق اللي بيوصل أبعد (وبعدها الأكثر نقاطاً) لما الكل يخلّص هو الفائز!'
+        : S.mode === 'duel'
+        ? '⚔️ تحدّي بين طالبتين بس، كل وحدة على جهازها — الأسرع ' + W('goN') + ' هي الفائزة!'
+        : S.mode === 'race'
         ? '🏁 كل وحدة بتجاوب على أسئلتها، والأسرع ' + W('goN') + ' هي الفائزة. بتشوفوا بعض على مسار السباق!'
         : '🤝 كلكم فريق واحد: كل إجابة صح من أي وحدة ' + W('build') + ' ' + W('bridge') + '، والفوز لما الكل ' + W('all') + '!') + '</div>' +
       (S.host
-        ? '<button class="gml-btn gold" id="gmlStart"' + (players.length ? '' : ' disabled') + '>▶️ يلا نبلّش كلنا!</button>' +
+        ? '<button class="gml-btn gold" id="gmlStart"' + ((S.mode === 'duel' ? players.length === 2 : (S.mode === 'teams' ? players.length >= 2 : players.length)) ? '' : ' disabled') + '>▶️ يلا نبلّش كلنا!</button>' +
+          (S.mode === 'duel' && players.length !== 2 ? '<div class="gml-sub" style="font-size:.8rem;color:#ffe082">⚔️ التحدّي بيبلّش لما يكون في لاعبتين بالضبط</div>' : '') +
           (players.length < 2 ? '<div class="gml-sub" style="font-size:.8rem;color:#ffe082">⏳ استني صاحباتك يدخلوا...</div>' : '')
         : '<div class="gml-sub" style="color:#ffe082">⏳ استني ' + esc((S.room && S.room.hostName) || 'صاحبة الغرفة') + ' تبلّش اللعبة...</div>') +
       '<div class="gml-err" id="gmlErr"></div>' +
@@ -409,6 +446,9 @@
       try { await S.fb.updateDoc(roomDoc(), { state: 'play', startAt: now() }); }
       catch (e) { this.disabled = false; err('ما زبط، جربي كمان مرة'); }
     };
+    box.querySelectorAll('.gml-tm button').forEach(function (b) {
+      b.onclick = function () { S.tm = b.getAttribute('data-t'); S.tmSet = true; if (S.players[S.pid]) S.players[S.pid].tm = S.tm; writeMe(false); viewLobby(); };
+    });
     box.querySelectorAll('#gmlLChars .gml-ch').forEach(function (b) {
       b.onclick = function () {
         if (b.disabled) return;
@@ -424,7 +464,7 @@
   async function writeMe(first) {
     var f = S.fb; if (!f || !S.code) return;
     var m = S.mine;
-    var d = { id: S.pid, n: S.name, av: S.av, spec: !!S.spec, host: !!S.host, step: m.step, total: S.total, pts: m.pts, mis: m.mis, done: !!m.done, won: !!m.won, runs: m.runs, last: now() };
+    var d = { id: S.pid, n: S.name, av: S.av, tm: S.tm || 'A', spec: !!S.spec, host: !!S.host, step: m.step, total: S.total, pts: m.pts, mis: m.mis, done: !!m.done, won: !!m.won, runs: m.runs, last: now() };
     if (first) d.j = now();
     if (m.done && !m.finSent) { d.finAt = f.serverTimestamp(); m.finSent = true; }
     try { await withStore(function () { return f.setDoc(plDoc(), d, { merge: true }); }); } catch (e) { console.warn('[GMLive] write', e); }
@@ -464,9 +504,11 @@
       var p = S.players[k], o = old[k]; if (!o || k === S.pid || p.spec) return;
       if (p.done && !o.done) toast(avTxt(p) + p.n + (p.won ? ' ' + W('did') + '! 🏆' : ' خلّصت المغامرة'), 'fin' + k);
       else if (S.mode === 'coop' && p.step > o.step && p.step < S.total) toast('💚 ' + p.n + ' جاوبت صح و' + W('built') + ' قطعة من ' + W('bridge') + '!');
-      else if (S.mode === 'race' && p.step > o.step && p.step > S.mine.step && o.step <= S.mine.step && !S.mine.done) toast('⚡ ' + p.n + ' سبقتك! يلا شدّي حيلك 💪');
+      else if (isRace() && p.step > o.step && p.step > S.mine.step && o.step <= S.mine.step && !S.mine.done) toast('⚡ ' + p.n + ' سبقتك! يلا شدّي حيلك 💪');
+      else if (S.mode === 'teams' && p.step > o.step && p.step < S.total) toast((teamOf(p) === S.tm ? '💪 ' + p.n + ' من فريقك جاوبت صح!' : '⚡ ' + TEAMS[teamOf(p)].e + ' ' + p.n + ' من الفريق الثاني جاوبت صح!'));
       if (p.runs > (o.runs || 0)) toast('😱 ' + p.n + ' رجعت من البداية' + (S.mode === 'coop' ? '، شجّعوها!' : ''));
     });
+    if (S.mode === 'teams') { var tw = teamWinner(); if (tw) toast(tw === 'tie' ? '🤝 تعادل بين الفريقين!' : '🏆 فاز ' + TEAMS[tw].e + ' ' + TEAMS[tw].n + '!', 'teamwin'); }
     if (S.mode === 'coop') {
       var pl = playersArr().filter(function (p) { return !p.spec; });
       if (pl.length && pl.every(function (p) { return p.done; })) toast('🤝🏆 الفريق كله خلّص و' + W('team') + '! برافو عليكم', 'teamdone');
@@ -510,12 +552,15 @@
     var r = ranked(), pl = playersArr().filter(function (p) { return !p.spec; });
     var meRank = 0; r.forEach(function (p, i) { if (p.id === S.pid) meRank = i + 1; });
     var tp = teamPct(pl), sumPts = 0; pl.forEach(function (p) { sumPts += p.pts || 0; });
-    var head = S.mode === 'coop'
+    var head = S.mode === 'teams'
+      ? '<span>🛡️ فرق ضد فرق · ' + pl.length + ' لاعبات</span><span>' + (S.tm && !S.spec ? TEAMS[S.tm].e + ' فريقك' : '') + '</span>'
+      : S.mode === 'coop'
       ? '<span>🤝 تعاون · ' + pl.length + ' لاعبات</span><span>' + (S.cfg.private && !S.host && !S.spec ? '' : '💚 قوة الفريق ' + sumPts) + '</span>'
-      : '<span>🏁 تنافس · ' + pl.length + ' لاعبات</span><span>' + (meRank ? '🎯 مركزك ' + meRank + ' من ' + r.length : '') + '</span>';
+      : '<span>' + (S.mode === 'duel' ? '⚔️ تحدّي' : '🏁 تنافس') + ' · ' + pl.length + ' لاعبات</span><span>' + (meRank ? '🎯 مركزك ' + meRank + ' من ' + r.length : '') + '</span>';
     /* النهر: كل بنت إلها حارة فيها تماسيحها، والكل بنفس المشهد */
     S.prev = S.prev || {};
     var track = '<div class="gml-river' + (pl.length > 6 ? ' many' : '') + '">' +
+      (S.mode === 'teams' ? teamBarHTML() : '') +
       (S.mode === 'coop' ? '<div class="gml-team"><i style="width:' + tp + '%"></i><span>' + W('bicon') + ' ' + W('bridge') + ' ' + tp + '%</span></div>' : '') +
       pl.map(function (p) {
         var st = Math.max(0, Math.min(p.step || 0, S.total));
@@ -527,11 +572,13 @@
           cells += '<span class="' + cls + '"><span class="t">' + thing + '</span>' +
             (k === st ? '<span class="who' + (hop ? ' hop' : '') + '" style="--c:' + p.c + '">' + avHTML(p.av) + '</span>' : '') + '</span>';
         }
-        return '<div class="gml-lane' + (p.id === S.pid ? ' me' : '') + (p.done ? ' done' : '') + '" style="--c:' + p.c + '">' +
-          '<span class="ln">' + esc(p.n) + (p.done ? ' ✅' : '') + '</span><span class="cells">' + cells + '</span></div>';
+        return '<div class="gml-lane' + (p.id === S.pid ? ' me' : '') + (p.done ? ' done' : '') + '" style="--c:' + (S.mode === 'teams' ? TEAMS[teamOf(p)].c : p.c) + '">' +
+          '<span class="ln">' + (S.mode === 'teams' ? TEAMS[teamOf(p)].e + ' ' : '') + esc(p.n) + (p.done ? ' ✅' : '') + '</span><span class="cells">' + cells + '</span></div>';
       }).join('') + '</div>';
     if (!full) pl.forEach(function (p) { S.prev[p.id] = Math.max(0, Math.min(p.step || 0, S.total)); });
-    var foot = S.mode === 'coop'
+    var foot = S.mode === 'teams'
+      ? '<div class="gml-bf">🛡️ ' + (function () { var t = teamStats(); return t.A.pct === t.B.pct ? 'الفريقين متساويين' : 'بالمقدمة: ' + (t.A.pct > t.B.pct ? TEAMS.A.e + ' ' + TEAMS.A.n : TEAMS.B.e + ' ' + TEAMS.B.n); })() + ' · اضغطي للتفاصيل</div>'
+      : S.mode === 'coop'
       ? '<div class="gml-bf">🤝 كل إجابة صح من أي وحدة ' + W('build') + ' ' + W('bridge') + ' · اضغطي للتفاصيل</div>'
       : '<div class="gml-bf">' + (r[0] ? '👑 بالمقدمة: ' + esc(avTxt(r[0]) + r[0].n) : '') + ' · اضغطي للتفاصيل</div>';
     var rows = '';
@@ -540,7 +587,7 @@
         var pct = Math.min(100, Math.round(Math.min(p.step, S.total) / S.total * 100));
         var stale = !p.done && (now() - (p.last || 0)) > 60000;
         var st = p.done ? (p.won ? '✅ ' + W('did') : '🏁 خلّصت') : (stale ? '💤 مش متصلة' : '🎮 ' + Math.min(p.step, S.total) + '/' + S.total);
-        return '<div class="gml-row' + (p.id === S.pid ? ' me' : '') + '" style="--c:' + p.c + '"><span class="r">' + (S.mode === 'race' ? (i + 1) : '•') + '</span><span class="e">' + avHTML(p.av) + '</span>' +
+        return '<div class="gml-row' + (p.id === S.pid ? ' me' : '') + '" style="--c:' + (S.mode === 'teams' ? TEAMS[teamOf(p)].c : p.c) + '"><span class="r">' + (isRace() ? (i + 1) : (S.mode === 'teams' ? TEAMS[teamOf(p)].e : '•')) + '</span><span class="e">' + avHTML(p.av) + '</span>' +
           '<div><b>' + esc(p.n) + '</b><div class="gml-pb"><i style="width:' + pct + '%"></i></div></div>' +
           '<span class="s">' + st + '<br>' + (hidePts(p) ? '🔒 العلامة مخفية' : '💚' + (p.pts || 0) + ' · ❌' + (p.mis || 0)) + (p.runs ? ' · 🔄' + p.runs : '') + '</span></div>';
       }).join('') + '</div>';
@@ -555,7 +602,7 @@
       var vis = S.boards.some(function (el) { return el && el.isConnected && el.offsetParent !== null; });
       chip.style.display = vis ? 'none' : 'block';
       var r = ranked(), me = 0; r.forEach(function (p, i) { if (p.id === S.pid) me = i + 1; });
-      chip.textContent = S.mode === 'coop' ? '🤝 الفريق ' + teamPct(r) + '%' : (S.spec ? '🏁 ' + r.length + ' لاعبات' : '🏁 مركزك ' + me + '/' + r.length);
+      chip.textContent = S.mode === 'coop' ? '🤝 الفريق ' + teamPct(r) + '%' : S.mode === 'teams' ? (function () { var t = teamStats(); return TEAMS.A.e + ' ' + t.A.pct + '% · ' + TEAMS.B.e + ' ' + t.B.pct + '%'; })() : (S.spec ? '🏁 ' + r.length + ' لاعبات' : '🏁 مركزك ' + me + '/' + r.length);
     }
   }
   function fullSub() {
@@ -563,7 +610,7 @@
   }
   function openFull(spec) {
     if (!S.started) return;
-    $('gmlFT').textContent = spec || S.spec ? '👩‍🏫 متابعة الغرفة مباشرة' : (S.mode === 'coop' ? '🤝 الفريق' : '🏁 السباق');
+    $('gmlFT').textContent = spec || S.spec ? '👩‍🏫 متابعة الغرفة مباشرة' : (S.mode === 'coop' ? '🤝 الفريق' : S.mode === 'teams' ? '🛡️ الفرق' : S.mode === 'duel' ? '⚔️ التحدّي' : '🏁 السباق');
     $('gmlFC').style.display = (spec || S.spec) ? 'none' : 'block';
     $('gmlFH').style.display = (spec || S.spec) ? 'block' : 'none';
     $('gmlFB').innerHTML = boardHTML(true); fullSub(); fullOv.classList.add('on');
@@ -576,7 +623,8 @@
       build(); initFB(); viewMe();
     },
     active: function () { return S.started && !S.spec; },
-    mode: function () { return S.started ? S.mode : ''; },
+    mode: function () { return S.started ? (S.mode === 'duel' ? 'race' : S.mode) : ''; },
+    modeName: function () { return S.started ? modeName(S.mode) : ''; },
     report: function (o) {
       if (!S.started || S.spec) return;
       var m = S.mine, wasDone = m.done;
@@ -591,7 +639,8 @@
       if (m.done && !wasDone) {
         setTimeout(function () {
           var r = ranked(), rk = 0; r.forEach(function (p, i) { if (p.id === S.pid) rk = i + 1; });
-          if (S.mode === 'race') toast(m.won ? '🏆 ' + W('you') + '! ترتيبك ' + rk + ' من ' + r.length : 'خلّصتي! ترتيبك ' + rk + ' من ' + r.length);
+          if (isRace()) toast(m.won ? '🏆 ' + W('you') + '! ترتيبك ' + rk + ' من ' + r.length : 'خلّصتي! ترتيبك ' + rk + ' من ' + r.length);
+          else if (S.mode === 'teams') toast('🛡️ خلّصتي دورك! شجّعي ' + TEAMS[S.tm || 'A'].n);
           else toast('🤝 خلّصتي دورك! شوفي صاحباتك وين وصلوا');
         }, 1500);
       }
@@ -608,8 +657,11 @@
       if (!S.started) return '';
       var r = ranked(), pl = playersArr().filter(function (p) { return !p.spec; });
       var rk = 0; r.forEach(function (p, i) { if (p.id === S.pid) rk = i + 1; });
-      var t = S.mode === 'race'
-        ? (rk === 1 && S.mine.won ? '👑 إنتِ الأولى بالسباق!' : '🏁 ترتيبك بالسباق: ' + rk + ' من ' + r.length)
+      var tw = S.mode === 'teams' ? teamWinner() : '';
+      var t = S.mode === 'teams'
+        ? (tw === 'tie' ? '🤝 تعادل بين الفريقين!' : tw ? (tw === S.tm ? '🏆 فاز فريقك ' : '🛡️ فاز ') + TEAMS[tw].e + ' ' + TEAMS[tw].n + '!' : '🛡️ استنّي باقي البنات يخلّصوا…')
+        : isRace()
+        ? (rk === 1 && S.mine.won ? '👑 إنتِ الأولى' + (S.mode === 'duel' ? ' بالتحدّي!' : ' بالسباق!') : '🏁 ترتيبك: ' + rk + ' من ' + r.length)
         : (pl.every(function (p) { return p.done; }) ? '🤝🏆 الفريق كله ' + W('team') + '!' : '🤝 ' + W('bridge') + ': ' + teamPct(pl) + '%');
       return '<div class="gml-final"><div class="t">' + t + '</div>' + boardHTML(true) + '</div>';
     },
